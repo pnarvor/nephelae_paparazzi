@@ -11,13 +11,13 @@ class PprzUav:
         self.navFrame = navFrame
         self.gps      = []
 
-        self.binds = []
-        self.binds.append(
+        self.ivyBinds = []
+        self.ivyBinds.append(
             IvyBindMsg(lambda agent, msg: self.gps_callback(msg),
                        '(' + str(self.id) + ' GPS .*)'))
 
-    def unbind(self):
-        for bindId in self.binds:
+    def terminate(self):
+        for bindId in self.ivyBinds:
             IvyUnBindMsg(bindId)
                           
     def gps_callback(self, msg):

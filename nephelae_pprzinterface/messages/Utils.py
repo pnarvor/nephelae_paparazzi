@@ -29,7 +29,6 @@ class TimeoutLock:
         self.cond = threading.Condition()
 
     def wait(self, timeout=5.0):
-        print("Start wait")
 
         self.notified = False
         with self.cond:
@@ -45,11 +44,9 @@ class TimeoutLock:
         return self.notified
 
     def release(self):
-        print("Try release")
         with self.cond:
             self.notified = True
             self.cond.notify_all()
-            print("Released")
 
 class MessageGrabber:
 
@@ -71,13 +68,17 @@ class MessageGrabber:
         return self.res
 
     def callback(self, msg):
-        
-        print("Callback called !")
+       
+        # check in case of message queue
+        if self.bindId == -1:
+            return
+
         try:
             self.res = self.messageType(msg)
         except Exception as e:
             self.error = e
         IvyUnBindMsg(self.bindId)
+        self.bindId = -1
         self.lock.release()
 
 def grab_one(messageType, regex, timeout=60.0):
