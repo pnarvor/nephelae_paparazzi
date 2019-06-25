@@ -1,6 +1,11 @@
+from .Messages import Message
 from .Messages import UavMessage
 
 class Gps(UavMessage):
+
+    def bind(callback, uavId='.*'):
+        return Message.bind(lambda msg: callback(Gps(msg)),
+                            '(' + str(uavId) + ' GPS .*)')
 
     def __init__(self, msg):
         self.type = "GPS"
@@ -18,5 +23,4 @@ class Gps(UavMessage):
         self.add_field('itow'      , float(words[8]) / 1.0e3)
         self.add_field('utm_zone'  ,   int(words[9]))
         self.add_field('gps_nb_err',   int(words[10]))
-
-
+    

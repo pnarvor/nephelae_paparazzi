@@ -1,6 +1,12 @@
 import time
 
+from ivy.std_api import *
+import logging
+
 class Message:
+
+    def bind(callback, regex):
+        return IvyBindMsg(lambda agent, msg: callback(msg), regex)
 
     def __init__(self, msg=""):
         self.stamp = time.time()
