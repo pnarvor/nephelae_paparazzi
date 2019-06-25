@@ -26,16 +26,12 @@ class PprzInterface:
         while self.navFrame is None:
             print("Waiting for NAVIGATION_REF message...")
             try:
-                self.navFrame = pmsg.grab_one(pmsg.NavigationRef,
-                                              '(.* NAVIGATION_REF .*)',
-                                              timeout=2.0)
+                self.navFrame = pmsg.grab_one(pmsg.NavigationRef, timeout=2.0)
             except Exception as e:
                 pass
         print(self.navFrame)
 
-        self.ivyBinds.append(
-            IvyBindMsg(lambda agent, msg: self.find_uavs_callback(msg),
-                       '(.* GPS .*)'))
+        self.ivyBinds.append(pmsg.Gps.bind(self.find_uavs_callback))
         self.running = True
 
     def stop(self):
@@ -51,7 +47,7 @@ class PprzInterface:
             print("Complete.")
 
     def find_uavs_callback(self, msg):
-        uavId = int(msg.split(' ')[0])
+        uavId = int(msg.uavId)
         if not uavId in self.uavs.keys():
             self.uavs[uavId] = PprzUav(uavId, self.navFrame)
             print("Found UAV, id :", uavId)
