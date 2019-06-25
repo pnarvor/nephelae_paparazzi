@@ -58,9 +58,9 @@ class MessageGrabber:
         self.lock        = TimeoutLock()
         self.bindId      = -1
 
-    def grab_one(self, regex, timeout=5.0):
+    def grab_one(self, timeout=5.0):
         
-        self.bindId = IvyBindMsg(lambda agent, msg: self.callback(msg), regex)
+        self.bindId = self.messageType.bind(self.callback)
         if not self.lock.wait(timeout):
             raise Exception("MessageGrabber : timeout reached with regex \"" + regex + "\"")
         if self.error is not None:
@@ -73,15 +73,12 @@ class MessageGrabber:
         if self.bindId == -1:
             return
 
-        try:
-            self.res = self.messageType(msg)
-        except Exception as e:
-            self.error = e
+        self.res = msg
         IvyUnBindMsg(self.bindId)
         self.bindId = -1
         self.lock.release()
 
-def grab_one(messageType, regex, timeout=60.0):
+def grab_one(messageType, timeout=60.0):
 
     """get_one(messageType, regex, timeout=60.0)
        
@@ -100,4 +97,4 @@ def grab_one(messageType, regex, timeout=60.0):
 
     """
     grabber = MessageGrabber(messageType)
-    return grabber.grab_one(regex, timeout)
+    return grabber.grab_one(timeout)

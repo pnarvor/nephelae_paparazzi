@@ -19,7 +19,7 @@ IvyInit("PprzInterface_" + str(os.getpid()))
 logging.getLogger('Ivy').setLevel(logging.WARN)
 IvyStart("127.255.255.255:2010")
 
-msg = pmsg.grab_one(pmsg.Gps, '(.* GPS .*)', timeout=2.0)
-# msg = pmsg.grab_one(pmsg.NavigationRef, '(.* NAVIGATION_REF .*)', timeout=10.0)
+# msg = pmsg.grab_one(pmsg.Gps, timeout=2.0)
+msg = pmsg.grab_one(pmsg.NavigationRef, timeout=10.0)
 print(msg)
 
