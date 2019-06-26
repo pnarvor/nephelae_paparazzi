@@ -4,3 +4,4 @@ from .Messages import UavMessage
 
 from .NavigationRef import NavigationRef
 from .Gps           import Gps
+from .Ptu           import Ptu
