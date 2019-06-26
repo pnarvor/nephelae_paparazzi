@@ -47,7 +47,7 @@ class PprzInterface:
             print("Complete.")
 
     def find_uavs_callback(self, msg):
-        uavId = int(msg.uavId)
+        uavId = msg.uavId
         if not uavId in self.uavs.keys():
             self.uavs[uavId] = PprzUav(uavId, self.navFrame)
             print("Found UAV, id :", uavId)
