@@ -12,7 +12,7 @@ class PprzUav:
         self.gps      = []
 
         self.ivyBinds = []
-        self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback))
+        self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
 
     def terminate(self):
         for bindId in self.ivyBinds:
