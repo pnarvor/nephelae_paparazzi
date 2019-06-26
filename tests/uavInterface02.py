@@ -8,7 +8,7 @@ import signal
 from ivy.std_api import *
 import logging
 
-import nephelae_pprzinterface as ppint
+import pprzinterface as ppint
 
 interface = ppint.PprzInterface()
 interface.start()

@@ -16,8 +16,8 @@ IvyInit("PprzInterface_" + str(os.getpid()))
 logging.getLogger('Ivy').setLevel(logging.WARN)
 IvyStart("127.255.255.255:2010")
 
-import nephelae_pprzinterface as ppint
+import pprzinterface as ppint
 
-uav100 = ppint.PprzUavInterface(str(100,), None)
-uav101 = ppint.PprzUavInterface(str(101,), None)
+uav100 = ppint.PprzUav(str(100,), None)
+uav101 = ppint.PprzUav(str(101,), None)
 
