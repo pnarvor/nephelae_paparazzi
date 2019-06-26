@@ -51,4 +51,6 @@ class PprzInterface:
         if not uavId in self.uavs.keys():
             self.uavs[uavId] = PprzUav(uavId, self.navFrame)
             print("Found UAV, id :", uavId)
-
+    
+    def __getitem__(self, key):
+        return self.uavs[key]
