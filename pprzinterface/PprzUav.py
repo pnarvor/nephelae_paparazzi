@@ -5,7 +5,9 @@ from . import messages as pmsg
 
 class PprzUav:
 
-    def __init__(self, uavId, navFrame):
+    def __init__(self, uavId, navFrame,
+                       gpsObservers=[],
+                       sensorObservers=[]):
 
         self.id          = uavId
         self.navFrame    = navFrame
@@ -26,7 +28,8 @@ class PprzUav:
         self.gps.append(msg)
 
     def ptu_callback(self, msg):
-        self.ptu.append(msg)
+        self.ptu.append({'gps': self.gps[-1], 'data': msg})
 
     def cloud_sensor_callback(self, msg):
-        self.cloudSensor.append(msg)
+        self.cloudSensor.append({'gps': self.gps[-1], 'data': msg})
+
