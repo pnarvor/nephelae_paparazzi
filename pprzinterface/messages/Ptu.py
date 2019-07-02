@@ -19,5 +19,5 @@ class Ptu(UavMessage):
         self.add_field('pressure',    float(words[0]))
         self.add_field('temperature', float(words[1]))
         self.add_field('humidity',    float(words[2]))
-        self.add_field('other',       float(words[3]))
+        self.add_field('ptuUnknown',  float(words[3]))
     
