@@ -1,5 +1,8 @@
+from nephelae_base.types import Position
+
 from .Messages import Message
 from .Messages import UavMessage
+from . import NavigationRef
 
 class Gps(UavMessage):
 
@@ -23,4 +26,18 @@ class Gps(UavMessage):
         self.add_field('itow'      , float(words[8]) / 1.0e3)
         self.add_field('utm_zone'  ,   int(words[9]))
         self.add_field('gps_nb_err',   int(words[10]))
-    
+
+    def __sub__(self, other):
+
+        if type(other) == Gps:
+            return Position(self.itow - other.itow,
+                            self.utm_east - other.utm_east,
+                            self.utm_north - other.utm_north,
+                            self.alt - other.alt)
+        elif type(other) == NavigationRef:
+            return Position(self.stamp - other.stamp,
+                            self.utm_east - other.utm_east,
+                            self.utm_north - other.utm_north,
+                            self.alt - other.ground_alt)
+        else:
+            raise AttributeError("Invalid operand type")
