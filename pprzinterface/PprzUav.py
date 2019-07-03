@@ -4,6 +4,7 @@ import logging
 from nephelae_base.types import SensorSample
 
 from . import messages as pmsg
+from . import MessageSynchronizer
 
 class PprzUav:
 
