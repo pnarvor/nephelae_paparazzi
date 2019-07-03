@@ -31,6 +31,8 @@ class PprzUav:
         self.ivyBinds.append(pmsg.Ptu.bind(self.ptu_callback, self.id))
         self.ivyBinds.append(pmsg.CloudSensor.bind(self.cloud_sensor_callback, self.id))
 
+        self.gps = [] # For convenience
+
     def terminate(self):
         for bindId in self.ivyBinds:
             IvyUnBindMsg(bindId)
@@ -44,6 +46,8 @@ class PprzUav:
 
         for gpsObserver in self.gpsObservers:
             gpsObserver.add_sample(msg)
+
+        self.gps.append(msg)
 
     def ptu_callback(self, msg):
 
