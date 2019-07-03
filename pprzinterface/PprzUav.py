@@ -63,19 +63,19 @@ class PprzUav:
         gps = pair[0]
         ptu = pair[1]
         # Converting pprz message to SensorSample type
-        pSample = SensorSample(variableName='pressure',
+        pSample = SensorSample(variableName='pressure', producer=self.id,
                                timeStamp=ptu.stamp - self.navFrame.stamp,
                                position=gps - self.navFrame,
                                data=[ptu.pressure])
-        tSample = SensorSample(variableName='temperature',
+        tSample = SensorSample(variableName='temperature', producer=self.id,
                                timeStamp=ptu.stamp - self.navFrame.stamp,
                                position=gps - self.navFrame,
                                data=[ptu.temperature])
-        uSample = SensorSample(variableName='humidity',
+        uSample = SensorSample(variableName='humidity', producer=self.id,
                                timeStamp=ptu.stamp - self.navFrame.stamp,
                                position=gps - self.navFrame,
                                data=[ptu.humidity])
-        oSample = SensorSample(variableName='ptuUnknown',
+        oSample = SensorSample(variableName='ptuUnknown', producer=self.id,
                                timeStamp=ptu.stamp - self.navFrame.stamp,
                                position=gps - self.navFrame,
                                data=[ptu.humidity])
@@ -96,7 +96,7 @@ class PprzUav:
         gps   = pair[0]
         cloud = pair[1]
         # Converting pprz message to SensorSample type
-        sample = SensorSample(variableName='LWC',
+        sample = SensorSample(variableName='LWC', producer=self.id,
                               timeStamp=cloud.stamp - self.navFrame.stamp,
                               position=gps - self.navFrame,
                               data=[cloud.var_0,cloud.var_1,cloud.var_2,cloud.var_3])
@@ -105,6 +105,5 @@ class PprzUav:
             observer.notify(sample)
 
         self.cloudSensor.append({'gps': gps, 'data': cloud})
-
 
 
