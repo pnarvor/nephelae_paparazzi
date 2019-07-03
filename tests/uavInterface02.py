@@ -16,7 +16,7 @@ class Logger:
     def __init__(self):
         pass
 
-    def notify(self, sample):
+    def add_sample(self, sample):
         print(sample, end="\n\n")
 
 interface = ppint.PprzInterface()

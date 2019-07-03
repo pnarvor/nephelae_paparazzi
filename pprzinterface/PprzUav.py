@@ -7,7 +7,7 @@ from . import messages as pmsg
 from .MessageSynchronizer import MessageSynchronizer
 
 def notifiable(obj):
-    notifyMethod = getattr(obj, 'notify', None)
+    notifyMethod = getattr(obj, 'add_sample', None)
     if not callable(notifyMethod):
         return False
     else:
@@ -43,7 +43,7 @@ class PprzUav:
             self.cloudSensorSynchronizer.update_left_channel(msg))
 
         for gpsObserver in self.gpsObservers:
-            gpsObserver.notify(msg)
+            gpsObserver.add_sample(msg)
 
     def ptu_callback(self, msg):
 
@@ -81,10 +81,10 @@ class PprzUav:
                                data=[ptu.humidity])
 
         for observer in self.sensorObservers:
-            observer.notify(pSample)
-            observer.notify(tSample)
-            observer.notify(uSample)
-            observer.notify(oSample)
+            observer.add_sample(pSample)
+            observer.add_sample(tSample)
+            observer.add_sample(uSample)
+            observer.add_sample(oSample)
 
     def process_cloud_sensor_message_pair(self, pair):
         
@@ -100,7 +100,7 @@ class PprzUav:
                               data=[cloud.var_0,cloud.var_1,cloud.var_2,cloud.var_3])
 
         for observer in self.sensorObservers:
-            observer.notify(sample)
+            observer.add_sample(sample)
 
     def add_gps_observer(self, observer):
         if not notifiable(observer):
