@@ -4,7 +4,7 @@ import logging
 from nephelae_base.types import SensorSample
 
 from . import messages as pmsg
-from . import MessageSynchronizer
+from .MessageSynchronizer import MessageSynchronizer
 
 class PprzUav:
 
@@ -17,6 +17,9 @@ class PprzUav:
         self.gps         = []
         self.ptu         = []
         self.cloudSensor = []
+
+        self.ptuSynchronizer         = MessageSynchronizer()
+        self.cloudSensorSynchronizer = MessageSynchronizer()
 
         self.gpsObservers    = gpsObservers
         self.sensorObservers = sensorObservers
@@ -31,35 +34,51 @@ class PprzUav:
             IvyUnBindMsg(bindId)
                           
     def gps_callback(self, msg):
-        self.gps.append(msg)
+
+        self.process_ptu_message_pair(
+            self.ptuSynchronizer.update_left_channel(msg))
+        self.process_cloud_sensor_message_pair(
+            self.cloudSensorSynchronizer.update_left_channel(msg))
+
         for gpsObserver in self.gpsObservers:
             gpsObserver.notify(msg)
 
+        self.gps.append(msg)
 
     def ptu_callback(self, msg):
 
-        if len(self.gps) == 0:
+        self.process_ptu_message_pair(
+            self.ptuSynchronizer.update_right_channel(msg))
+
+    def cloud_sensor_callback(self, msg):
+
+        self.process_cloud_sensor_message_pair(
+            self.cloudSensorSynchronizer.update_right_channel(msg))
+    
+    def process_ptu_message_pair(self, pair):
+
+        if pair is None:
             return
-        gps = self.gps[-1] # Sync appends here. See if better way
-        self.ptu.append({'gps': gps, 'data': msg})
-        
+
+        gps = pair[0]
+        ptu = pair[1]
         # Converting pprz message to SensorSample type
         pSample = SensorSample(variableName='pressure',
-                               timeStamp=msg.stamp - self.navFrame.stamp,
+                               timeStamp=ptu.stamp - self.navFrame.stamp,
                                position=gps - self.navFrame,
-                               data=[msg.pressure])
+                               data=[ptu.pressure])
         tSample = SensorSample(variableName='temperature',
-                               timeStamp=msg.stamp - self.navFrame.stamp,
+                               timeStamp=ptu.stamp - self.navFrame.stamp,
                                position=gps - self.navFrame,
-                               data=[msg.temperature])
+                               data=[ptu.temperature])
         uSample = SensorSample(variableName='humidity',
-                               timeStamp=msg.stamp - self.navFrame.stamp,
+                               timeStamp=ptu.stamp - self.navFrame.stamp,
                                position=gps - self.navFrame,
-                               data=[msg.humidity])
+                               data=[ptu.humidity])
         oSample = SensorSample(variableName='ptuUnknown',
-                               timeStamp=msg.stamp - self.navFrame.stamp,
+                               timeStamp=ptu.stamp - self.navFrame.stamp,
                                position=gps - self.navFrame,
-                               data=[msg.humidity])
+                               data=[ptu.humidity])
 
         for observer in self.sensorObservers:
             observer.notify(pSample)
@@ -67,20 +86,25 @@ class PprzUav:
             observer.notify(uSample)
             observer.notify(oSample)
 
-    def cloud_sensor_callback(self, msg):
+        self.ptu.append({'gps': gps, 'data': ptu})
 
-        if len(self.gps) == 0:
+    def process_cloud_sensor_message_pair(self, pair):
+        
+        if pair is None:
             return
-        gps = self.gps[-1] # Sync appends here. See if better way
-        self.cloudSensor.append({'gps': gps, 'data': msg})
 
+        gps   = pair[0]
+        cloud = pair[1]
         # Converting pprz message to SensorSample type
         sample = SensorSample(variableName='LWC',
-                              timeStamp=msg.stamp - self.navFrame.stamp,
+                              timeStamp=cloud.stamp - self.navFrame.stamp,
                               position=gps - self.navFrame,
-                              data=[msg.var_0,msg.var_1,msg.var_2,msg.var_3])
+                              data=[cloud.var_0,cloud.var_1,cloud.var_2,cloud.var_3])
 
         for observer in self.sensorObservers:
             observer.notify(sample)
+
+        self.cloudSensor.append({'gps': gps, 'data': cloud})
+
 
 
