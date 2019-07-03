@@ -28,7 +28,7 @@ uavs = []
 while interface.running:
     for uav in interface.uavs.keys():
         if uav not in uavs:
-            interface.uavs[uav].sensorObservers.append(Logger())
+            interface.uavs[uav].add_sensor_observer(Logger())
             uavs.append(uav)
     time.sleep(0.5)
 

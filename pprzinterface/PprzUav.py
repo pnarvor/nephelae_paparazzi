@@ -6,23 +6,25 @@ from nephelae_base.types import SensorSample
 from . import messages as pmsg
 from .MessageSynchronizer import MessageSynchronizer
 
+def notifiable(obj):
+    notifyMethod = getattr(obj, 'notify', None)
+    if not callable(notifyMethod):
+        return False
+    else:
+        return True
+
 class PprzUav:
 
-    def __init__(self, uavId, navFrame,
-                       gpsObservers=[],
-                       sensorObservers=[]):
+    def __init__(self, uavId, navFrame):
 
         self.id          = uavId
         self.navFrame    = navFrame
-        self.gps         = []
-        self.ptu         = []
-        self.cloudSensor = []
 
         self.ptuSynchronizer         = MessageSynchronizer()
         self.cloudSensorSynchronizer = MessageSynchronizer()
 
-        self.gpsObservers    = gpsObservers
-        self.sensorObservers = sensorObservers
+        self.gpsObservers    = []
+        self.sensorObservers = []
 
         self.ivyBinds = []
         self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
@@ -42,8 +44,6 @@ class PprzUav:
 
         for gpsObserver in self.gpsObservers:
             gpsObserver.notify(msg)
-
-        self.gps.append(msg)
 
     def ptu_callback(self, msg):
 
@@ -86,8 +86,6 @@ class PprzUav:
             observer.notify(uSample)
             observer.notify(oSample)
 
-        self.ptu.append({'gps': gps, 'data': ptu})
-
     def process_cloud_sensor_message_pair(self, pair):
         
         if pair is None:
@@ -104,6 +102,12 @@ class PprzUav:
         for observer in self.sensorObservers:
             observer.notify(sample)
 
-        self.cloudSensor.append({'gps': gps, 'data': cloud})
+    def add_gps_observer(self, observer):
+        if not notifiable(observer):
+            raise AttributeError("Observer is not notifiable")
+        self.gpsObservers.append(observer)
 
-
+    def add_sensor_observer(self, observer):
+        if not notifiable(observer):
+            raise AttributeError("Observer is not notifiable")
+        self.sensorObservers.append(observer)
