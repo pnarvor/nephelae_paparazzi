@@ -20,13 +20,17 @@ logging.getLogger('Ivy').setLevel(logging.WARN)
 IvyStart("127.255.255.255:2010")
 
 def callback01(msg):
-    # msg = pmsg.Gps(msg)
     print(msg)
 
 def callback02(msg):
-    # msg = pmsg.NavigationRef(msg)
     print(msg)
+    response = pmsg.WorldEnv.build(msg.requestId, msg.senderId, 10.0,0.0,0.0)
+    print(response.ivy_string())
+    response.send()
 
-pmsg.Gps.bind(callback01)
-pmsg.NavigationRef.bind(callback02)
+
+# pmsg.Gps.bind(callback01)
+# pmsg.NavigationRef.bind(callback01)
+pmsg.WorldEnvReq.bind(callback02)
+# pmsg.WorldEnv.bind(callback01)
 
