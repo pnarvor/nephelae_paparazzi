@@ -5,16 +5,19 @@ import logging
 
 from . import messages as pmsg
 from .PprzUav import PprzUav
+# from . import PprzUavBase
 
 class PprzInterface:
 
-    def __init__(self, ivyIpp="127.255.255.255:2010"):
+    def __init__(self, ivyIpp="127.255.255.255:2010",
+                 build_uav_callback=lambda uavId, navRef: PprzUav(uavId, navRef)):
 
         self.ivyIpp   = ivyIpp
         self.navFrame = None
         self.uavs     = {}
         self.ivyBinds = []
         self.running  = False
+        self.build_uav_callback = build_uav_callback
 
     def start(self):
 
@@ -30,8 +33,7 @@ class PprzInterface:
             except Exception as e:
                 pass
         print(self.navFrame)
-
-        self.ivyBinds.append(pmsg.Gps.bind(self.find_uavs_callback))
+        self.ivyBinds.append(pmsg.Gps.bind(self.found_uav_callback))
         self.running = True
 
     def stop(self):
@@ -46,11 +48,14 @@ class PprzInterface:
             self.running = False
             print("Complete.")
 
-    def find_uavs_callback(self, msg):
+    def found_uav_callback(self, msg):
         uavId = msg.uavId
         if not uavId in self.uavs.keys():
-            self.uavs[uavId] = PprzUav(uavId, self.navFrame)
+            self.uavs[uavId] = self.build_uav_callback(uavId, self.navFrame)
             print("Found UAV, id :", uavId)
     
     def __getitem__(self, key):
         return self.uavs[key]
+
+
+
