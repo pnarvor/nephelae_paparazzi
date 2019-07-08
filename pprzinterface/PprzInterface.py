@@ -4,13 +4,12 @@ from ivy.std_api import *
 import logging
 
 from . import messages as pmsg
-from .PprzUav import PprzUav
-# from . import PprzUavBase
+from . import PprzUavBase
 
 class PprzInterface:
 
     def __init__(self, ivyIpp="127.255.255.255:2010",
-                 build_uav_callback=lambda uavId, navRef: PprzUav(uavId, navRef)):
+                 build_uav_callback=lambda uavId, navRef: PprzUavBase(uavId, navRef)):
 
         self.ivyIpp   = ivyIpp
         self.navFrame = None

@@ -19,6 +19,9 @@ class Logger:
     def add_sample(self, sample):
         print(sample, end="\n\n")
 
+    def add_gps(self, gps):
+        print(gps, end="\n\n")
+
 interface = ppint.PprzInterface()
 interface.start()
 
@@ -29,6 +32,7 @@ while interface.running:
     for uav in interface.uavs.keys():
         if uav not in uavs:
             interface.uavs[uav].add_sensor_observer(Logger())
+            interface.uavs[uav].add_gps_observer(Logger())
             uavs.append(uav)
     time.sleep(0.5)
 
