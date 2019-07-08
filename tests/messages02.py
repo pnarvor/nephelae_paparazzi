@@ -24,7 +24,7 @@ def callback01(msg):
 
 def callback02(msg):
     print(msg)
-    response = pmsg.WorldEnv.build(msg.requestId, msg.senderId, 0.0,0.0,0.0)
+    response = pmsg.WorldEnv.build(msg, 0.0,0.0,0.0)
     print(response.ivy_string())
     response.send()
 

@@ -7,12 +7,13 @@ class WorldEnv(ResponseMessage):
         return Message.bind(lambda msg: callback(WorldEnv(msg)),
             '(^\d+_\d+ ' + str(uavId) + ' WORLD_ENV .*)')
 
-    def build(requestId, senderId,
+    def build(requestMsg,
               wind_east=0.0, wind_north=0.0, wind_up=0.0,
               ir_contrast=266.0, time_scale=1.0, gps_availability=1):
         res = WorldEnv("")
-        res.requestId = requestId
-        res.senderId  = senderId
+        res.requestId = requestMsg.requestId
+        res.senderId  = requestMsg.senderId
+        res.stamp     = requestMsg.stamp
         res.add_field('wind_east'       , wind_east)
         res.add_field('wind_north'      , wind_north)
         res.add_field('wind_up'         , wind_up)
