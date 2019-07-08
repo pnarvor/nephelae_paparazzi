@@ -8,6 +8,9 @@ class Message:
     def bind(callback, regex):
         return IvyBindMsg(lambda agent, msg: callback(msg), regex)
 
+    def unbind(ivyBindId):
+        IvyUnBindMsg(ivyBindId)
+
     def send(self):
         IvySendMsg(self.ivy_string())
 
