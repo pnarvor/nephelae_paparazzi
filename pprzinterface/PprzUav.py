@@ -6,37 +6,19 @@ from nephelae_base.types import SensorSample
 from . import messages as pmsg
 from .MessageSynchronizer import MessageSynchronizer
 
-def notifiable(obj):
-    notifyMethod = getattr(obj, 'add_sample', None)
-    if not callable(notifyMethod):
-        return False
-    else:
-        return True
+from . import PprzUavBase
 
-class PprzUav:
+class PprzUav(PprzUavBase):
 
     def __init__(self, uavId, navFrame):
-
-        self.id          = uavId
-        self.navFrame    = navFrame
+        super().__init__(uavId, navFrame)
 
         self.ptuSynchronizer         = MessageSynchronizer()
         self.cloudSensorSynchronizer = MessageSynchronizer()
 
-        self.gpsObservers    = []
-        self.sensorObservers = []
-
-        self.ivyBinds = []
-        self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
         self.ivyBinds.append(pmsg.Ptu.bind(self.ptu_callback, self.id))
         self.ivyBinds.append(pmsg.CloudSensor.bind(self.cloud_sensor_callback, self.id))
 
-        self.gps = [] # For convenience
-
-    def terminate(self):
-        for bindId in self.ivyBinds:
-            IvyUnBindMsg(bindId)
-                          
     def gps_callback(self, msg):
 
         self.process_ptu_message_pair(
@@ -106,12 +88,4 @@ class PprzUav:
         for observer in self.sensorObservers:
             observer.add_sample(sample)
 
-    def add_gps_observer(self, observer):
-        if not notifiable(observer):
-            raise AttributeError("Observer is not notifiable")
-        self.gpsObservers.append(observer)
 
-    def add_sensor_observer(self, observer):
-        if not notifiable(observer):
-            raise AttributeError("Observer is not notifiable")
-        self.sensorObservers.append(observer)

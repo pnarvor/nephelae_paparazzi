@@ -22,17 +22,14 @@ class Logger:
     def add_gps(self, gps):
         print(gps, end="\n\n")
 
-interface = ppint.PprzInterface()
+def build_uav(uavId, navRef):
+    uav = ppint.PprzUav(uavId, navRef)
+    uav.add_sensor_observer(Logger())
+    uav.add_gps_observer(Logger())
+    return uav
+
+interface = ppint.PprzInterface(build_uav_callback=build_uav)
 interface.start()
 
 signal.signal(signal.SIGINT, lambda sig,fr: interface.stop())
-
-uavs = []
-while interface.running:
-    for uav in interface.uavs.keys():
-        if uav not in uavs:
-            interface.uavs[uav].add_sensor_observer(Logger())
-            interface.uavs[uav].add_gps_observer(Logger())
-            uavs.append(uav)
-    time.sleep(0.5)
 
