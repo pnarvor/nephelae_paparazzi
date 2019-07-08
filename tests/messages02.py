@@ -24,13 +24,14 @@ def callback01(msg):
 
 def callback02(msg):
     print(msg)
-    response = pmsg.WorldEnv.build(msg.requestId, msg.senderId, 10.0,0.0,0.0)
+    response = pmsg.WorldEnv.build(msg.requestId, msg.senderId, 0.0,0.0,0.0)
     print(response.ivy_string())
     response.send()
 
 
 # pmsg.Gps.bind(callback01)
 # pmsg.NavigationRef.bind(callback01)
+# pmsg.WorldEnvReq.bind(callback02, 19555)
 pmsg.WorldEnvReq.bind(callback02)
 # pmsg.WorldEnv.bind(callback01)
 

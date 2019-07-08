@@ -3,9 +3,9 @@ from .Messages import RequestMessage
 
 class WorldEnvReq(RequestMessage):
 
-    def bind(callback, uavId='.*'):
+    def bind(callback, requesterPid='\d+'):
         return Message.bind(lambda msg: callback(WorldEnvReq(msg)),
-            '(^' + str(uavId) + ' \d+_\d+ WORLD_ENV_REQ .*)')
+            '(^.* ' + str(requesterPid) + '_\d+ WORLD_ENV_REQ .*)')
 
     def __init__(self, msg):
         self.type = "WORLD_ENV_REQ"
