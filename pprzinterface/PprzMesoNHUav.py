@@ -9,7 +9,7 @@ from nephelae_simulation.mesonh_interface import MesoNHVariable
 from nephelae_simulation.mesonh_probe     import MesoNHCachedProbe
 
 from . import messages as pmsg
-from . import PprzUavBase
+from .PprzUavBase import PprzUavBase
 
 class PprzMesoNHUav(PprzUavBase):
 
