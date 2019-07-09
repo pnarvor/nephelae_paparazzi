@@ -3,12 +3,14 @@ import logging
 
 from . import messages as pmsg
 
+
 def gps_notifiable(obj):
     notifyMethod = getattr(obj, 'add_gps', None)
     if not callable(notifyMethod):
         return False
     else:
         return True
+
 
 def sensor_sample_notifiable(obj):
     notifyMethod = getattr(obj, 'add_sample', None)
@@ -19,6 +21,20 @@ def sensor_sample_notifiable(obj):
 
 
 class PprzUavBase:
+
+    """PprzUavBase
+    
+    Base type for handling paparazzi uavs through the ivy-bus.
+    This class is intended to be the base class for both simulated and real
+    Uavs (but is not an abstract class / can be instanciated).
+    Uavs are identified by their paparazzi id which are used to subscribe to
+    GPS messages.
+
+    This class implements a subscriber pattern for external classes to get
+    both GPS and sensor information. (The subscribers must implement a
+    'add_gps' method and a 'add_sample' respectively).
+
+    """
 
 
     def __init__(self, uavId, navFrame):
@@ -41,9 +57,7 @@ class PprzUavBase:
 
 
     def gps_callback(self, msg):
-        for gpsObserver in self.gpsObservers:
-            gpsObserver.add_gps(msg)
-
+        self.notify_gps(msg)
         self.gps.append(msg)
 
 
@@ -57,3 +71,13 @@ class PprzUavBase:
         if not sensor_sample_notifiable(observer):
             raise AttributeError("Observer is not notifiable")
         self.sensorObservers.append(observer)
+
+
+    def notify_gps(self, gps):
+        for gpsObserver in self.gpsObservers:
+            gpsObserver.add_gps(gps)
+
+
+    def notify_sensor_sample(self, sample):
+        for sensorObserver in self.sensorObservers:
+            sensorObserver.add_sample(sample)
