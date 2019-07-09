@@ -96,6 +96,9 @@ class RequestMessage(Message):
         return (str(self.senderId) + ' ' + str(self.requestId) + ' ' +
                 str(self.type) + ' ' + self.data_string())
 
+    def sender_pid(self):
+        return self.requestId.split('_')[0]
+
 
 class ResponseMessage(Message):
 
@@ -121,5 +124,4 @@ class ResponseMessage(Message):
     def ivy_string(self):
         return (str(self.requestId) + ' ' + str(self.senderId) + ' ' + 
                 str(self.type) + ' ' + self.data_string())
-
 
