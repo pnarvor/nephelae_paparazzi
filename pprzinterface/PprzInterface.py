@@ -4,7 +4,7 @@ from ivy.std_api import *
 import logging
 
 from . import messages as pmsg
-from . import PprzUavBase
+from .PprzUavBase import PprzUavBase
 
 class PprzInterface:
 
@@ -43,13 +43,13 @@ class PprzInterface:
             except Exception as e:
                 pass
         print(self.navFrame)
-        self.ivyBinds.append(pmsg.Gps.bind(self.found_uav_callback))
+        if self.build_uav_callback is not None:
+            self.ivyBinds.append(pmsg.Gps.bind(self.found_uav_callback))
         self.running = True
 
 
     def stop(self):
         if self.running:
-            print("Shutdown... ", end="")
             for bindId in self.ivyBinds:
                 IvyUnBindMsg(bindId)
             for uav in self.uavs.values():
@@ -58,7 +58,6 @@ class PprzInterface:
             uavs = {}
             IvyStop()
             self.running = False
-            print("Complete.")
 
 
     def found_uav_callback(self, msg):
