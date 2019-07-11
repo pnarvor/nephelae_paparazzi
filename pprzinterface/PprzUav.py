@@ -10,6 +10,12 @@ from . import PprzUavBase
 
 class PprzUav(PprzUavBase):
 
+    """PprzUav
+
+    Main interface to paparazzi uavs
+
+    """
+
     def __init__(self, uavId, navFrame):
         super().__init__(uavId, navFrame)
 
@@ -18,6 +24,7 @@ class PprzUav(PprzUavBase):
 
         self.ivyBinds.append(pmsg.Ptu.bind(self.ptu_callback, self.id))
         self.ivyBinds.append(pmsg.CloudSensor.bind(self.cloud_sensor_callback, self.id))
+
 
     def gps_callback(self, msg):
 
@@ -31,16 +38,19 @@ class PprzUav(PprzUavBase):
 
         self.gps.append(msg)
 
+
     def ptu_callback(self, msg):
 
         self.process_ptu_message_pair(
             self.ptuSynchronizer.update_right_channel(msg))
 
+
     def cloud_sensor_callback(self, msg):
 
         self.process_cloud_sensor_message_pair(
             self.cloudSensorSynchronizer.update_right_channel(msg))
-    
+
+
     def process_ptu_message_pair(self, pair):
 
         if pair is None:
@@ -66,17 +76,16 @@ class PprzUav(PprzUavBase):
                                position=gps - self.navFrame,
                                data=[ptu.humidity])
 
-        for observer in self.sensorObservers:
-            observer.add_sample(pSample)
-            observer.add_sample(tSample)
-            observer.add_sample(uSample)
-            observer.add_sample(oSample)
+        self.notify_sensor_sample(pSample)
+        self.notify_sensor_sample(tSample)
+        self.notify_sensor_sample(uSample)
+        self.notify_sensor_sample(oSample)
+
 
     def process_cloud_sensor_message_pair(self, pair):
         
         if pair is None:
             return
-
         gps   = pair[0]
         cloud = pair[1]
         # Converting pprz message to SensorSample type
@@ -84,8 +93,6 @@ class PprzUav(PprzUavBase):
                               timeStamp=cloud.stamp - self.navFrame.stamp,
                               position=gps - self.navFrame,
                               data=[cloud.var_0,cloud.var_1,cloud.var_2,cloud.var_3])
-
-        for observer in self.sensorObservers:
-            observer.add_sample(sample)
+        self.notify_sensor_sample(sample)
 
 
