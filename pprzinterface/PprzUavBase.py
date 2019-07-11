@@ -1,8 +1,9 @@
 from ivy.std_api import *
 import logging
 
-from . import messages as pmsg
+from nephelae_base.types import MultiObserverSubject
 
+from . import messages as pmsg
 
 def gps_notifiable(obj):
     notifyMethod = getattr(obj, 'add_gps', None)
@@ -20,7 +21,7 @@ def sensor_sample_notifiable(obj):
         return True
 
 
-class PprzUavBase:
+class PprzUavBase(MultiObserverSubject):
 
     """PprzUavBase
     
@@ -38,6 +39,7 @@ class PprzUavBase:
 
 
     def __init__(self, uavId, navFrame):
+        super().__init__(['add_gps', 'add_sample'])
 
         self.id          = uavId
         self.navFrame    = navFrame
@@ -62,22 +64,18 @@ class PprzUavBase:
 
 
     def add_gps_observer(self, observer):
-        if not gps_notifiable(observer):
-            raise AttributeError("Observer is not notifiable")
-        self.gpsObservers.append(observer)
+        self.attach_observer(observer, 'add_gps')
 
 
     def add_sensor_observer(self, observer):
-        if not sensor_sample_notifiable(observer):
-            raise AttributeError("Observer is not notifiable")
-        self.sensorObservers.append(observer)
+        self.attach_observer(observer, 'add_sample')
 
 
     def notify_gps(self, gps):
-        for gpsObserver in self.gpsObservers:
-            gpsObserver.add_gps(gps)
+        self.add_gps(gps)
 
 
     def notify_sensor_sample(self, sample):
-        for sensorObserver in self.sensorObservers:
-            sensorObserver.add_sample(sample)
+        self.add_sample(sample)
+
+

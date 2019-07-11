@@ -19,17 +19,17 @@ class Logger:
         pass
 
     def add_sample(self, sample):
-        # print(sample, end="\n\n")
-        return 
+        print(sample, end="\n\n")
 
     def add_gps(self, gps):
-        # print(gps, end="\n\n")
-        return
+        print(gps, end="\n\n")
 
 def build_uav(uavId, navRef):
     uav = ppint.PprzMesoNHUav(uavId, navRef, mesonhFiles, ['RCT', 'WT'])
-    uav.add_sensor_observer(Logger())
-    uav.add_gps_observer(Logger())
+
+    # # Uncomment this for console output
+    # uav.add_sensor_observer(Logger())
+    # uav.add_gps_observer(Logger())
     return uav
 
 interface = ppint.PprzSimulation(mesonhFiles,
