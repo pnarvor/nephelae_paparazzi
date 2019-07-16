@@ -1,4 +1,5 @@
 from nephelae_base.types import Position
+from nephelae_base.types import Gps
 
 from .Messages import Message
 from .Messages import UavMessage
@@ -40,4 +41,4 @@ class Gps(UavMessage):
                             self.utm_north - other.utm_north,
                             self.alt - other.ground_alt)
         else:
-            raise AttributeError("Invalid operand type")
+            raise ValueError("Invalid operand type")

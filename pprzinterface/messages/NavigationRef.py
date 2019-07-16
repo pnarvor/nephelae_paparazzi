@@ -1,3 +1,6 @@
+from nephelae_base.types import Position
+from nephelae_base.types import NavigationRef
+
 from .Messages import Message
 from .Messages import UavMessage
 
