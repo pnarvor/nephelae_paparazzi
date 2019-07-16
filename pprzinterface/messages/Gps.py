@@ -1,5 +1,4 @@
-from nephelae_base.types import Position
-from nephelae_base.types import Gps
+import nephelae_base.types as ntypes
 
 from .Messages import Message
 from .Messages import UavMessage
@@ -11,9 +10,11 @@ class Gps(UavMessage):
         return Message.bind(lambda msg: callback(Gps(msg)),
                             '(' + str(uavId) + ' GPS .*)')
 
+
     def __init__(self, msg):
         self.type = "GPS"
         super().__init__(msg)
+
 
     def parse_data(self, words):
         self.add_field('mode'      ,   int(words[0]))
@@ -28,17 +29,29 @@ class Gps(UavMessage):
         self.add_field('utm_zone'  ,   int(words[9]))
         self.add_field('gps_nb_err',   int(words[10]))
 
-    def __sub__(self, other):
 
+    def __sub__(self, other):
         if type(other) == Gps:
-            return Position(self.itow - other.itow,
-                            self.utm_east - other.utm_east,
-                            self.utm_north - other.utm_north,
-                            self.alt - other.alt)
+            return ntypes.Position(self.itow - other.itow,
+                                   self.utm_east - other.utm_east,
+                                   self.utm_north - other.utm_north,
+                                   self.alt - other.alt)
         elif type(other) == NavigationRef:
-            return Position(self.stamp - other.stamp,
-                            self.utm_east - other.utm_east,
-                            self.utm_north - other.utm_north,
-                            self.alt - other.ground_alt)
+            return ntypes.Position(self.stamp - other.stamp,
+                                   self.utm_east - other.utm_east,
+                                   self.utm_north - other.utm_north,
+                                   self.alt - other.ground_alt)
         else:
             raise ValueError("Invalid operand type")
+
+
+    def to_base_type(self):
+        return ntypes.Gps(self.uavId,
+                          ntypes.Position(self.stamp,
+                                          self.utm_east,
+                                          self.utm_north,
+                                          self.alt),
+                          self.mode, self.course, self.speed, self.climb,
+                          self.week, self.itow, self.utm_zone, self.gps_nb_err)
+
+
