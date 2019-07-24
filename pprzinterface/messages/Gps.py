@@ -36,13 +36,11 @@ class Gps(UavMessage):
                                    self.utm_east - other.utm_east,
                                    self.utm_north - other.utm_north,
                                    self.alt - other.alt)
-        elif type(other) == NavigationRef:
+        else:
             return ntypes.Position(self.stamp - other.stamp,
                                    self.utm_east - other.utm_east,
                                    self.utm_north - other.utm_north,
                                    self.alt - other.ground_alt)
-        else:
-            raise ValueError("Invalid operand type")
 
 
     def to_base_type(self):
