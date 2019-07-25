@@ -32,6 +32,7 @@ def callback02(msg):
 # pmsg.Gps.bind(callback01)
 # pmsg.NavigationRef.bind(callback01)
 # pmsg.WorldEnvReq.bind(callback02, 19555)
-pmsg.WorldEnvReq.bind(callback02)
+# pmsg.WorldEnvReq.bind(callback02)
 # pmsg.WorldEnv.bind(callback01)
+pmsg.WindInfo.bind(callback01)
 

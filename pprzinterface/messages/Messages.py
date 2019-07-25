@@ -125,3 +125,30 @@ class ResponseMessage(Message):
         return (str(self.requestId) + ' ' + str(self.senderId) + ' ' + 
                 str(self.type) + ' ' + self.data_string())
 
+
+class RawDataLinkMessage(Message):
+
+    def __init__(self, msg):
+        super().__init__(msg)
+
+    def __str__(self):
+        res = str(self.uavId) + ' ' + str(self.type) + ' :\n'
+        for field in self.fields:
+            res = res + ' ' + field + ' : ' + str(self[field]) + '\n'
+        return res
+
+    def parse(self, msg):
+        words = msg.split(' ')
+
+        if words[1] != "RAW_DATALINK":
+            raise Exception("Got wrong message for parsing (Expected "
+                            + "\"RAW_DATALINK\" got \"" + words[1] + "\".")
+        self.uavId = words[2]
+        data = words[3].split(';')
+        if self.type is not None:
+            if not self.type == data[0]:
+                raise Exception("Got wrong message for parsing (Expected \""
+                               + str(self.type) + "\" got \"" + words[1] + "\".")
+        self.parse_data(data[2:])
+
+
