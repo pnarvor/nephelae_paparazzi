@@ -12,3 +12,4 @@ from .WorldEnv      import WorldEnv
 from .Ptu           import Ptu
 from .CloudSensor   import CloudSensor
 from .WindInfo      import WindInfo
+from .Bat           import Bat

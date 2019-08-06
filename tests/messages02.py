@@ -34,5 +34,6 @@ def callback02(msg):
 # pmsg.WorldEnvReq.bind(callback02, 19555)
 # pmsg.WorldEnvReq.bind(callback02)
 # pmsg.WorldEnv.bind(callback01)
-pmsg.WindInfo.bind(callback01)
+# pmsg.WindInfo.bind(callback01)
+pmsg.Bat.bind(callback01)
 
