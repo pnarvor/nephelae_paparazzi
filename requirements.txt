@@ -1,0 +1,4 @@
+numpy
+ivy-python
+nephelae_base
+sh
