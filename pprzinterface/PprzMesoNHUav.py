@@ -58,9 +58,9 @@ class PprzMesoNHUav(PprzUavBase):
         for var in self.probes.keys():
             try:
                 sample = SensorSample(variableName=var, producer=self.id,
-                                       timeStamp=position.t,
-                                       position=position,
-                                       data=[self.probes[var][readKeys]])
+                                      timeStamp=position.t,
+                                      position=position,
+                                      data=[self.probes[var][readKeys]])
                 self.notify_sensor_sample(sample)
             except Exception as e:
                 print("Could not read, feedback :", e)

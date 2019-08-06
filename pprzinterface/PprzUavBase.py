@@ -2,6 +2,7 @@ from ivy.std_api import *
 import logging
 
 from nephelae_base.types import MultiObserverSubject
+from nephelae_base.types import SensorSample
 
 from . import messages as pmsg
 
@@ -49,6 +50,7 @@ class PprzUavBase(MultiObserverSubject):
 
         self.ivyBinds = []
         self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
+        self.ivyBinds.append(pmsg.Bat.bind(self.bat_callback, self.id))
 
         self.gps = [] # For convenience. To be removed
 
@@ -62,6 +64,20 @@ class PprzUavBase(MultiObserverSubject):
         self.notify_gps(msg)
         self.gps.append(msg)
 
+
+    def bat_callback(self, msg):
+        sample = SensorSample('BAT', producer=self.id,
+                              timeStamp=msg.stamp,
+                              position=self.gps[-1] - self.navFrame,
+                              data=[msg.throttle,
+                                    msg.voltage,
+                                    msg.amps, 
+                                    msg.flight_time,
+                                    msg.block_time,
+                                    msg.stage_time,
+                                    msg.energy])
+        self.notify_sensor_sample(sample)
+        
 
     def add_gps_observer(self, observer):
         self.attach_observer(observer, 'add_gps')
