@@ -66,6 +66,8 @@ class PprzUavBase(MultiObserverSubject):
 
 
     def bat_callback(self, msg):
+        if not self.gps:
+            return
         sample = SensorSample('BAT', producer=self.id,
                               timeStamp=msg.stamp,
                               position=self.gps[-1] - self.navFrame,

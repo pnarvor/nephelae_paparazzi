@@ -27,9 +27,9 @@ class Logger:
 def build_uav(uavId, navRef):
     uav = ppint.PprzMesoNHUav(uavId, navRef, mesonhFiles, ['RCT', 'WT'])
 
-    # # Uncomment this for console output
-    # uav.add_sensor_observer(Logger())
-    # uav.add_gps_observer(Logger())
+    # Uncomment this for console output
+    uav.add_sensor_observer(Logger())
+    uav.add_gps_observer(Logger())
     return uav
 
 interface = ppint.PprzSimulation(mesonhFiles,
