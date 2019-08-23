@@ -1,4 +1,4 @@
-import nephelae_base.types as ntypes
+import nephelae.types as ntypes
 
 from .Messages import Message
 from .Messages import UavMessage

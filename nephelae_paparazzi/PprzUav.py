@@ -1,12 +1,11 @@
 from ivy.std_api import *
 import logging
 
-from nephelae_base.types import SensorSample
+from nephelae.types import SensorSample
 
 from . import messages as pmsg
-from .MessageSynchronizer import MessageSynchronizer
-
 from . import PprzUavBase
+from .MessageSynchronizer import MessageSynchronizer
 
 class PprzUav(PprzUavBase):
 

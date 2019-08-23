@@ -3,10 +3,9 @@ import logging
 
 from netCDF4 import MFDataset
 
-from nephelae_base.types import SensorSample
-
-from nephelae_simulation.mesonh_interface import MesoNHVariable
-from nephelae_simulation.mesonh_probe     import MesoNHCachedProbe
+from nephelae.types  import SensorSample
+from nephelae_mesonh import MesoNHVariable
+from nephelae_mesonh import MesoNHCachedProbe
 
 from . import messages as pmsg
 from .PprzUavBase import PprzUavBase

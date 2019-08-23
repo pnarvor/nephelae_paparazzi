@@ -1,8 +1,8 @@
 import time
 from netCDF4 import MFDataset
 
-from nephelae_simulation.mesonh_interface import MesoNHVariable
-from nephelae_simulation.mesonh_probe     import MesoNHCachedProbe
+from nephelae_mesonh import MesoNHVariable
+from nephelae_mesonh import MesoNHCachedProbe
 
 from .messages import Message
 from .messages import WorldEnvReq

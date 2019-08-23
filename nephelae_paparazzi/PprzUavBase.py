@@ -1,8 +1,8 @@
 from ivy.std_api import *
 import logging
 
-from nephelae_base.types import MultiObserverSubject
-from nephelae_base.types import SensorSample
+from nephelae.types import MultiObserverSubject
+from nephelae.types import SensorSample
 
 from . import messages as pmsg
 
