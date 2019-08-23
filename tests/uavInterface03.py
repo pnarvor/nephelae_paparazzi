@@ -12,9 +12,9 @@ import time
 from ivy.std_api import *
 import logging
 
-import pprzinterface as ppint
+from nephelae_paparazzi import PprzInterface
 
-interface = ppint.PprzInterface()
+interface = PprzInterface()
 interface.start()
 signal.signal(signal.SIGINT, lambda sig,fr: interface.stop())
 print("Waiting to catch drones...", end='')

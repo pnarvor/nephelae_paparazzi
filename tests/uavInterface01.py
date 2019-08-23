@@ -16,8 +16,11 @@ IvyInit("PprzInterface_" + str(os.getpid()))
 logging.getLogger('Ivy').setLevel(logging.WARN)
 IvyStart("127.255.255.255:2010")
 
-import pprzinterface as ppint
+from nephelae_paparazzi import PprzUav
+from nephelae_paparazzi.messages import NavigationRef, grab_one
 
-uav100 = ppint.PprzUav(str(100,), None)
-uav101 = ppint.PprzUav(str(101,), None)
+msg = grab_one(NavigationRef, timeout=10.0)
+
+uav100 = PprzUav(str(100), msg)
+uav101 = PprzUav(str(101), msg)
 

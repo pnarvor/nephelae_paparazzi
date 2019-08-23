@@ -13,7 +13,7 @@ def signal_handler(sig, frame):
     exit()
 signal.signal(signal.SIGINT, signal_handler)
 
-import pprzinterface.messages as pmsg
+import nephelae_paparazzi.messages as pmsg
 
 IvyInit("PprzInterface_" + str(os.getpid()))
 logging.getLogger('Ivy').setLevel(logging.WARN)
