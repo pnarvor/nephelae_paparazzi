@@ -1,4 +1,5 @@
 numpy
+matplotlib
 ivy-python
-nephelae_base
-sh
+netCDF4
+
