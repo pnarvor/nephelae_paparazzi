@@ -1,8 +1,8 @@
 from . import messages as pmsg
 
 from .PprzInterface  import PprzInterface
-from .PprzMesoNHUav  import PprzMesoNHUav
-from .PprzMesoNHWind import PprzMesoNHWind
+from .PprzMesonhUav  import PprzMesonhUav
+from .PprzMesonhWind import PprzMesonhWind
 
 
 class PprzSimulation(PprzInterface):
@@ -15,13 +15,13 @@ class PprzSimulation(PprzInterface):
 
     """
 
-    def __init__(self, mesonhFiles, mesoNHVariables,
+    def __init__(self, mesonhFiles, mesonhVariables,
                  ivyIpp="127.255.255.255:2010",
                  windFeedback=True,
-                 build_uav_callback=lambda uavId, navRef: PprzMesoNHUav(uavId,
+                 build_uav_callback=lambda uavId, navRef: PprzMesonhUav(uavId,
                                                                         navRef,
                                                                         mesonhFiles, 
-                                                                        mesoNHVariables)):
+                                                                        mesonhVariables)):
         super().__init__(ivyIpp, build_uav_callback)
         
         self.mesonhFiles  = mesonhFiles
@@ -58,6 +58,6 @@ class PprzSimulation(PprzInterface):
     def worldenvreq_callback(self, msg):
         senderPid = msg.sender_pid()
         if senderPid not in self.windProbes.keys():
-            self.windProbes[senderPid] = PprzMesoNHWind(senderPid,
+            self.windProbes[senderPid] = PprzMesonhWind(senderPid,
                                                         self.navFrame,
                                                         self.mesonhFiles)

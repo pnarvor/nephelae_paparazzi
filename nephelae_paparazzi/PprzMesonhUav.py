@@ -1,18 +1,22 @@
+import sys
+import os
+import traceback
+
 from ivy.std_api import *
 import logging
 
 from netCDF4 import MFDataset
 
 from nephelae.types  import SensorSample
-from nephelae_mesonh import MesoNHVariable
-from nephelae_mesonh import MesoNHCachedProbe
+from nephelae_mesonh import MesonhVariable
+from nephelae_mesonh import MesonhCachedProbe
 
 from . import messages as pmsg
 from .PprzUavBase import PprzUavBase
 
-class PprzMesoNHUav(PprzUavBase):
+class PprzMesonhUav(PprzUavBase):
 
-    """PprzMesoNHUav
+    """PprzMesonhUav
 
     Specialization of PprzUavBase intended to get sensor data from a MesoNH
     dataset. Sensor data are read in the MesoNH dataset and published to the
@@ -30,11 +34,11 @@ class PprzMesoNHUav(PprzUavBase):
         self.atm = MFDataset(mesonhFiles)
         self.probes = {}
         for var in mesonhVariables:
-            mesoNHVar = MesoNHVariable(self.atm, var, interpolation='linear')
-            self.probes[var] = MesoNHCachedProbe(mesoNHVar,
+            mesonhVar = MesonhVariable(self.atm, var, interpolation='linear')
+            self.probes[str(var)] = MesonhCachedProbe(mesonhVar,
                                                  targetCacheBounds,
                                                  updateThreshold)
-            self.probes[var].start()
+            self.probes[str(var)].start()
         self.initialized = False
 
 
@@ -48,7 +52,7 @@ class PprzMesoNHUav(PprzUavBase):
         super().gps_callback(msg)
 
         position = msg - self.navFrame
-        readKeys = (position.t, position.z, position.y, position.x)
+        readKeys = (position.t, position.x, position.y, position.z)
         if not self.initialized:
             for probe in self.probes.values():
                 probe.request_cache_update(readKeys, block=True)
@@ -62,6 +66,7 @@ class PprzMesoNHUav(PprzUavBase):
                                       data=[self.probes[var][readKeys]])
                 self.notify_sensor_sample(sample)
             except Exception as e:
+                print(traceback.format_exc())
                 print("Could not read, feedback :", e)
 
 

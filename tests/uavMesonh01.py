@@ -9,7 +9,7 @@ import time
 from ivy.std_api import *
 import logging
 
-from nephelae_paparazzi import PprzInterface, PprzMesoNHUav
+from nephelae_paparazzi import PprzInterface, PprzMesonhUav
 
 mesonhFiles = '/home/pnarvor/work/nephelae/data/MesoNH-2019-02/REFHR.1.ARMCu.4D.nc'
 
@@ -25,7 +25,7 @@ class Logger:
         print(gps, end="\n\n")
 
 def build_uav(uavId, navRef):
-    uav = PprzMesoNHUav(uavId, navRef, mesonhFiles, ['RCT', 'WT'])
+    uav = PprzMesonhUav(uavId, navRef, mesonhFiles, ['RCT', 'WT', ['UT','VT']])
     uav.add_sensor_observer(Logger())
     uav.add_gps_observer(Logger())
     return uav

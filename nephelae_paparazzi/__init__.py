@@ -6,8 +6,8 @@ from .PprzSimulation      import PprzSimulation
 
 from .PprzUavBase         import PprzUavBase
 from .PprzUav             import PprzUav
-from .PprzMesoNHUav       import PprzMesoNHUav
-from .PprzMesoNHWind      import PprzMesoNHWind
+from .PprzMesonhUav       import PprzMesonhUav
+from .PprzMesonhWind      import PprzMesonhWind
 
 
 

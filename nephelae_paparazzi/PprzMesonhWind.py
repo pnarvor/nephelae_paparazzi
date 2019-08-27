@@ -1,24 +1,24 @@
 import time
 from netCDF4 import MFDataset
 
-from nephelae_mesonh import MesoNHVariable
-from nephelae_mesonh import MesoNHCachedProbe
+from nephelae_mesonh import MesonhVariable
+from nephelae_mesonh import MesonhCachedProbe
 
 from .messages import Message
 from .messages import WorldEnvReq
 from .messages import WorldEnv
 
 
-class PprzMesoNHWind:
+class PprzMesonhWind:
 
-    """PprzMesoNHWind
+    """PprzMesonhWind
 
     Class for solely reading wind values in a MesoNH dataset for sending 
     wind feedback to a paparazzi simulated uav (identified by its executable
     pid shown in paparazzi requests). The feedback is going through
     paparazzi request system, using WORLD_ENV_REQ.
 
-    This class is written is a very similar fashion to PprzMesoNHUav but could
+    This class is written is a very similar fashion to PprzMesonhUav but could
     not have been part of it because it is not possible to associate paparazzi
     WORLD_ENV_REQ messages (indentified by a process pid) to a specific
     simulated UAV (user defined id).
@@ -35,8 +35,8 @@ class PprzMesoNHWind:
         self.atm = MFDataset(mesonhFiles)
         self.probes = {}
         for var in ['UT','VT','WT']:
-            mesoNHVar = MesoNHVariable(self.atm, var, interpolation='linear')
-            self.probes[var] = MesoNHCachedProbe(mesoNHVar,
+            mesonhVar = MesonhVariable(self.atm, var, interpolation='linear')
+            self.probes[var] = MesonhCachedProbe(mesonhVar,
                                                  targetCacheBounds,
                                                  updateThreshold)
             self.probes[var].start()
@@ -67,7 +67,7 @@ class PprzMesoNHWind:
         # relative to the navFrame (paparazzi NAVIGATION_REF message)
 
         t = msg.stamp - self.navFrame.stamp
-        position = (t, msg.alt, msg.north, msg.east)
+        position = (t, msg.east, msg.north, msg.alt)
         if not self.initialized:
             for probe in self.probes.values():
                 probe.request_cache_update(position, block=True)
