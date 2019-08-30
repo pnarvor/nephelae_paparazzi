@@ -29,9 +29,13 @@ class PprzMesonhUav(PprzUavBase):
                  mesonhFiles, mesonhVariables,
                  targetCacheBounds=[[0,20],[-200,100],[-200,200],[-200,200]],
                  updateThreshold=0.25):
-        super().__init__(uavId, navFrame)
-
-        self.atm = MFDataset(mesonhFiles)
+        # Bad, callback can happend before end of init
+        # super().__init__(uavId, navFrame)
+        
+        if isinstance(mesonhFiles, MFDataset):
+            self.atm = mesonhFiles
+        else:
+            self.atm = MFDataset(mesonhFiles)
         self.probes = {}
         for var in mesonhVariables:
             mesonhVar = MesonhVariable(self.atm, var, interpolation='linear')
@@ -40,6 +44,7 @@ class PprzMesonhUav(PprzUavBase):
                                                  updateThreshold)
             self.probes[str(var)].start()
         self.initialized = False
+        super().__init__(uavId, navFrame)
 
 
     def terminate(self):

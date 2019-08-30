@@ -1,3 +1,5 @@
+from netCDF4 import MFDataset
+
 from . import messages as pmsg
 
 from .PprzInterface  import PprzInterface
@@ -24,7 +26,10 @@ class PprzSimulation(PprzInterface):
                                                                         mesonhVariables)):
         super().__init__(ivyIpp, build_uav_callback)
         
-        self.mesonhFiles  = mesonhFiles
+        if isinstance(mesonhFiles, MFDataset):
+            self.atm = mesonhFiles
+        else:
+            self.atm = MFDataset(mesonhFiles)
         self.windFeedback = windFeedback
         self.windProbes   = {}
         self.windIvyBind  = None
@@ -60,4 +65,4 @@ class PprzSimulation(PprzInterface):
         if senderPid not in self.windProbes.keys():
             self.windProbes[senderPid] = PprzMesonhWind(senderPid,
                                                         self.navFrame,
-                                                        self.mesonhFiles)
+                                                        self.atm)

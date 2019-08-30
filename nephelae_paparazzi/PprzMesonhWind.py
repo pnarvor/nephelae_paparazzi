@@ -32,7 +32,10 @@ class PprzMesonhWind:
 
         self.uavPid   = uavPid
         self.navFrame = navFrame
-        self.atm = MFDataset(mesonhFiles)
+        if isinstance(mesonhFiles, MFDataset):
+            self.atm = mesonhFiles
+        else:
+            self.atm = MFDataset(mesonhFiles)
         self.probes = {}
         for var in ['UT','VT','WT']:
             mesonhVar = MesonhVariable(self.atm, var, interpolation='linear')

@@ -16,13 +16,14 @@ class PprzUav(PprzUavBase):
     """
 
     def __init__(self, uavId, navFrame):
-        super().__init__(uavId, navFrame)
 
         self.ptuSynchronizer         = MessageSynchronizer()
         self.cloudSensorSynchronizer = MessageSynchronizer()
 
         self.ivyBinds.append(pmsg.Ptu.bind(self.ptu_callback, self.id))
         self.ivyBinds.append(pmsg.CloudSensor.bind(self.cloud_sensor_callback, self.id))
+
+        super().__init__(uavId, navFrame)
 
 
     def gps_callback(self, msg):
