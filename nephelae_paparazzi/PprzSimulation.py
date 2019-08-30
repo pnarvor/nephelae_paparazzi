@@ -24,8 +24,6 @@ class PprzSimulation(PprzInterface):
                                                                         navRef,
                                                                         mesonhFiles, 
                                                                         mesonhVariables)):
-        super().__init__(ivyIpp, build_uav_callback)
-        
         if isinstance(mesonhFiles, MFDataset):
             self.atm = mesonhFiles
         else:
@@ -33,6 +31,8 @@ class PprzSimulation(PprzInterface):
         self.windFeedback = windFeedback
         self.windProbes   = {}
         self.windIvyBind  = None
+
+        super().__init__(ivyIpp, build_uav_callback)
 
     
     def start(self):
