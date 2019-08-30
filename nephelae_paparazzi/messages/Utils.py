@@ -4,6 +4,9 @@ import time
 from ivy.std_api import *
 import logging
 
+class TimeoutReached(Exception):
+    pass
+
 class TimeoutLock:
 
     """TimeoutLock
@@ -62,7 +65,8 @@ class MessageGrabber:
         
         self.bindId = self.messageType.bind(self.callback)
         if not self.lock.wait(timeout):
-            raise Exception("MessageGrabber : timeout reached with regex \"" + regex + "\"")
+            # raise Exception("MessageGrabber : timeout reached with regex \"" + regex + "\"")
+            raise TimeoutReached()
         if self.error is not None:
             raise Exception(self, error)
         return self.res

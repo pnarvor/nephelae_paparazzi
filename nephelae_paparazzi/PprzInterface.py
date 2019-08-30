@@ -40,7 +40,13 @@ class PprzInterface:
             print("Waiting for NAVIGATION_REF message...")
             try:
                 self.navFrame = pmsg.grab_one(pmsg.NavigationRef, timeout=2.0)
-            except Exception as e:
+            except pmsg.TimeoutReached:
+                # print("# Caught exception #############################################\n    ", e)
+                # exc_type, exc_obj, exc_tb = sys.exc_info()
+                # fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                # print(exc_type, fname, exc_tb.tb_lineno,
+                #       end="\n############################################################") 
+                # # Argh... fix this !
                 pass
         print(self.navFrame)
         if self.build_uav_callback is not None:
