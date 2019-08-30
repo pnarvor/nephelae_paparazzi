@@ -37,10 +37,14 @@ class Gps(UavMessage):
                                    self.utm_north - other.utm_north,
                                    self.alt - other.alt)
         else:
+            # return ntypes.Position(self.stamp - other.stamp,
+            #                        self.utm_east - other.utm_east,
+            #                        self.utm_north - other.utm_north,
+            #                        self.alt - other.ground_alt)
             return ntypes.Position(self.stamp - other.stamp,
                                    self.utm_east - other.utm_east,
                                    self.utm_north - other.utm_north,
-                                   self.alt - other.ground_alt)
+                                   self.alt)
 
 
     def to_base_type(self):
