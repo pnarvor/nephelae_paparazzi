@@ -27,7 +27,7 @@ class PprzMesonhWind:
 
 
     def __init__(self, uavPid, navFrame, mesonhFiles,
-                 targetCacheBounds=[[0,20],[-200,100],[-200,200],[-200,200]],
+                 targetCacheBounds=[[0,20],[-500,500],[-500,500],[-400,200]],
                  updateThreshold=0.25):
 
         self.uavPid   = uavPid

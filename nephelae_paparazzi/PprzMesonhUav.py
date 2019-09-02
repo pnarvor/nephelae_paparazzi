@@ -27,7 +27,7 @@ class PprzMesonhUav(PprzUavBase):
 
     def __init__(self, uavId, navFrame,
                  mesonhFiles, mesonhVariables,
-                 targetCacheBounds=[[0,20],[-200,100],[-200,200],[-200,200]],
+                 targetCacheBounds=[[0,20],[-500,500],[-500,500],[-400,200]],
                  updateThreshold=0.25):
         # Bad, callback can happend before end of init
         # super().__init__(uavId, navFrame)
