@@ -28,8 +28,8 @@ def build_uav(uavId, navRef):
     uav = PprzMesonhUav(uavId, navRef, mesonhFiles, ['RCT', 'WT', ['UT', 'VT']])
 
     # Uncomment this for console output
-    uav.add_sensor_observer(Logger())
-    uav.add_gps_observer(Logger())
+    # uav.add_sensor_observer(Logger())
+    # uav.add_gps_observer(Logger())
     return uav
 
 interface = PprzSimulation(mesonhFiles,
@@ -45,5 +45,6 @@ def stop():
         sys.stdout.flush()
         interface.stop()
         print("Complete.")
+        exit()
 signal.signal(signal.SIGINT, lambda sig,fr: stop())
 

@@ -1,9 +1,14 @@
 from ivy.std_api import *
 import logging
+import random
+import os
+import time
+import threading
 
 from nephelae.types import MultiObserverSubject
 from nephelae.types import SensorSample
 
+from . import common
 from . import messages as pmsg
 
 def gps_notifiable(obj):
@@ -44,6 +49,7 @@ class PprzUavBase(MultiObserverSubject):
 
         self.id          = uavId
         self.navFrame    = navFrame
+        self.config      = None
 
         self.gpsObservers    = []
         self.sensorObservers = []
@@ -51,8 +57,10 @@ class PprzUavBase(MultiObserverSubject):
         self.ivyBinds = []
         self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
         self.ivyBinds.append(pmsg.Bat.bind(self.bat_callback, self.id))
+        self.config = self.request_config()
 
         self.gps = [] # For convenience. To be removed
+        print("Building uav")
 
 
     def terminate(self):
@@ -96,4 +104,25 @@ class PprzUavBase(MultiObserverSubject):
     def notify_sensor_sample(self, sample):
         self.add_sample(sample)
 
+
+    def config_callback(self, config):
+        if self.config is not None:
+            return
+        self.config = config
+        IvyUnBindMsg(self.configBindId)
+        self.configThread.join()
+        print("Got config :", self. config)
+        
+
+    def request_config(self):
+        def config_request_loop(uavObj):
+            count = 1
+            while uavObj.config is None:
+                IvySendMsg('ground ' + str(os.getpid()) + '_' + str(count) +
+                           ' CONFIG_REQ ' + str(self.id))
+                count = count + 1
+                time.sleep(1.0)
+        self.configBindId = pmsg.Config.bind(self.config_callback, str(os.getpid()) + '_\d+')
+        self.configThread = threading.Thread(target=config_request_loop, args=(self,))
+        self.configThread.start()
 
