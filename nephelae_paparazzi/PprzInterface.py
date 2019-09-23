@@ -1,8 +1,10 @@
 import os
+import threading
 
 from ivy.std_api import *
 import logging
 
+from . import common
 from . import messages as pmsg
 from .PprzUavBase import PprzUavBase
 
@@ -27,13 +29,14 @@ class PprzInterface:
         self.ivyBinds = []
         self.running  = False
         self.build_uav_callback = build_uav_callback
+        self.lock = threading.Lock()
 
 
     def start(self):
 
-        IvyInit("PprzInterface_" + str(os.getpid()))
-        logging.getLogger('Ivy').setLevel(logging.WARN)
-        IvyStart("127.255.255.255:2010")
+        # IvyInit("PprzInterface_" + str(os.getpid()))
+        # logging.getLogger('Ivy').setLevel(logging.WARN)
+        # IvyStart("127.255.255.255:2010")
         
         # Finding a Navigation frame
         while self.navFrame is None:
@@ -62,15 +65,26 @@ class PprzInterface:
                 if uav is not None:
                     uav.terminate()
             uavs = {}
-            IvyStop()
+            # IvyStop()
+            common.messageInterface.stop()
             self.running = False
 
 
     def found_uav_callback(self, msg):
         uavId = msg.uavId
-        if not uavId in self.uavs.keys():
-            self.uavs[uavId] = self.build_uav_callback(uavId, self.navFrame)
-            print("Found UAV, id :", uavId)
+        with self.lock:
+            try:
+                # print("\n\n\n interface locked #########################")
+                if not uavId in self.uavs.keys():
+                    print("Building uav",flush=True)
+                    self.uavs[uavId] = self.build_uav_callback(uavId, self.navFrame)
+                    print("Found UAV, id :", uavId)
+                # else:
+                #     print("uav already there")
+            except Exception as e:
+                print('###################### Exception :', e)
+                raise e
+        # print("interface unlocked #######################")
 
 
     def __getitem__(self, key):
