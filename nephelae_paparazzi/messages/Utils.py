@@ -1,8 +1,12 @@
+import os
+import sys
 import threading
 import time
 
 from ivy.std_api import *
 import logging
+
+from .. import common
 
 class TimeoutReached(Exception):
     pass
@@ -39,7 +43,7 @@ class TimeoutLock:
             currentTime = startTime
             while currentTime < startTime + timeout:
                 if self.notified:
-                    self.notified = True
+                    # self.notified = True
                     break
                 else:
                     self.cond.wait(timeout + startTime - currentTime)
@@ -48,41 +52,72 @@ class TimeoutLock:
 
     def release(self):
         with self.cond:
+            # print("lock notified")
             self.notified = True
             self.cond.notify_all()
 
 class MessageGrabber:
 
-    def __init__(self, messageType):
+    def __init__(self, messageType, bindParameter=None):
 
-        self.messageType = messageType
-        self.res         = None
-        self.error       = None
-        self.lock        = TimeoutLock()
-        self.bindId      = -1
+        self.messageType   = messageType
+        self.res           = None
+        self.error         = None
+        self.lock          = TimeoutLock()
+        self.callbackLock  = threading.Lock()
+        self.bindId        = -1
+        self.bindParameter = bindParameter
+        
+        # Binding before grab_one call allows for safe request handling
+        # (create message grabber = ivybind, send request, and only then wait for request)
+        if self.bindParameter is None:
+            self.bindId = self.messageType.bind(self.callback)
+        else:
+            self.bindId = self.messageType.bind(self.callback, self.bindParameter)
+        # print("Bind id is", self.bindId)
 
     def grab_one(self, timeout=5.0):
         
-        self.bindId = self.messageType.bind(self.callback)
+        # return res if already grabbed
+        # print("Grabbing one", flush=True)
+        if self.res is not None:
+            # print("Return already")
+            return self.res
+        # print("Go for waiting", flush=True)
+        
         if not self.lock.wait(timeout):
             # raise Exception("MessageGrabber : timeout reached with regex \"" + regex + "\"")
+            # print("unbinding :", self.bindId)
+            IvyUnBindMsg(self.bindId)
             raise TimeoutReached()
         if self.error is not None:
             raise Exception(self, error)
         return self.res
 
     def callback(self, msg):
-       
-        # check in case of message queue
-        if self.bindId == -1:
-            return
+        
+        with self.callbackLock:
+            try:
+                # print("Callback called", msg, flush=True)
+                # check in case of message queue
+                if self.bindId == -1:
+                    # print("Returning...", flush=True)
+                    return
+                # print("Not returning...", flush=True)
 
-        self.res = msg
-        IvyUnBindMsg(self.bindId)
-        self.bindId = -1
-        self.lock.release()
+                self.res = msg
+                # print("unbinding :", self.bindId)
+                IvyUnBindMsg(self.bindId)
+                self.bindId = -1
+                self.lock.release()
+                # print("Unlocked", flush=True)
+            except Exception as e:
+                print("Got exception #####################", e, flush=True)
+                raise e
+            # print("returning\n\n")
 
-def grab_one(messageType, timeout=60.0):
+
+def grab_one(messageType, timeout=60.0, bindParameter=None):
 
     """get_one(messageType, regex, timeout=60.0)
        
@@ -100,5 +135,8 @@ def grab_one(messageType, timeout=60.0):
        message (messageType): Instance of messageType
 
     """
-    grabber = MessageGrabber(messageType)
+    # print("Call global grab")
+    grabber = MessageGrabber(messageType, bindParameter)
     return grabber.grab_one(timeout)
+
+
