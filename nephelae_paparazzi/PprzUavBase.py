@@ -4,6 +4,7 @@ import random
 import os
 import time
 import threading
+from defusedxml.ElementTree import parse as xml_parse
 
 from nephelae.types import MultiObserverSubject
 from nephelae.types import SensorSample
@@ -57,7 +58,10 @@ class PprzUavBase(MultiObserverSubject):
         self.ivyBinds = []
         self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
         self.ivyBinds.append(pmsg.Bat.bind(self.bat_callback, self.id))
-        self.config = self.request_config()
+
+        self.config    = self.request_config()
+        self.blocks    = {}
+        self.waypoints = {}
 
         self.gps = [] # For convenience. To be removed
         print("Building uav")
@@ -111,6 +115,8 @@ class PprzUavBase(MultiObserverSubject):
         self.config = config
         IvyUnBindMsg(self.configBindId)
         self.configThread.join()
+
+        self.parse_config()
         print("Got config :", self. config)
         
 
@@ -122,7 +128,18 @@ class PprzUavBase(MultiObserverSubject):
                            ' CONFIG_REQ ' + str(self.id))
                 count = count + 1
                 time.sleep(1.0)
-        self.configBindId = pmsg.Config.bind(self.config_callback, str(os.getpid()) + '_\d+')
-        self.configThread = threading.Thread(target=config_request_loop, args=(self,))
+        self.configBindId = pmsg.Config.bind(self.config_callback,
+                                             str(os.getpid()) + '_\d+')
+        self.configThread = threading.Thread(target=config_request_loop,
+                                             args=(self,))
         self.configThread.start()
+
+
+    def parse_config(self):
+        with open(self.config.flight_plan.split('file://')[1], "r") as fplanFile:
+            xmlBlocks = xml_parse(fplanFile).getroot()\
+                        .find('flight_plan').find('blocks').getchildren()
+            for b in xmlBlocks:
+                self.blocks[int(b.get('no'))] = b.get('name')
+            
 
