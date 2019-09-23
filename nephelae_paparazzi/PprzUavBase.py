@@ -46,7 +46,7 @@ class PprzUavBase(MultiObserverSubject):
 
 
     def __init__(self, uavId, navFrame):
-        super().__init__(['add_gps', 'add_sample'])
+        super().__init__(['add_gps', 'add_sample', 'add_flight_param'])
 
         self.id          = uavId
         self.navFrame    = navFrame
@@ -58,6 +58,7 @@ class PprzUavBase(MultiObserverSubject):
         self.ivyBinds = []
         self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
         self.ivyBinds.append(pmsg.Bat.bind(self.bat_callback, self.id))
+        self.ivyBinds.append(pmsg.FlightParam.bind(self.flight_param_callback, self.id))
 
         self.config    = self.request_config()
         self.blocks    = {}
@@ -91,7 +92,12 @@ class PprzUavBase(MultiObserverSubject):
                                     msg.stage_time,
                                     msg.energy])
         self.notify_sensor_sample(sample)
-        
+       
+
+    def flight_param_callback(self, flightParam):
+        self.currentFlightParam = flightParam
+        self.notify_flight_param(flightParam)
+
 
     def add_gps_observer(self, observer):
         self.attach_observer(observer, 'add_gps')
@@ -101,6 +107,10 @@ class PprzUavBase(MultiObserverSubject):
         self.attach_observer(observer, 'add_sample')
 
 
+    def add_flight_param_observer(self, observer):
+        self.attach_observer(observer, 'add_flight_param')
+
+
     def notify_gps(self, gps):
         self.add_gps(gps)
 
@@ -108,7 +118,11 @@ class PprzUavBase(MultiObserverSubject):
     def notify_sensor_sample(self, sample):
         self.add_sample(sample)
 
+    
+    def notify_flight_param(self, flightParam):
+        self.add_flight_param(flightParam) 
 
+    
     def config_callback(self, config):
         if self.config is not None:
             return

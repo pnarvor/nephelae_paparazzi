@@ -18,18 +18,22 @@ class Logger:
     def __init__(self):
         pass
 
-    def add_sample(self, sample):
-        print(sample, end="\n\n")
+    def add_sample(self, msg):
+        print(msg, end="\n\n")
 
-    def add_gps(self, gps):
-        print(gps, end="\n\n")
+    def add_gps(self, msg):
+        print(msg, end="\n\n")
+
+    def add_flight_param(self, msg):
+        print(msg, end="\n\n")
 
 def build_uav(uavId, navRef):
     uav = PprzMesonhUav(uavId, navRef, mesonhFiles, ['RCT', 'WT', ['UT', 'VT']])
 
     # Uncomment this for console output
     # uav.add_sensor_observer(Logger())
-    # uav.add_gps_observer(Logger())
+    uav.add_gps_observer(Logger())
+    uav.add_flight_param_observer(Logger())
     return uav
 
 interface = PprzSimulation(mesonhFiles,
