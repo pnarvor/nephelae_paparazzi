@@ -14,3 +14,4 @@ from .Ptu           import Ptu
 from .CloudSensor   import CloudSensor
 from .WindInfo      import WindInfo
 from .Bat           import Bat
+from .Config        import Config
