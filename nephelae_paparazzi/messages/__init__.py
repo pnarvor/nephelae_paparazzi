@@ -15,3 +15,4 @@ from .CloudSensor   import CloudSensor
 from .WindInfo      import WindInfo
 from .Bat           import Bat
 from .Config        import Config
+from .FlightParam   import FlightParam

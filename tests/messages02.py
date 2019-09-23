@@ -15,9 +15,9 @@ signal.signal(signal.SIGINT, signal_handler)
 
 import nephelae_paparazzi.messages as pmsg
 
-IvyInit("PprzInterface_" + str(os.getpid()))
-logging.getLogger('Ivy').setLevel(logging.WARN)
-IvyStart("127.255.255.255:2010")
+# IvyInit("PprzInterface_" + str(os.getpid()))
+# logging.getLogger('Ivy').setLevel(logging.WARN)
+# IvyStart("127.255.255.255:2010")
 
 def callback01(msg):
     print(msg)
@@ -35,5 +35,8 @@ def callback02(msg):
 # pmsg.WorldEnvReq.bind(callback02)
 # pmsg.WorldEnv.bind(callback01)
 # pmsg.WindInfo.bind(callback01)
-pmsg.Bat.bind(callback01)
+# pmsg.Bat.bind(callback01)
+pmsg.FlightParam.bind(callback01)
+
+
 
