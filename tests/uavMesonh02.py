@@ -32,8 +32,8 @@ def build_uav(uavId, navRef):
 
     # Uncomment this for console output
     # uav.add_sensor_observer(Logger())
-    uav.add_gps_observer(Logger())
-    uav.add_flight_param_observer(Logger())
+    # uav.add_gps_observer(Logger())
+    # uav.add_flight_param_observer(Logger())
     return uav
 
 interface = PprzSimulation(mesonhFiles,

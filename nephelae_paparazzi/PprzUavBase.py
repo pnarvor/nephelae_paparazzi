@@ -59,10 +59,14 @@ class PprzUavBase(MultiObserverSubject):
         self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
         self.ivyBinds.append(pmsg.Bat.bind(self.bat_callback, self.id))
         self.ivyBinds.append(pmsg.FlightParam.bind(self.flight_param_callback, self.id))
+        self.ivyBinds.append(pmsg.NavStatus.bind(self.nav_status_callback, self.id))
 
         self.config    = self.request_config()
         self.blocks    = {}
         self.waypoints = {}
+
+        self.currentFlightParam = None
+        self.currentNavStatus   = None
 
         self.gps = [] # For convenience. To be removed
         print("Building uav")
@@ -97,6 +101,10 @@ class PprzUavBase(MultiObserverSubject):
     def flight_param_callback(self, flightParam):
         self.currentFlightParam = flightParam
         self.notify_flight_param(flightParam)
+
+
+    def nav_status_callback(self, navStatus):
+        self.currentNavStatus = navStatus
 
 
     def add_gps_observer(self, observer):
@@ -155,5 +163,7 @@ class PprzUavBase(MultiObserverSubject):
                         .find('flight_plan').find('blocks').getchildren()
             for b in xmlBlocks:
                 self.blocks[int(b.get('no'))] = b.get('name')
-            
 
+
+    def current_block(self):
+        return self.blocks[self.currentNavStatus.cur_block]
