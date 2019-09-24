@@ -37,7 +37,8 @@ def callback02(msg):
 # pmsg.WindInfo.bind(callback01)
 # pmsg.Bat.bind(callback01)
 # pmsg.FlightParam.bind(callback01)
-pmsg.NavStatus.bind(callback01)
+# pmsg.NavStatus.bind(callback01)
+pmsg.ApStatus.bind(callback01)
 
 
 
