@@ -60,6 +60,7 @@ class PprzUavBase(MultiObserverSubject):
         self.ivyBinds.append(pmsg.Bat.bind(self.bat_callback, self.id))
         self.ivyBinds.append(pmsg.FlightParam.bind(self.flight_param_callback, self.id))
         self.ivyBinds.append(pmsg.NavStatus.bind(self.nav_status_callback, self.id))
+        self.ivyBinds.append(pmsg.ApStatus.bind(self.ap_status_callback, self.id))
 
         self.config    = self.request_config()
         self.blocks    = {}
@@ -68,6 +69,7 @@ class PprzUavBase(MultiObserverSubject):
         self.currentGps         = None
         self.currentFlightParam = None
         self.currentNavStatus   = None
+        self.currentApStatus    = None
         self.currentBat         = None
 
         self.gps = [] # For convenience. To be removed
@@ -109,6 +111,10 @@ class PprzUavBase(MultiObserverSubject):
 
     def nav_status_callback(self, navStatus):
         self.currentNavStatus = navStatus
+
+
+    def ap_status_callback(self, apStatus):
+        self.currentApStatus = apStatus
 
 
     def add_gps_observer(self, observer):
