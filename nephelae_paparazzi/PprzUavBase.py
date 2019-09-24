@@ -65,8 +65,10 @@ class PprzUavBase(MultiObserverSubject):
         self.blocks    = {}
         self.waypoints = {}
 
+        self.currentGps         = None
         self.currentFlightParam = None
         self.currentNavStatus   = None
+        self.currentBat         = None
 
         self.gps = [] # For convenience. To be removed
         print("Building uav")
@@ -78,11 +80,13 @@ class PprzUavBase(MultiObserverSubject):
 
 
     def gps_callback(self, msg):
+        self.currentGps = msg
         self.notify_gps(msg)
         self.gps.append(msg)
 
 
     def bat_callback(self, msg):
+        self.currentBat = msg
         if not self.gps:
             return
         sample = SensorSample('BAT', producer=self.id,
