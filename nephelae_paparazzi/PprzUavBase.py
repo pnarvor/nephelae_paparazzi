@@ -55,13 +55,6 @@ class PprzUavBase(MultiObserverSubject):
         self.gpsObservers    = []
         self.sensorObservers = []
 
-        self.ivyBinds = []
-        self.ivyBinds.append(Gps.bind(self.gps_callback, self.id))
-        self.ivyBinds.append(Bat.bind(self.bat_callback, self.id))
-        self.ivyBinds.append(FlightParam.bind(self.flight_param_callback, self.id))
-        self.ivyBinds.append(NavStatus.bind(self.nav_status_callback, self.id))
-        self.ivyBinds.append(ApStatus.bind(self.ap_status_callback, self.id))
-
         self.config    = self.request_config()
         self.blocks    = {}
         self.waypoints = {}
@@ -71,6 +64,14 @@ class PprzUavBase(MultiObserverSubject):
         self.currentNavStatus   = None
         self.currentApStatus    = None
         self.currentBat         = None
+
+        self.ivyBinds = []
+        self.ivyBinds.append(Gps.bind(self.gps_callback, self.id))
+
+        self.ivyBinds.append(Bat.bind(self.set_bat, self.id))
+        self.ivyBinds.append(FlightParam.bind(self.set_flight_param, self.id))
+        self.ivyBinds.append(NavStatus.bind(self.set_nav_status, self.id))
+        self.ivyBinds.append(ApStatus.bind(self.set_ap_status, self.id))
 
         self.gps = [] # For convenience. To be removed
         print("Building uav")
@@ -87,32 +88,32 @@ class PprzUavBase(MultiObserverSubject):
         self.gps.append(msg)
 
 
-    def bat_callback(self, msg):
+    def set_bat(self, msg):
         self.currentBat = msg
-        if not self.gps:
-            return
-        sample = SensorSample('BAT', producer=self.id,
-                              timeStamp=msg.stamp,
-                              position=self.gps[-1] - self.navFrame,
-                              data=[msg.throttle,
-                                    msg.voltage,
-                                    msg.amps, 
-                                    msg.flight_time,
-                                    msg.block_time,
-                                    msg.stage_time,
-                                    msg.energy])
-        self.notify_sensor_sample(sample)
+        # if not self.gps:
+        #     return
+        # sample = SensorSample('BAT', producer=self.id,
+        #                       timeStamp=msg.stamp,
+        #                       position=self.gps[-1] - self.navFrame,
+        #                       data=[msg.throttle,
+        #                             msg.voltage,
+        #                             msg.amps, 
+        #                             msg.flight_time,
+        #                             msg.block_time,
+        #                             msg.stage_time,
+        #                             msg.energy])
+        # self.notify_sensor_sample(sample)
        
 
-    def flight_param_callback(self, flightParam):
+    def set_flight_param(self, flightParam):
         self.currentFlightParam = flightParam
 
 
-    def nav_status_callback(self, navStatus):
+    def set_nav_status(self, navStatus):
         self.currentNavStatus = navStatus
 
 
-    def ap_status_callback(self, apStatus):
+    def set_ap_status(self, apStatus):
         self.currentApStatus = apStatus
 
 
