@@ -46,6 +46,9 @@ class Message:
             res = res + ' ' + str(getattr(self, field))
         return res
 
+    def print(self):
+        print(self)
+
 
 class UavMessage(Message):
 
