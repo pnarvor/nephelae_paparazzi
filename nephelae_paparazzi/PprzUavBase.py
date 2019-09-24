@@ -10,7 +10,7 @@ from nephelae.types import MultiObserverSubject
 from nephelae.types import SensorSample
 
 from . import common
-from . import messages as pmsg
+from .messages import Gps, FlightParam, NavStatus, ApStatus, Bat, Config
 
 def gps_notifiable(obj):
     notifyMethod = getattr(obj, 'add_gps', None)
@@ -56,11 +56,11 @@ class PprzUavBase(MultiObserverSubject):
         self.sensorObservers = []
 
         self.ivyBinds = []
-        self.ivyBinds.append(pmsg.Gps.bind(self.gps_callback, self.id))
-        self.ivyBinds.append(pmsg.Bat.bind(self.bat_callback, self.id))
-        self.ivyBinds.append(pmsg.FlightParam.bind(self.flight_param_callback, self.id))
-        self.ivyBinds.append(pmsg.NavStatus.bind(self.nav_status_callback, self.id))
-        self.ivyBinds.append(pmsg.ApStatus.bind(self.ap_status_callback, self.id))
+        self.ivyBinds.append(Gps.bind(self.gps_callback, self.id))
+        self.ivyBinds.append(Bat.bind(self.bat_callback, self.id))
+        self.ivyBinds.append(FlightParam.bind(self.flight_param_callback, self.id))
+        self.ivyBinds.append(NavStatus.bind(self.nav_status_callback, self.id))
+        self.ivyBinds.append(ApStatus.bind(self.ap_status_callback, self.id))
 
         self.config    = self.request_config()
         self.blocks    = {}
@@ -151,7 +151,7 @@ class PprzUavBase(MultiObserverSubject):
                            ' CONFIG_REQ ' + str(self.id))
                 count = count + 1
                 time.sleep(1.0)
-        self.configBindId = pmsg.Config.bind(self.config_callback,
+        self.configBindId = Config.bind(self.config_callback,
                                              str(os.getpid()) + '_\d+')
         self.configThread = threading.Thread(target=config_request_loop,
                                              args=(self,))
