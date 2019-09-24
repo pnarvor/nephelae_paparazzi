@@ -46,7 +46,7 @@ class PprzUavBase(MultiObserverSubject):
 
 
     def __init__(self, uavId, navFrame):
-        super().__init__(['add_gps', 'add_sample', 'add_flight_param'])
+        super().__init__(['add_gps', 'add_sample'])
 
         self.id          = uavId
         self.navFrame    = navFrame
@@ -106,7 +106,6 @@ class PprzUavBase(MultiObserverSubject):
 
     def flight_param_callback(self, flightParam):
         self.currentFlightParam = flightParam
-        self.notify_flight_param(flightParam)
 
 
     def nav_status_callback(self, navStatus):
@@ -125,20 +124,12 @@ class PprzUavBase(MultiObserverSubject):
         self.attach_observer(observer, 'add_sample')
 
 
-    def add_flight_param_observer(self, observer):
-        self.attach_observer(observer, 'add_flight_param')
-
-
     def notify_gps(self, gps):
         self.add_gps(gps)
 
 
     def notify_sensor_sample(self, sample):
         self.add_sample(sample)
-
-    
-    def notify_flight_param(self, flightParam):
-        self.add_flight_param(flightParam) 
 
     
     def config_callback(self, config):
