@@ -38,7 +38,8 @@ def callback02(msg):
 # pmsg.Bat.bind(callback01)
 # pmsg.FlightParam.bind(callback01)
 # pmsg.NavStatus.bind(callback01)
-pmsg.ApStatus.bind(callback01)
+# pmsg.ApStatus.bind(callback01)
+pmsg.MissionStatus.bind(callback01)
 
 
 

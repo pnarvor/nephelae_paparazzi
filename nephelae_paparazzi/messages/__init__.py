@@ -18,3 +18,4 @@ from .Config        import Config
 from .FlightParam   import FlightParam
 from .NavStatus     import NavStatus
 from .ApStatus      import ApStatus
+from .MissionStatus import MissionStatus
