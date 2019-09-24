@@ -10,7 +10,7 @@ from nephelae.types import MultiObserverSubject
 from nephelae.types import SensorSample
 
 from . import common
-from .messages import Gps, FlightParam, NavStatus, ApStatus, Bat, Config
+from .messages import Gps, FlightParam, NavStatus, ApStatus, Bat, MissionStatus, Config
 
 def gps_notifiable(obj):
     notifyMethod = getattr(obj, 'add_gps', None)
@@ -59,19 +59,21 @@ class PprzUavBase(MultiObserverSubject):
         self.blocks    = {}
         self.waypoints = {}
 
-        self.currentGps         = None
-        self.currentFlightParam = None
-        self.currentNavStatus   = None
-        self.currentApStatus    = None
-        self.currentBat         = None
+        self.currentGps           = None
+        self.currentFlightParam   = None
+        self.currentNavStatus     = None
+        self.currentApStatus      = None
+        self.currentBat           = None
+        self.currentMissionStatus = None
 
         self.ivyBinds = []
         self.ivyBinds.append(Gps.bind(self.gps_callback, self.id))
 
-        self.ivyBinds.append(Bat.bind(self.set_bat, self.id))
         self.ivyBinds.append(FlightParam.bind(self.set_flight_param, self.id))
         self.ivyBinds.append(NavStatus.bind(self.set_nav_status, self.id))
         self.ivyBinds.append(ApStatus.bind(self.set_ap_status, self.id))
+        self.ivyBinds.append(Bat.bind(self.set_bat, self.id))
+        self.ivyBinds.append(MissionStatus.bind(self.set_mission_status, self.id))
 
         self.gps = [] # For convenience. To be removed
         print("Building uav")
@@ -115,6 +117,10 @@ class PprzUavBase(MultiObserverSubject):
 
     def set_ap_status(self, apStatus):
         self.currentApStatus = apStatus
+
+
+    def set_mission_status(self, missionStatus):
+        self.currentMissionStatus = missionStatus
 
 
     def add_gps_observer(self, observer):
