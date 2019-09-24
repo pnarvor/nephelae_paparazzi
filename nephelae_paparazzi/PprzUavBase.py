@@ -169,3 +169,9 @@ class PprzUavBase(MultiObserverSubject):
 
     def current_block(self):
         return self.blocks[self.currentNavStatus.cur_block]
+
+
+    def flight_time(self):
+        return self.currentApStatus.flight_time
+
+
