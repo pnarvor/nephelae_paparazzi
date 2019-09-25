@@ -54,6 +54,7 @@ def status_to_str(status):
         + '\n  target_alt       : ' + str(status['target_alt'])\
         + '\n  target_course    : ' + str(status['target_course'])\
         + '\n  target_climb     : ' + str(status['target_climb'])\
+        + '\n  current_block_id : ' + str(status['current_block_id'])\
         + '\n  current_block    : ' + str(status['current_block'])\
         + '\n  block_time       : ' + str(status['block_time'])\
         + '\n  mission_time_left: ' + str(status['mission_time_left'])\
@@ -141,6 +142,7 @@ class PprzUavBase(MultiObserverSubject):
         self.status['target_alt']        = 'NA'
         self.status['target_course']     = 'NA'
         self.status['target_climb']      = 'NA'
+        self.status['current_block_id']  = 'NA'
         self.status['current_block']     = 'NA'
         self.status['block_time']        = 'NA'
         self.status['mission_time_left'] = 'NA'
@@ -208,7 +210,8 @@ class PprzUavBase(MultiObserverSubject):
         self.status['target_alt']       = navStatus.target_alt
         self.status['target_course']    = navStatus.target_course
         self.status['target_climb']     = navStatus.target_climb
-        self.status['current_block']    = navStatus.cur_block
+        self.status['current_block_id'] = navStatus.cur_block
+        self.status['current_block']    = self.blocks[navStatus.cur_block]
         self.status['block_time']       = navStatus.block_time
 
 
@@ -235,6 +238,18 @@ class PprzUavBase(MultiObserverSubject):
 
     def add_status_observer(self, observer):
         self.attach_observer(observer, 'notify_status')
+
+
+    def remove_gps_observer(self, observer):
+        self.detach_observer(observer, 'add_gps')
+
+
+    def remove_sensor_observer(self, observer):
+        self.detach_observer(observer, 'add_sample')
+
+
+    def remove_status_observer(self, observer):
+        self.detach_observer(observer, 'notify_status')
 
 
     def notify_gps(self, gps):
