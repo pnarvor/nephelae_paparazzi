@@ -15,7 +15,14 @@ class MissionStatus(UavMessage):
 
     def parse_data(self, words):
         self.add_field('remaining_time', float(words[0]))
-        self.add_field('index_list', [int(index) for index in words[1].split(',')])
+        indexes = []
+        for index in words[1].split(','):
+            try:
+                value = int(index)
+            except ValueError:
+                continue
+            indexes.append(value)
+        self.add_field('index_list', indexes)
 
 
 
