@@ -3,10 +3,9 @@ from .Messages import ResponseMessage
 
 class Config(ResponseMessage):
 
-    def bind(callback, requestId='\d+_\d+'):
-        print('(^' + str(requestId) + ' .* CONFIG .*)')
+    def bind(callback, requestId='\d+_\d+', uavId='.*'):
         return Message.bind(lambda msg: callback(Config(msg)),
-            '(^' + str(requestId) + ' .* CONFIG .*)')
+            '(^' + str(requestId) + ' .* CONFIG ' + uavId +' .*)')
 
     def __init__(self, msg):
         self.type = "CONFIG"

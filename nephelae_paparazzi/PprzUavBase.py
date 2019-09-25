@@ -280,7 +280,8 @@ class PprzUavBase(MultiObserverSubject):
                 count = count + 1
                 time.sleep(1.0)
         self.configBindId = Config.bind(self.config_callback,
-                                             str(os.getpid()) + '_\d+')
+                                        str(os.getpid()) + '_\d+',
+                                        self.id)
         self.configThread = threading.Thread(target=config_request_loop,
                                              args=(self,))
         self.configThread.start()
