@@ -61,7 +61,7 @@ class MissionBuilder:
     """
 
     missionMessagesNames = ['MISSION_GOTO_WP',
-                            'MISSION_GOTO_LLA',
+                            'MISSION_GOTO_WP_LLA',
                             'MISSION_CIRCLE',
                             'MISSION_CIRCLE_LLA',
                             'MISSION_SEGMENT',
