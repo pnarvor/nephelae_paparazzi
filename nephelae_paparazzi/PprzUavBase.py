@@ -60,6 +60,7 @@ def status_to_str(status):
         + '\n  mission_time_left: ' + str(status['mission_time_left'])\
         + '\n  mission_task_list: ' + str(status['mission_task_list'])
 
+
 def print_status(status):
     print(status_to_str(status))
 
@@ -228,6 +229,7 @@ class PprzUavBase(MultiObserverSubject):
         # self.status['mission_task_list'] = 'NA'
 
 
+    # decide to keep these or not...
     def add_gps_observer(self, observer):
         self.attach_observer(observer, 'add_gps')
 
@@ -250,7 +252,7 @@ class PprzUavBase(MultiObserverSubject):
 
     def remove_status_observer(self, observer):
         self.detach_observer(observer, 'notify_status')
-
+    # decide to keep these or not... (up)
 
     def notify_gps(self, gps):
         self.add_gps(gps)
@@ -301,5 +303,11 @@ class PprzUavBase(MultiObserverSubject):
 
     def flight_time(self):
         return self.currentApStatus.flight_time
+
+
+    # def get_mission_list(self):
+
+
+
 
 

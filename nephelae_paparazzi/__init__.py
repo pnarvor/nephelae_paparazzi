@@ -1,5 +1,6 @@
 from .                    import common
 from .                    import messages
+from .                    import missions
 from .MessageSynchronizer import MessageSynchronizer
 
 from .PprzInterface       import PprzInterface
