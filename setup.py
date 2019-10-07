@@ -12,7 +12,10 @@ setup(name='nephelae_paparazzi',
         'numpy',
         'matplotlib',
         'ivy-python',
-        'netCDF4'
+        'netCDF4',
+        'defusedxml',
+        'utm',
+        'lxml'
       ],
       zip_safe=False)
 
