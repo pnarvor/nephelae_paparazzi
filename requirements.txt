@@ -4,4 +4,6 @@ ivy-python
 netCDF4
 defusedxml
 utm
+lxml
+defusedxml
 
