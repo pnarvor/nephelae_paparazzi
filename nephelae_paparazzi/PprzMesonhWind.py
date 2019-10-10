@@ -1,8 +1,6 @@
 import time
-from netCDF4 import MFDataset
 
-from nephelae_mesonh import MesonhVariable
-from nephelae_mesonh import MesonhCachedProbe
+from nephelae_mesonh import MesonhVariable, MesonhCachedProbe, MesonhDataset
 
 from .messages import Message
 from .messages import WorldEnvReq
@@ -32,10 +30,10 @@ class PprzMesonhWind:
 
         self.uavPid   = uavPid
         self.navFrame = navFrame
-        if isinstance(mesonhFiles, MFDataset):
+        if isinstance(mesonhFiles, MesonhDataset):
             self.atm = mesonhFiles
         else:
-            self.atm = MFDataset(mesonhFiles)
+            self.atm = MesonhDataset(mesonhFiles)
         self.probes = {}
         for var in ['UT','VT','WT']:
             mesonhVar = MesonhVariable(self.atm, var, interpolation='linear')

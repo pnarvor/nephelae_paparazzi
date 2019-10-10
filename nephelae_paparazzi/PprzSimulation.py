@@ -1,4 +1,4 @@
-from netCDF4 import MFDataset
+from nephelae_mesonh import MesonhDataset
 
 from . import messages as pmsg
 
@@ -12,8 +12,8 @@ class PprzSimulation(PprzInterface):
     """PprzSimulation
 
     Class to manage simulated pprz Uavs flying in a MesoNH dataset
-    Behavior similiar to PprzInterface but with added features related 
-    mainly to wind simulation.
+    Behavior similiar to PprzInterface but with added features mainly 
+    related to wind simulation.
 
     """
 
@@ -24,10 +24,10 @@ class PprzSimulation(PprzInterface):
                                                                         navRef,
                                                                         mesonhFiles, 
                                                                         mesonhVariables)):
-        if isinstance(mesonhFiles, MFDataset):
+        if isinstance(mesonhFiles, MesonhDataset):
             self.atm = mesonhFiles
         else:
-            self.atm = MFDataset(mesonhFiles)
+            self.atm = MesonhDataset(mesonhFiles)
         self.windFeedback = windFeedback
         self.windProbes   = {}
         self.windIvyBind  = None

@@ -11,7 +11,9 @@ import logging
 
 from nephelae_paparazzi import PprzSimulation, PprzMesonhUav, print_status
 
-mesonhFiles = '/home/pnarvor/work/nephelae/data/MesoNH-2019-02/REFHR.1.ARMCu.4D.nc'
+# mesonhFiles = '/home/pnarvor/work/nephelae/data/MesoNH-2019-02/REFHR.1.ARMCu.4D.nc'
+# mesonhFiles = '/home/pnarvor/work/nephelae/data/nephelae-remote/Nephelae_tmp/download/L12zo.1.BOMEX.OUT.*.nc'
+mesonhFiles = '/home/pnarvor/work/nephelae/data/nephelae-remote/MesoNH02/bomex_hf.nc'
 
 class Logger:
 
@@ -32,9 +34,9 @@ def build_uav(uavId, navRef):
     uav = PprzMesonhUav(uavId, navRef, mesonhFiles, ['RCT', 'WT', ['UT', 'VT']])
 
     # Uncomment this for console output
-    # uav.add_sensor_observer(Logger())
+    uav.add_sensor_observer(Logger())
     # uav.add_gps_observer(Logger())
-    uav.add_status_observer(Logger())
+    # uav.add_status_observer(Logger())
     return uav
 
 interface = PprzSimulation(mesonhFiles,
