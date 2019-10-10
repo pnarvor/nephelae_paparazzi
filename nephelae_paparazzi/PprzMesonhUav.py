@@ -5,7 +5,7 @@ import traceback
 from netCDF4 import MFDataset
 
 from nephelae.types  import SensorSample, Bounds
-from nephelae_mesonh import MesonhVariable, MesonhCachedProbe
+from nephelae_mesonh import MesonhVariable, MesonhCachedProbe, MesonhDataset
 
 from . import messages as pmsg
 from .PprzUavBase import PprzUavBase
@@ -48,18 +48,18 @@ class PprzMesonhUav(PprzUavBase):
 
     """
 
+    defaultRctBounds = Bounds(0.0, 1.0e-3)
 
     def __init__(self, uavId, navFrame,
                  mesonhFiles, mesonhVariables,
                  targetCacheBounds=[[0,20],[-500,500],[-500,500],[-400,200]],
                  updateThreshold=0.25):
-        # Bad, callback can happend before end of init
         # super().__init__(uavId, navFrame)
         
-        if isinstance(mesonhFiles, MFDataset):
+        if isinstance(mesonhFiles, MesonhDataset):
             self.atm = mesonhFiles
         else:
-            self.atm = MFDataset(mesonhFiles)
+            self.atm = MesonhDataset(mesonhFiles)
         self.probes = {}
         for var in mesonhVariables:
             mesonhVar = MesonhVariable(self.atm, var, interpolation='linear')
@@ -68,9 +68,17 @@ class PprzMesonhUav(PprzUavBase):
                                                  updateThreshold)
             self.probes[str(var)].start()
         self.initialized = False
-        if 'RCT' in mesonhVariables:
-            b = self.probes['RCT'].var.actual_range[0]
+        b = self.probes['RCT'].var.actual_range[0]
+        if b is None:
+            self.rctBounds = PprzMesonhUav.defaultRctBounds
+            print("Warning. This Mesonh dataset does not seem to define " +
+                  "the range of its RCT variable. Using default value.",
+                  PprzMesonhUav.defaultRctBounds)
+        else:
             self.rctBounds = Bounds(b[0], b[-1])
+
+        # Mother class initialization at the end because it defines some ivy
+        # callbacks, which could happend before end of init
         super().__init__(uavId, navFrame)
 
 
