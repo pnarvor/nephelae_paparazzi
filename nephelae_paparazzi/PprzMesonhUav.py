@@ -69,7 +69,7 @@ class PprzMesonhUav(PprzUavBase):
             self.probes[str(var)].start()
         self.initialized = False
         b = self.probes['RCT'].var.actual_range[0]
-        if b is None:
+        if b.min is None or b.max is None:
             self.rctBounds = PprzMesonhUav.defaultRctBounds
             print("Warning. This Mesonh dataset does not seem to define " +
                   "the range of its RCT variable. Using default value.",
