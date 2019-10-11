@@ -61,8 +61,8 @@ def status_to_str(status):
         + '\n  mission_task_list: ' + str(status['mission_task_list'])
 
 
-def print_status(status):
-    print(status_to_str(status))
+def print_status(status, flush=True):
+    print(status_to_str(status), flush=flush)
 
 
 class PprzUavBase(MultiObserverSubject):
@@ -267,7 +267,7 @@ class PprzUavBase(MultiObserverSubject):
             return
         self.config = config
         IvyUnBindMsg(self.configBindId)
-        self.configThread.join()
+        # self.configThread.join() # this is blocking everything... why ?
 
         self.parse_config()
         print("Got config :", self. config)
