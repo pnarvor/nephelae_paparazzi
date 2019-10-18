@@ -46,8 +46,8 @@ class DisplayData:
             return
         with self.lock:
             if msg.producer not in self.data.keys():
-                self.data[msg.producer] = [0.0]*self.maxData
-            self.data[msg.producer].append(msg.data[0])
+                self.data[msg.producer] = [[0.0, 0.0]]*self.maxData
+            self.data[msg.producer].append([msg.timeStamp, msg.data[0]])
             self.data[msg.producer][0:1] = []
     
     def get(self):
@@ -74,8 +74,6 @@ interface = PprzSimulation(mesonhFiles,
                            ['RCT', 'WT', ['UT','VT']],
                            build_uav_callback=build_uav,
                            windFeedback=False)
-# ### wind feedback only
-# interface = ppint.PprzSimulation(mesonhFiles, [], build_uav_callback=None)
 interface.start()
 
 
@@ -89,12 +87,11 @@ def update(i):
     global varDisp
     data = dataObs.get()
     axes.clear()
+    axes.set_title(dataObs.dataType)
     for key in data.keys():
-        axes.plot(data[key])
-        # if key not in varDisp.keys():
-        #     varDisp[key] = axes.plot(data[key])
-        # else:
-        #     varDisp[key].setData(data[key])
+        axes.plot(data[key][:,0], data[key][:,1], '--*', label=key)
+    axes.legend(loc="lower left")
+    axes.set_xlabel("Time (s)")
 
 anim = animation.FuncAnimation(
     fig,
@@ -108,10 +105,9 @@ plt.show(block=False)
 
 def stop():
     if interface.running:
-        print("Shutting down... ", end='')
-        sys.stdout.flush()
+        print("Shutting down... ", end='', flush=True)
         interface.stop()
-        print("Complete.")
+        print("Complete.", flush=True)
         exit()
 signal.signal(signal.SIGINT, lambda sig,fr: stop())
 
