@@ -58,7 +58,9 @@ class DisplayData:
         return res
 
 
-dataObs = DisplayData()
+dataType = 'RCT'
+# dataType = 'WT'
+dataObs = DisplayData(dataType)
 def build_uav(uavId, navRef):
     uav = PprzMesonhUav(uavId, navRef, mesonhDataset, ['RCT', 'WT', ['UT', 'VT']])
 
