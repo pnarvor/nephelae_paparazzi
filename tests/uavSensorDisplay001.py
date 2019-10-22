@@ -8,6 +8,7 @@ import time
 import threading
 import matplotlib.pyplot as plt
 from   matplotlib import animation
+from   matplotlib.colors import hex2color
 import numpy as np
 
 from ivy.std_api import *
@@ -81,6 +82,7 @@ interface.start()
 
 varDisp = {}
 fig,axes = plt.subplots(1,1)
+axes.set_facecolor((0.267004, 0.004874, 0.329415))
 
 def init():
     pass
@@ -91,7 +93,8 @@ def update(i):
     axes.clear()
     axes.set_title(dataObs.dataType)
     for key in data.keys():
-        axes.plot(data[key][:,0], data[key][:,1], '--*', label=key)
+        axes.plot(data[key][:,0], data[key][:,1], '--*', label=key,
+                  color=interface.uavs[key].config.default_gui_color)
     axes.legend(loc="lower left")
     axes.set_xlabel("Time (s)")
 
