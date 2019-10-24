@@ -48,7 +48,7 @@ class PprzMesonhUav(PprzUavBase):
 
     """
 
-    defaultRctBounds = Bounds(0.0, 1.0e-3)
+    defaultRctBounds = Bounds(0.0, 1.0e-5)
 
     def __init__(self, uavId, navFrame,
                  mesonhFiles, mesonhVariables,
@@ -104,7 +104,7 @@ class PprzMesonhUav(PprzUavBase):
                 if var == 'RCT':
                     msg = PprzMessage('datalink', 'PAYLOAD_COMMAND')
                     msg['ac_id']   = int(self.id)
-                    msg['command'] = [int(255 * value / self.rctBounds.span())]
+                    msg['command'] = [min(255,int(255 * value / self.rctBounds.span()))]
                     pprzlink_send(msg)
                 sample = SensorSample(variableName=var, producer=self.id,
                                       timeStamp=position.t,
