@@ -53,7 +53,7 @@ class PprzMesonhUav(PprzUavBase):
     def __init__(self, uavId, navFrame,
                  mesonhFiles, mesonhVariables,
                  targetCacheBounds=[[0,20],[-500,500],[-500,500],[-400,200]],
-                 updateThreshold=0.25):
+                 updateThreshold=0.25, rctFeedback=True):
         # super().__init__(uavId, navFrame)
         
         if isinstance(mesonhFiles, MesonhDataset):
@@ -76,6 +76,7 @@ class PprzMesonhUav(PprzUavBase):
                   PprzMesonhUav.defaultRctBounds)
         else:
             self.rctBounds = Bounds(b[0], b[-1])
+        self.rctFeedback = rctFeedback
 
         # Mother class initialization at the end because it defines some ivy
         # callbacks, which could happend before end of init
@@ -101,7 +102,7 @@ class PprzMesonhUav(PprzUavBase):
         for var in self.probes.keys():
             try:
                 value = self.probes[var][readKeys]
-                if var == 'RCT':
+                if var == 'RCT' and self.rctFeedback:
                     msg = PprzMessage('datalink', 'PAYLOAD_COMMAND')
                     msg['ac_id']   = int(self.id)
                     msg['command'] = [min(255,int(255 * value / self.rctBounds.span()))]

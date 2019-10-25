@@ -63,7 +63,8 @@ dataType = 'RCT'
 # dataType = 'WT'
 dataObs = DisplayData(dataType)
 def build_uav(uavId, navRef):
-    uav = PprzMesonhUav(uavId, navRef, mesonhDataset, ['RCT', 'WT', ['UT', 'VT']])
+    uav = PprzMesonhUav(uavId, navRef, mesonhDataset, ['RCT', 'WT', ['UT', 'VT']],
+                        rctFeedback=False)
 
     uav.add_sensor_observer(dataObs)
 
