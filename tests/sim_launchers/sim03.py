@@ -12,25 +12,27 @@ toBeLaunched = []
 # UAV components
 toBeLaunched.append({'cmd':'sw/simulator/pprzsim-launch',
                      'output':'Lisa_Neph_0',
-                     'options':['-a','Lisa_Neph_0','-t','nps']})
+                     'options':['-a','Lisa_Neph_0','-t','sim', '--boot', '--norc']})
 toBeLaunched.append({'cmd':'sw/simulator/pprzsim-launch',
                      'output':'Lisa_Neph_1',
-                     'options':['-a','Lisa_Neph_1','-t','nps']})
+                     'options':['-a','Lisa_Neph_1','-t','sim', '--boot', '--norc']})
 toBeLaunched.append({'cmd':'sw/simulator/pprzsim-launch',
                      'output':'Lisa_Neph_2',
-                     'options':['-a','Lisa_Neph_2','-t','nps']})
+                     'options':['-a','Lisa_Neph_2','-t','sim', '--boot', '--norc']})
 
 
 # Other components
 toBeLaunched.append({'cmd':'sw/ground_segment/cockpit/gcs',
                      'output':'gcs',
                      'options':['-layout', 'large_left_col.xml']})
-toBeLaunched.append({'cmd':'sw/ground_segment/tmtc/link',
-                     'output':'link',
-                     'options':['-udp', '-udp_broadcast']})
 toBeLaunched.append({'cmd':'sw/ground_segment/tmtc/server',
                      'output':'server',
                      'options':['-n']})
+
+# Not needed with sim type simulation
+# toBeLaunched.append({'cmd':'sw/ground_segment/tmtc/link',
+#                      'output':'link',
+#                      'options':['-udp', '-udp_broadcast']})
 
 outputDir = "output/"
 # Creating a folder for simulation output
