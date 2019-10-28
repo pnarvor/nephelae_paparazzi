@@ -14,7 +14,7 @@ else:
         sys.path.append(os.path.join(PPRZLINK_HOME, 'lib/v2.0/python'))
 
 from pprzlink.ivy import IvyMessagesInterface
-# from pprzlink.message import PprzMessage
+from pprzlink.message import PprzMessage
 
 messageInterface = IvyMessagesInterface()
 
