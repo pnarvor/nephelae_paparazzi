@@ -52,8 +52,8 @@ for cmd in toBeLaunched:
     command = sh.Command(os.path.join(PPRZ_HOME, cmd['cmd']))
     command = command.bake(_bg=True, _bg_exc=False)
     if args.output is not None:
-        command = command.bake(_out=os.path.join(outputDir, cmd['output'] + "_stdout.txt"),
-                               _err=os.path.join(outputDir, cmd['output'] + "_stderr.txt"))
+        command = command.bake(_out=os.path.join(args.output, cmd['output'] + "_stdout.txt"),
+                               _err=os.path.join(args.output, cmd['output'] + "_stderr.txt"))
     else:
         command = command.bake(_out="/dev/null", _err="/dev/null")
                                
