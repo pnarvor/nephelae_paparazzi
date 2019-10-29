@@ -1,3 +1,8 @@
+###########################################
+DEPRECATED DEPRECATED DEPRECATED DEPRECATED 
+###########################################
+
+
 from ..common import messageInterface
 from pprzlink.message import PprzMessage
 from pprzlink import messages_xml_map
