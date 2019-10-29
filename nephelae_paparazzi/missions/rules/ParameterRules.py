@@ -20,15 +20,26 @@ class ParameterRules:
         Default behavior is returning checked value (no check)
     """
 
-    def __init__(self, parameterName=''):
+    def __init__(self, rules=[], parameterName=''):
         self.parameterName = parameterName
+        self.rules = rules
 
 
     def __str__(self):
-        return "Rules for parameter " + self.parameterName + " : none."
+        res = "Rules for parameter " + self.parameterName
+        if isinstance(self, ParameterRules):
+            if not self.rules:
+                res = res + " : None."
+            else:
+                for rule in self.rules:
+                    res = res + "\n  " + rule.description()
+        else:
+            res = res + "\n  " + self.description()
 
-
+    
     def check(self, parameter):
+        for rule in self.rules:
+            parameter = rule.check(parameter)
         return parameter
 
 
