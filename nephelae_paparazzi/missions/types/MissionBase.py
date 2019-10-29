@@ -53,7 +53,7 @@ class MissionBase:
               prefix + "missionId".ljust(maxWidth)  + " : " + str(self.missionId) +\
               prefix + "aircraftId".ljust(maxWidth) + " : " + str(self.aircraftId) +\
               prefix + "duration".ljust(maxWidth)   + " : " + str(self.duration)
-        for key in self.parameters.keys():
+        for key in self.__class__.parameterNames:
             res = res + prefix + key.ljust(maxWidth) + " : " + str(self[key])
         return res
 
