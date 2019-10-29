@@ -1,7 +1,7 @@
 from .MissionBase import MissionBase
 
 from ...common import messageInterface, PprzMessage
-from ..common  import InsertMode
+from .. import InsertMode
 
 class Lace(MissionBase):
 
