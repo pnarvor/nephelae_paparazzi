@@ -5,7 +5,7 @@ from nephelae.types import Bounds
 # any of these classes
 from .types import *
 
-from .ParameterRules import ParameterRules
+from .rules import ParameterRules
 
 class MissionFactory:
 
@@ -44,6 +44,8 @@ class MissionFactory:
             parameterRules = {}
         for paramName in missionTypes[missionType].parameterNames:
             if paramName not in parameterRules.keys():
+                parameterRules[paramName] = ParameterRules(paramName)
+            elif parameterRules[paramName] is None:
                 parameterRules[paramName] = ParameterRules(paramName)
 
         self.missionType    = missionType

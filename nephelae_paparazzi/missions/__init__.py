@@ -7,5 +7,6 @@ class InsertMode:
     ReplaceAll     = 3
 
 from . import types
+from . import rules
 from .MissionFactory import MissionFactory
 
