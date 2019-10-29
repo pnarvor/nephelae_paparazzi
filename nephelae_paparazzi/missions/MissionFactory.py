@@ -5,16 +5,19 @@ from nephelae.types import Bounds
 # any of these classes
 from .types import *
 
+from .ParameterRules import ParameterRules
+
 class MissionFactory:
 
     """
     MissionFactory
 
-    Factory class for mission instances. Mostly manage parameter Bounds.
+    Factory class for mission instances. Mostly manage parameter
+    rules (Bounds, default values...).
 
     """
 
-    def __init__(self, missionType, parameterBounds=None):
+    def __init__(self, missionType, parameterRules=None):
         """
         Parameters
         ----------
@@ -23,29 +26,31 @@ class MissionFactory:
             Identifier of the mission type which will be instanciated when
             calling build.
         
-        parameters : dict(str, Bounds)
-            keys   : Parameters for this particular mission type.
-                     Not including parameters common to all mission types.
-            values : Allowed bounds for this particular parameter. The factory
-                     will raise an exception if these bounds are not respected
-                     when building a mission.
-                     Can be None or Bounds(None, None) to ignore some checks.
+        parametersRules : dict(str:ParameterRules, ...)
+            keys : str
+                Parameter names for this particular mission type.
+                Not including parameters common to all mission types.
+            values : ParameterRules
+                Rules for a parameter (allowed bounds, default value...)
+                # Allowed bounds for this particular parameter. The factory
+                # will raise an exception if these bounds are not respected
+                # when building a mission.
+                # Can be None or Bounds(None, None) to ignore some checks.
         """
 
-        # All mission parameter must have bounds even if None
-        # This block add missing parameters bounds and
-        # set them to None
-        if parameterBounds is None:
-            parameterBounds = {}
+        # All mission parameter must have rules objects.
+        # This block add missing ParameterRules (all permissive)
+        if parameterRules is None:
+            parameterRules = {}
         for paramName in missionTypes[missionType].parameterNames:
-            if paramName not in parameterBounds.keys():
-                parameterBounds[paramName] = None
+            if paramName not in parameterRules.keys():
+                parameterRules[paramName] = ParameterRules(paramName)
 
-        self.missionType     = missionType
-        self.parameterBounds = parameterBounds
+        self.missionType    = missionType
+        self.parameterRules = parameterRules
 
 
-    def build(self, **missionParameters):
+    def build(self, missionId, aircraftId, duration, **missionParameters):
         """
         This is the main function to build an instance of a mission.
         This will check parameters according to bounds given in
@@ -53,6 +58,16 @@ class MissionFactory:
         
         After this step, the Mission instance should NOT be modified.
         """
-
-        pass
+        checkedParams = {}
+        for key in self.parameterRules.keys():
+            try:
+                checkedParams[key] = self.parameterRules[key].check(missionParameters[key])
+            except KeyError as e:
+                raise KeyError("Missing parameter when building mission : " +\
+                               key + ". Original exception feedback : " + str(e))
+        # Instanciating a mission from the global missionTypes list
+        # Keywords argument parameters are in a dictionary which can
+        # be expanded with ** on function call.
+        return missionTypes[self.missionType](missionId, aircraftId,
+                                              duration, **checkedParams)
 
