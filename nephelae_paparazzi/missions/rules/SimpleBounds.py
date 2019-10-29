@@ -13,20 +13,14 @@ class SimpleBounds(ParameterRules):
     ----------
     bounds : nephelae.type.Bounds
         Bounds to compare parameter with.
-    
-    defaultValue : ?
-        Default parameter value to return if checked parameter is None.
-
 
     Methods
     -------
-    check(parameter) -> boolean: raise ValueError
-        If parameter is None returns self.defaultValue (if self.defaultValue
-        is None, raise ValueError exception).
+    check(AnyType) -> AnyType: raise ValueError
         If parameter is not None, check if inside self.bounds. If not, raise
         ValueError exception, if yes, returns checked parameter.
     """
-    def __init__(self, parameterName='', bounds=None, defaultValue=None):
+    def __init__(self, bounds=None, parameterName=''):
         """
         Parameters
         ----------
@@ -34,27 +28,18 @@ class SimpleBounds(ParameterRules):
 
         defaultValue : any type
         """
-        super().__init__(parameterName)
+        super().__init__(parameterName=parameterName)
         if isinstance(bounds, Bounds) or bounds is None:
             self.bounds = bounds
         else: # Assuming a list of min and max value
             self.bounds = Bounds(bounds[0], bounds[-1])
-        self.defaultValue = defaultValue
 
 
-    def __str__(self):
-        return "Rules for parameter " + self.parameterName +\
-               "\n  default value : " + str(self.defaultVale) +\
-               "\n  bounds        : " + str(self.bounds)
+    def description(self):
+        return "Bounds : " + str(self.bounds)
 
 
     def check(self, parameterValue):
-        if parameterValue is None:
-            if self.defaultValue is None:
-                raise ValueError("Default value not defined for " +
-                                 self.parameterName)
-            else:
-                return self.defaultValue
         if self.bounds is None:
             return parameterValue
         if not self.bounds.isinside(parameterValue):
