@@ -14,6 +14,7 @@ class Lace(MissionBase):
     parameterNames = ['start_x', 'start_y', 'start_z',
                       'first_turn_direction', 'circle_radius',
                       'drift_x', 'drift_y', 'drift_z']
+    updatableNames = ['drift_x', 'drift_y', 'drift_z']
 
     def __init__(self, missionId, aircraftId, duration,
                        start_x, start_y, start_z, first_turn_direction,
@@ -45,6 +46,25 @@ class Lace(MissionBase):
                            self['drift_x'], self['drift_y'], self['drift_z']]
 
         return msg
+
+    
+    def build_update_messages(self, duration=-9.0, drift_x=None, drift_y=None, drift_z=None):
+        """Builds (a) ready to send paparazzi message(s) for lace update"""
+
+        msgs = []
+        if drift_x is not None and drift_y is not None:
+            msgs.append(PprzMessage('datalink', 'MISSION_UPDATE'))
+            msgs[-1]['ac_id']    = self.aircraftId
+            msgs[-1]['index']    = self.missionId
+            msgs[-1]['duration'] = duration
+            msgs[-1]['params']   = [drift_x, drift_y]
+        if drift_z is not None:
+            msgs.append(PprzMessage('datalink', 'MISSION_UPDATE'))
+            msgs[-1]['ac_id']    = self.aircraftId
+            msgs[-1]['index']    = self.missionId
+            msgs[-1]['duration'] = duration
+            msgs[-1]['params']   = [drift_z]
+        return msgs
 
 
 

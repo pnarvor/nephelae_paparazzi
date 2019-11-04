@@ -35,6 +35,7 @@ class MissionBase:
     """
      
     parameterNames = []
+    updatableNames = []
 
     def __init__(self, missionId, aircraftId, duration):
         
