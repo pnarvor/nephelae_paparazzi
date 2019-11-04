@@ -10,3 +10,6 @@ from . import types
 from . import rules
 from .MissionFactory import MissionFactory
 
+# DEPRECATED TO BE DELETED
+from .Mission import MissionBuilder
+

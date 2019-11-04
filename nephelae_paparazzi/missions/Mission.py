@@ -1,6 +1,6 @@
-###########################################
-DEPRECATED DEPRECATED DEPRECATED DEPRECATED 
-###########################################
+# ###########################################
+# DEPRECATED DEPRECATED DEPRECATED DEPRECATED 
+# ###########################################
 
 
 from ..common import messageInterface
