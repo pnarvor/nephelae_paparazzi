@@ -9,9 +9,12 @@ class MissionBase:
 
     class Attributes
     ----------------
-    parameters : list(int, ...)
+    parameterNames : list(str, ...)
         List of parameters names for a mission specific parameters.
-        Empty for the base type (obvioulsy).
+
+    updatableNames : list(str, ...)
+        List of parameters names which can be updated. Can be a subset of
+        parameterNames or include other parameters.
 
 
     Attributes

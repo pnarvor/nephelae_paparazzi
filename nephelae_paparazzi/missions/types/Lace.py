@@ -7,8 +7,8 @@ class Lace(MissionBase):
 
     """
     Lace 
-
-    blablabla
+    
+    Mission type for the lace pattern. See MissionBase.py for more information.
     """
     
     parameterNames = ['start_x', 'start_y', 'start_z',
