@@ -33,3 +33,6 @@ class TypeCheck(ParameterRules):
                             " is not amongst " + str(self.allowedTypes))
         return parameterValue
 
+
+    def summary(self):
+        return {'allowed_types':str(self.allowedTypes)}

@@ -34,3 +34,6 @@ class AllowedValues(ParameterRules):
                              str(parameterValue)+". Allowed values are : "+\
                              str(self.allowedValues))
 
+
+    def summary(self):
+        return {'allowed_values':self.allowedValues}

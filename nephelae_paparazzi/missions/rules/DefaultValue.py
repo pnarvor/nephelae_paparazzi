@@ -30,3 +30,7 @@ class DefaultValue(ParameterRules):
         if parameterValue is None:
             return self.defaultValue
         return parameterValue
+
+
+    def summary(self):
+        return {'default':self.defaultValue}

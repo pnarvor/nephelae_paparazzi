@@ -48,5 +48,8 @@ class SimpleBounds(ParameterRules):
                             str(self.bounds))
         return parameterValue
 
-    
+
+    def summary(self):
+        return {'bounds':{'min':self.bounds.min,
+                          'max':self.bounds.max}}
 
