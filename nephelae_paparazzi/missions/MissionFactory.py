@@ -73,3 +73,10 @@ class MissionFactory:
         return missionTypes[self.missionType](missionId, aircraftId,
                                               duration, **checkedParams)
 
+
+    def parameter_rules_summary(self):
+        res = {}
+        for key in self.parameterRules.keys():
+            res[key] = self.parameterRules[key].summary()
+        return res
+

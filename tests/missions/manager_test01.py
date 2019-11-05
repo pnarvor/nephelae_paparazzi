@@ -4,7 +4,7 @@ import sys
 sys.path.append('../../')
 
 from nephelae_paparazzi.missions import MissionFactory, MissionManager
-from nephelae_paparazzi.missions.rules import ParameterRules, SimpleBounds, TypeCheck, DefaultValue
+from nephelae_paparazzi.missions.rules import ParameterRules, SimpleBounds, AllowedValues, DefaultValue
 from nephelae_paparazzi.common import messageInterface, PprzMessage
 
 def send_lwc(ac_id, value):
@@ -28,7 +28,7 @@ laceFactory = MissionFactory("Lace", {
     'start_x'              : SimpleBounds([-10000.0, 10000.0], 'start_x'),
     'start_y'              : SimpleBounds([-10000.0, 10000.0], 'start_y'),
     'start_z'              : SimpleBounds([300.0, 4000.0], 'start_z'),
-    'first_turn_direction' : TypeCheck((int,), 'first_turn_direction'),
+    'first_turn_direction' : AllowedValues([-1.0, 1.0], 'first_turn_direction'),
     'circle_radius'        : SimpleBounds([50.0, 500.0], 'circle_radius'),
     'drift_x'              : SimpleBounds([-10.0, 10.0], 'drift_x'),
     'drift_y'              : SimpleBounds([-10.0, 10.0], 'drift_y'),
@@ -39,6 +39,8 @@ laceFactory = MissionFactory("Lace", {
 })
 
 manager = MissionManager("200", factories={"Lace":laceFactory})
+print(manager.mission_parameters('Lace'))
+
 # should fail
 try:
     manager = MissionManager("200", factories={"Lace":laceFactory})
@@ -47,8 +49,9 @@ except ValueError as e:
 
 manager.create_mission('Lace', duration=-1,
                        start_x=1500.0, start_y=900.0, start_z=700.0,
-                       first_turn_direction=0, circle_radius=80.0,
+                       first_turn_direction=1.0, circle_radius=80.0,
                        drift_x=-7.0, drift_y=-0.5, drift_z=0.0)
+print(manager.pendingMissions[0])
 
 
 

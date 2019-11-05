@@ -20,10 +20,7 @@ laceFactory = MissionFactory("Lace", {
 
 })
 
-print('')
-for key in laceFactory.parameterRules.keys():
-    print(key, ':', laceFactory.parameterRules[key].summary())
-print('')
+print(laceFactory.parameter_rules_summary())
 
 # Should pass
 lace0 = laceFactory.build(missionId=1, aircraftId=200, duration=-1.0,

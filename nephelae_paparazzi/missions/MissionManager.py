@@ -79,7 +79,7 @@ class MissionManager:
 
 
     def mission_parameters(self, missionName):
-        return missionTypes[missionName].parameterNames
+        return self.missionFactories[missionName].parameter_rules_summary()
 
 
     def mission_updatables(self, missionName):
