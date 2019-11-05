@@ -25,7 +25,7 @@ class Lace(MissionBase):
         self.parameters['start_x']              = float(start_x)
         self.parameters['start_y']              = float(start_y)
         self.parameters['start_z']              = float(start_z)
-        self.parameters['first_turn_direction'] = int(first_turn_direction)
+        self.parameters['first_turn_direction'] = float(first_turn_direction)
         self.parameters['circle_radius']        = float(circle_radius)
         self.parameters['drift_x']              = float(drift_x)
         self.parameters['drift_y']              = float(drift_y)
