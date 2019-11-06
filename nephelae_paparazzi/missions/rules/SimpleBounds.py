@@ -7,7 +7,7 @@ class SimpleBounds(ParameterRules):
     """
     SimpleBounds
 
-    Implements a simple bound checking and a default value.
+    Implements a simple bound checking.
 
     Attributes
     ----------
@@ -40,8 +40,6 @@ class SimpleBounds(ParameterRules):
 
 
     def check(self, parameterValue):
-        if self.bounds is None:
-            return parameterValue
         if not self.bounds.isinside(parameterValue):
             raise ValueError("Parameter " + self.parameterName + \
                             " (" + str(parameterValue) + ") is not inside " +\
