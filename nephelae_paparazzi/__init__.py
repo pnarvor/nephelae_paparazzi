@@ -12,6 +12,7 @@ from .PprzUavBase         import PprzUavBase, status_to_str, print_status
 from .PprzUav             import PprzUav
 from .PprzMesonhUav       import PprzMesonhUav
 from .PprzMesonhWind      import PprzMesonhWind
+from .PprzMissionUav      import PprzMissionUav
 
 
 
