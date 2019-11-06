@@ -4,7 +4,7 @@ import sys
 sys.path.append('../../')
 
 from nephelae_paparazzi.missions import MissionFactory
-from nephelae_paparazzi.missions.rules import ParameterRules, SimpleBounds, TypeCheck, DefaultValue, AllowedValues
+from nephelae_paparazzi.missions.rules import ParameterRules, SimpleBounds, TypeCheck, DefaultValue, AllowedValues, Length
 
 laceFactory = MissionFactory("Lace", {
     'start_x'              : SimpleBounds([0.0, 1000.0], 'start_x'),
