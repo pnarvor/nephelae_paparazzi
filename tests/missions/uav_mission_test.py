@@ -35,17 +35,14 @@ class Logger:
 
 
 laceFactory = MissionFactory("Lace", {
-    'start_x'              : SimpleBounds([-10000.0, 10000.0], 'start_x'),
-    'start_y'              : SimpleBounds([-10000.0, 10000.0], 'start_y'),
-    'start_z'              : SimpleBounds([300.0, 4000.0], 'start_z'),
+    'start'                : [SimpleBounds([[-10000.0, -10000.0,  300.0],
+                                            [ 10000.0,  10000.0, 4000.0]],'start'),
+                              Length(3, 'start')],
     'first_turn_direction' : AllowedValues([-1.0, 1.0], 'first_turn_direction'),
     'circle_radius'        : SimpleBounds([50.0, 500.0], 'circle_radius'),
-    'drift_x'              : SimpleBounds([-10.0, 10.0], 'drift_x'),
-    'drift_y'              : SimpleBounds([-10.0, 10.0], 'drift_y'),
-    'drift_z'              : ParameterRules([DefaultValue(7.2, 'drift_z'),
-                                             SimpleBounds([-10.0, 10.0], 'drift_z')],
-                                             'drift_z'),
-
+    'drift'                : [SimpleBounds([[-10.0, -10.0, -5.0],
+                                            [ 10.0,  10.0,  5.0]],'drift'),
+                              Length(3, 'drift')],
 })
 
 

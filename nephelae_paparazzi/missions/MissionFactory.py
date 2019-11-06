@@ -47,6 +47,9 @@ class MissionFactory:
                 parameterRules[paramName] = ParameterRules(paramName)
             elif parameterRules[paramName] is None:
                 parameterRules[paramName] = ParameterRules(paramName)
+        for key in parameterRules.keys():
+            if isinstance(parameterRules[key], list):
+                parameterRules[key] = ParameterRules(parameterRules[key], key)
 
         self.missionType    = missionType
         self.parameterRules = parameterRules

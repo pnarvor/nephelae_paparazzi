@@ -42,8 +42,8 @@ class SimpleBounds(ParameterRules):
     def check(self, parameterValue):
         if not self.bounds.isinside(parameterValue):
             raise ValueError("Parameter " + self.parameterName + \
-                            " (" + str(parameterValue) + ") is not inside " +\
-                            str(self.bounds))
+                             " (" + str(parameterValue) + ") is not inside " +\
+                             str(self.bounds))
         return parameterValue
 
 
