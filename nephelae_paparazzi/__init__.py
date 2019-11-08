@@ -15,6 +15,9 @@ from .PprzMesonhWind      import PprzMesonhWind
 from .PprzMissionUav      import PprzMissionUav
 
 
+# v0.2
+from .AircraftLogger import AircraftLogger
+from .Aircraft       import Aircraft
 
 
 

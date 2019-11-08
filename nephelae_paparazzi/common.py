@@ -1,8 +1,6 @@
 import os
 import sys
-
-# PPRZ_HOME = os.getenv("PAPARAZZI_HOME", os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../')))
-# sys.path.append(PPRZ_HOME + "/var/lib/python")
+from ivy.std_api import *
 
 PPRZ_HOME = os.getenv("PAPARAZZI_HOME", None)
 if PPRZ_HOME is not None:
