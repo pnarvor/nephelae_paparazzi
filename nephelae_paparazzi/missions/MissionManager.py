@@ -8,22 +8,11 @@ class MissionManager:
     """
     MissionManager
 
-    This class is intended to handle all custom missions for a single
+    This plugin is intended to handle all custom missions for a single
     Paparazzi aircraft. Only one MissionManager is allowed for each aircraft.
-
-    class Attributes
-    ----------------
-    instances : list(str,...)
-        Constains the list of instances of all MissionManagers to prevent
-        the instanciation of two MissionManager for a single aircraft.
 
     Attributes
     ----------
-    aircraftId : str
-        The id of the aircraft this MissionManager is intended for.
-        An exception will be raised if the id already exists in 
-        MissionManager.instances.keys()
-
     missionFactories : dict({str:MissionFactory, ...})
         Factory classes to be used for instanciating missions.
         Keys are mission names, values are instances of MissionFactory.
@@ -36,9 +25,26 @@ class MissionManager:
     Methods
     -------
     """
+
+    def __pluginmethods__():
+        return [{'name'         : 'mission_types',
+                 'method'       : MissionManager.mission_types,
+                 'conflictMode' : 'error'},
+                {'name'         : 'mission_parameters',
+                 'method'       : MissionManager.mission_parameters,
+                 'conflictMode' : 'error'},
+                {'name'         : 'mission_updatables',
+                 'method'       : MissionManager.mission_updatables,
+                 'conflictMode' : 'error'},
+                {'name'         : 'create_mission',
+                 'method'       : MissionManager.create_mission,
+                 'conflictMode' : 'error'},
+                {'name'         : 'execute_mission',
+                 'method'       : MissionManager.execute_mission,
+                 'conflictMode' : 'error'}
+               ]
     
-    instances = {}
-    def __init__(self, aircraftId, configFile=None, factories=None):
+    def __initplugin__(self, configFile=None, factories=None):
         """
         Parameters
         ----------
@@ -58,13 +64,7 @@ class MissionManager:
             factories used to build mission instances. This parameter is
             ignored if configFile is set.
         """
-        if aircraftId in MissionManager.instances.keys():
-            raise ValueError("A instance of MissionManager for the aircraft "+
-                             str(aircraftId) + " already exists. Aborting.")
-        else:
-            MissionManager.instances[aircraftId] = self
 
-        self.aircraftId = aircraftId
         if configFile is not None:
             raise ValueError("Configuration files are not yet implemented !")
         else:
@@ -107,12 +107,12 @@ class MissionManager:
             raise ValueError("Cannot create a " + missionType + " for this aircraft.")
 
         self.pendingMissions.append(self.missionFactories[missionType].build(
-            self.lastMissionId+1, self.aircraftId, duration, **missionParameters))
+            self.lastMissionId+1, self.id, duration, **missionParameters))
 
         self.lastMissionId = self.lastMissionId + 1
 
     
-    def execute(self):
+    def execute_mission(self):
         """Execute last mission in self.pendingMission
             To be removed when a real management is implemented"""
         messageInterface.send(
