@@ -152,6 +152,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
         self.id          = uavId
         self.navFrame    = navFrame
+        self.ivyBinds    = []
 
         self.config               = None
         self.status               = AircraftStatus(self.id)
@@ -162,9 +163,10 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.currentBat           = None
         self.currentMissionStatus = None
 
-        self.request_config()
 
-        self.ivyBinds = []
+
+    def start(self):
+        self.request_config()
         self.ivyBinds.append(Gps.bind(self.gps_callback, self.id))
         self.ivyBinds.append(FlightParam.bind(self.flight_param_callback, self.id))
         self.ivyBinds.append(NavStatus.bind(self.nav_status_callback, self.id))
@@ -259,20 +261,12 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.attach_observer(observer, 'add_gps')
 
 
-    def add_sensor_observer(self, observer):
-        self.attach_observer(observer, 'add_sample')
-
-
     def add_status_observer(self, observer):
         self.attach_observer(observer, 'notify_status')
 
 
     def remove_gps_observer(self, observer):
         self.detach_observer(observer, 'add_gps')
-
-
-    def remove_sensor_observer(self, observer):
-        self.detach_observer(observer, 'add_sample')
 
 
     def remove_status_observer(self, observer):
