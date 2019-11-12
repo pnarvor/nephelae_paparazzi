@@ -30,18 +30,26 @@ class MesonhProbe:
                  'conflictMode' : 'abort'},
                 {'name'         : 'remove_sensor_observer',
                  'method'       : MesonhProbe.remove_sensor_observer,
-                 'conflictMode' : 'abort'}
+                 'conflictMode' : 'abort'},
+                {'name'         : 'rct_feedback',
+                 'method'       : MesonhProbe.rct_feedback,
+                 'conflictMode' : 'error'},
                ]
 
 
-    def __initplugin__(self, mesonhFiles, mesonhVariables,
+    def __initplugin__(self, mesonhFiles, mesonhVariables=[],
                        targetCacheBounds=[[0,20],[-500,500],[-500,500],[-400,200]],
                        updateThreshold=0.25, rctFeedback=True,
                        defaultRctBounds = Bounds(0.0, 1.0e-5)):
         
         self.mesonhInitialized = False
         self.rctFeedback       = rctFeedback
+        self.windFeedback       = rctFeedback
         self.add_notification_method('add_sample')
+
+        # Check if proper variables are fetched to do the feedback
+        if self.rctFeedback and 'RCT' not in mesonhVariables:
+            mesonhVariables.append('RCT')
 
         if isinstance(mesonhFiles, MesonhDataset):
             self.atm = mesonhFiles
@@ -82,17 +90,15 @@ class MesonhProbe:
         for var in self.probes.keys():
             try:
                 value = self.probes[var][readKeys]
-                if var == 'RCT' and self.rctFeedback:
-                    msg = PprzMessage('datalink', 'PAYLOAD_COMMAND')
-                    msg['ac_id']   = int(self.id)
-                    msg['command'] = [min(255,int(255 * value / self.rctBounds.span()))]
-                    messageInterface.send(msg)
                 sample = SensorSample(variableName=var, producer=self.id,
                                       timeStamp=position.t,
                                       position=position,
                                       data=[value])
                 self.add_sample(sample)
-            except Exception as e:
+
+                if var == 'RCT' and self.rctFeedback:
+                    self.rct_feedback(value)
+            except Exception as e: # !!!!!!!!!!!!!! Fix this !
                 print(traceback.format_exc())
                 print("Could not read, feedback :", e)
 
@@ -103,4 +109,12 @@ class MesonhProbe:
 
     def remove_sensor_observer(self, observer):
         self.detach_observer(observer, 'add_sample')
+
+
+    def rct_feedback(self, rctValue):
+        msg = PprzMessage('datalink', 'PAYLOAD_COMMAND')
+        msg['ac_id']   = int(self.id)
+        msg['command'] = [min(255,int(255 * rctValue / self.rctBounds.span()))]
+        messageInterface.send(msg)
+
 
