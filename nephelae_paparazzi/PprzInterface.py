@@ -42,7 +42,7 @@ class PprzInterface:
         while self.navFrame is None:
             print("Waiting for NAVIGATION_REF message...")
             try:
-                self.navFrame = pmsg.grab_one(pmsg.NavigationRef, timeout=2.0)
+                self.navFrame = pmsg.grab_one(pmsg.NavigationRef, timeout=2.0).to_base_type()
             except pmsg.TimeoutReached:
                 # print("# Caught exception #############################################\n    ", e)
                 # exc_type, exc_obj, exc_tb = sys.exc_info()
