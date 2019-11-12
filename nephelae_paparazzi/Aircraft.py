@@ -3,7 +3,7 @@ import threading
 import utm
 import time
 
-from nephelae.types import MultiObserverSubject, Pluginable
+from nephelae.types import MultiObserverSubject, Pluginable, Position
 
 from .common import IvySendMsg, IvyUnBindMsg
 from .messages import Gps, FlightParam, NavStatus, ApStatus, Bat, MissionStatus, Config
@@ -20,9 +20,12 @@ class AircraftStatus:
     FLIGHT_PARAM, NAV_STATUS, AP_STATUS, BAT, MISSION_STATUS
     """
 
-    def __init__(self, aircraftId):
-
+    def __init__(self, aircraftId, navFrame):
+        
         self.aircraftId        = aircraftId
+        self.navFrame          = navFrame
+        self.position          = Position()
+
         self.lat               = 'NA'
         self.long              = 'NA'
         self.utm_east          = 'NA'
@@ -55,6 +58,7 @@ class AircraftStatus:
 
     def __str__(self):
         return 'Aircraft ' + self.aircraftId + ' status :'\
+            + '\n  time             : ' + str(self.position.t)\
             + '\n  lat              : ' + str(self.lat)\
             + '\n  long             : ' + str(self.long)\
             + '\n  utm_east         : ' + str(self.utm_east)\
@@ -86,9 +90,16 @@ class AircraftStatus:
 
 
     def set_flight_param(self, flightParam):
+
+        # Getting current mission time
+        self.position.t = time.time() - self.navFrame.position.t
+        utmUav = utm.from_latlon(flightParam.lat, flightParam.long)
+        self.position.x = utmUav[0] - self.navFrame.position.x
+        self.position.y = utmUav[1] - self.navFrame.position.y
+        self.position.z = flightParam.alt
+
         self.currentFlightParam = flightParam
 
-        utmUav = utm.from_latlon(flightParam.lat, flightParam.long)
         self.lat       = flightParam.lat
         self.long      = flightParam.long
         self.utm_east  = utmUav[0]
@@ -155,14 +166,13 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.ivyBinds    = []
 
         self.config               = None
-        self.status               = AircraftStatus(self.id)
+        self.status               = AircraftStatus(self.id, self.navFrame)
         self.currentGps           = None
         self.currentFlightParam   = None
         self.currentNavStatus     = None
         self.currentApStatus      = None
         self.currentBat           = None
         self.currentMissionStatus = None
-
 
 
     def start(self):
