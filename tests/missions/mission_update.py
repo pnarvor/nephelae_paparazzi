@@ -10,6 +10,7 @@ from nephelae_mesonh            import MesonhDataset
 from nephelae_paparazzi         import Aircraft, AircraftLogger, PprzInterface
 from nephelae_paparazzi.plugins import MesonhProbe
 from nephelae_paparazzi.utils   import send_lwc
+from nephelae_paparazzi.common  import PprzMessage, messageInterface
 
 from nephelae_paparazzi.missions       import MissionManager, MissionFactory
 from nephelae_paparazzi.missions.rules import *

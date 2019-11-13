@@ -18,14 +18,13 @@ class Lace(MissionBase):
                        start, first_turn_direction, circle_radius, drift,
                        updateRules={}):
 
-        super().__init__(missionId, aircraftId, duration)
+        super().__init__(missionId, aircraftId, duration, updateRules)
         
         self.missionType                        = "Lace"
         self.parameters['start']                = start
         self.parameters['first_turn_direction'] = first_turn_direction
         self.parameters['circle_radius']        = circle_radius
         self.parameters['drift']                = drift
-        self.updateRules                        = updateRules
 
 
     def build_message(self, insertMode=InsertMode.Append):
@@ -47,40 +46,4 @@ class Lace(MissionBase):
                            float(self['drift'][2])]
 
         return msg
-
-
-    def build_update_message(self, duration=-9.0, hdrift=None, zdrift=None):
-        """
-        build a MISSION_UPDATE message for this mission
-
-        /!\ Several parameters but wil build only one update message.
-        Message will be build only for first non-None parameters, priority list
-        is in this order : [hdrift, zdrift]
-        
-        Parameters
-        ----------
-        duration : float
-            New duration for the mission. Set to -1.0 to set no limits and
-            -9.0 to keep unchanged.
-        """
-        msg = PprzMessage('datalink', 'MISSION_UPDATE')
-        msg['ac_id']    = self.aircraftId
-        msg['index']    = self.missionId
-        msg['duration'] = duration
-
-        try:
-            if hdrift is not None:
-                self.updateRules['hdrift'].check(hdrift)
-                msg['params'] = [hdrift[0], hdrift[1]]
-                return msg
-
-            elif zdrift is not None:
-                self.updateRules['zdrift'].check(zdrift)
-                msg['params'] = [zdrift]
-                return msg
-
-        except KeyError as e:
-            print("No rules defined for update parameter '" + str(e.args[0]) +\
-                  "'. Aborting. Feedback : " + str(e))
-
 

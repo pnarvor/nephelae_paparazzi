@@ -1,4 +1,5 @@
-
+# from . import missionTypes
+from ...common import PprzMessage
 
 class MissionBase:
     """
@@ -40,13 +41,14 @@ class MissionBase:
     parameterNames = []
     updatableNames = []
 
-    def __init__(self, missionId, aircraftId, duration):
+    def __init__(self, missionId, aircraftId, duration, updateRules={}):
         
         self.missionType = None
         self.missionId   = int(missionId)
         self.aircraftId  = int(aircraftId)
         self.duration    = float(duration)
         self.parameters  = {}
+        self.updateRules = updateRules
 
 
     def __str__(self):
@@ -77,6 +79,42 @@ class MissionBase:
             return self.parameters[key]
 
 
+    def build_update_messages(self, duration=-9.0, **params):
+        """
+        Builds MISSION_UPDATE messages for this mission.
+        
+        Will return a list of messages even with only one element to update.
+
+        Parameters
+        ----------
+        duration : float
+            New duration for the mission. Set to -1.0 to set no limits and
+            -9.0 to keep unchanged.
+        """
+
+        res = []
+        for paramName in params.keys():
+            msg = PprzMessage('datalink', 'MISSION_UPDATE')
+            msg['ac_id']    = self.aircraftId
+            msg['index']    = self.missionId
+            msg['duration'] = duration
+
+            try:
+                param = self.updateRules[paramName].check(params[paramName])
+            except KeyError as e:
+                print("No rules defined for update parameter '" + str(e.args[0]) +\
+                      "'. Aborting. Exception feedback : " + str(e))
+
+            # param can be a multidimensionnal parameter but msg['params']
+            # expects a list of floats
+            if hasattr(param, '__getitem__'):
+                msg['params'] = []
+                for value in param:
+                    msg['params'].append(value)
+            else:
+                msg['params'] = [param]
+            res.append(msg)
+        return res
 
 
         
