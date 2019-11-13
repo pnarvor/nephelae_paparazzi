@@ -72,6 +72,7 @@ class MissionManager:
 
         self.lastMissionId   = 0
         self.pendingMissions = []
+        self.currentMission  = None
 
 
     def mission_types(self):
@@ -115,6 +116,7 @@ class MissionManager:
     def execute_mission(self):
         """Execute last mission in self.pendingMission
             To be removed when a real management is implemented"""
-        messageInterface.send(
-            self.pendingMissions[-1].build_message(InsertMode.ReplaceAll))
+        self.currentMission  = self.pendingMissions[-1]
         self.pendingMissions = []
+        # messageInterface.send(
+        #     self.currentMission.build_message(InsertMode.ReplaceAll))
