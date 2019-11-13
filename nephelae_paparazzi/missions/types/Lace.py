@@ -12,10 +12,11 @@ class Lace(MissionBase):
     """
     
     parameterNames = ['start', 'first_turn_direction', 'circle_radius', 'drift']
-    updatableNames = ['drift']
+    updatableNames = ['hdrift', 'zdrift']
 
     def __init__(self, missionId, aircraftId, duration,
-                       start, first_turn_direction, circle_radius, drift):
+                       start, first_turn_direction, circle_radius, drift,
+                       updateRules={}):
 
         super().__init__(missionId, aircraftId, duration)
         
@@ -24,6 +25,7 @@ class Lace(MissionBase):
         self.parameters['first_turn_direction'] = first_turn_direction
         self.parameters['circle_radius']        = circle_radius
         self.parameters['drift']                = drift
+        self.updateRules                        = updateRules
 
 
     def build_message(self, insertMode=InsertMode.Append):
@@ -46,24 +48,39 @@ class Lace(MissionBase):
 
         return msg
 
-    
-    # def build_update_messages(self, duration=-9.0, drift_x=None, drift_y=None, drift_z=None):
-    #     """Builds (a) ready to send paparazzi message(s) for lace update"""
 
-    #     msgs = []
-    #     if drift_x is not None and drift_y is not None:
-    #         msgs.append(PprzMessage('datalink', 'MISSION_UPDATE'))
-    #         msgs[-1]['ac_id']    = self.aircraftId
-    #         msgs[-1]['index']    = self.missionId
-    #         msgs[-1]['duration'] = duration
-    #         msgs[-1]['params']   = [drift_x, drift_y]
-    #     if drift_z is not None:
-    #         msgs.append(PprzMessage('datalink', 'MISSION_UPDATE'))
-    #         msgs[-1]['ac_id']    = self.aircraftId
-    #         msgs[-1]['index']    = self.missionId
-    #         msgs[-1]['duration'] = duration
-    #         msgs[-1]['params']   = [drift_z]
-    #     return msgs
+    def build_update_message(self, duration=-9.0, hdrift=None, zdrift=None):
+        """
+        build a MISSION_UPDATE message for this mission
 
+        /!\ Several parameters but wil build only one update message.
+        Message will be build only for first non-None parameters, priority list
+        is in this order : [hdrift, zdrift]
+        
+        Parameters
+        ----------
+        duration : float
+            New duration for the mission. Set to -1.0 to set no limits and
+            -9.0 to keep unchanged.
+        """
+        msg = PprzMessage('datalink', 'MISSION_UPDATE')
+        msg['ac_id']    = self.aircraftId
+        msg['index']    = self.missionId
+        msg['duration'] = duration
+
+        try:
+            if hdrift is not None:
+                self.updateRules['hdrift'].check(hdrift)
+                msg['params'] = [hdrift[0], hdrift[1]]
+                return msg
+
+            elif zdrift is not None:
+                self.updateRules['zdrift'].check(zdrift)
+                msg['params'] = [zdrift]
+                return msg
+
+        except KeyError as e:
+            print("No rules defined for update parameter '" + str(e.args[0]) +\
+                  "'. Aborting. Feedback : " + str(e))
 
 

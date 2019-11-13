@@ -17,7 +17,7 @@ class MissionFactory:
 
     """
 
-    def __init__(self, missionType, parameterRules=None):
+    def __init__(self, missionType, parameterRules=None, updateRules=None):
         """
         Parameters
         ----------
@@ -44,15 +44,28 @@ class MissionFactory:
             parameterRules = {}
         for paramName in missionTypes[missionType].parameterNames:
             if paramName not in parameterRules.keys():
-                parameterRules[paramName] = ParameterRules(paramName)
+                parameterRules[paramName] = ParameterRules([], paramName)
             elif parameterRules[paramName] is None:
-                parameterRules[paramName] = ParameterRules(paramName)
+                parameterRules[paramName] = ParameterRules([], paramName)
         for key in parameterRules.keys():
             if isinstance(parameterRules[key], list):
                 parameterRules[key] = ParameterRules(parameterRules[key], key)
+        
+        # Same for update parameters
+        if updateRules is None:
+            updateRules = {}
+        for paramName in missionTypes[missionType].updatableNames:
+            if paramName not in updateRules.keys():
+                updateRules[paramName] = ParameterRules([], paramName)
+            elif updateRules[paramName] is None:
+                updateRules[paramName] = ParameterRules([], paramName)
+        for key in updateRules.keys():
+            if isinstance(updateRules[key], list):
+                updateRules[key] = ParameterRules(updateRules[key], key)
 
         self.missionType    = missionType
         self.parameterRules = parameterRules
+        self.updateRules    = updateRules
 
 
     def build(self, missionId, aircraftId, duration, **missionParameters):
@@ -74,7 +87,9 @@ class MissionFactory:
         # Keywords argument parameters are in a dictionary which can
         # be expanded with ** on function call.
         return missionTypes[self.missionType](missionId, aircraftId,
-                                              duration, **checkedParams)
+                                              duration,
+                                              updateRules=self.updateRules,
+                                              **checkedParams)
 
 
     def parameter_rules_summary(self):
