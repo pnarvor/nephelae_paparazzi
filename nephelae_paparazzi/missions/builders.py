@@ -1,4 +1,7 @@
+from warnings import warn
+
 from .rules          import *
+from .types          import missionTypes
 from .MissionFactory import MissionFactory
 from .MissionManager import MissionManager
 
@@ -35,7 +38,7 @@ def build_rule_set(parameterName, rulesDescription):
     return ParameterRules(ruleSet, parameterName)
 
 
-def build_mission_factory(missionType, parameterRules, updateRules={}):
+def build_mission_factory(missionType, parameterRules={}, updateRules={}):
 
     """
     build_factory
@@ -56,6 +59,40 @@ def build_mission_factory(missionType, parameterRules, updateRules={}):
         updatables[key] = build_rule_set(key, updateRules[key])
 
     return MissionFactory(missionType, parameters, updatables)
+
+
+def build_mission_manager(aircraft, **missions):
+    """
+    Load a MissionManager as a plugin to an Aircraft using the description
+    structure given by a yaml file.
+
+    missions is assumed a dictionary where keys are the mission types to be
+    created and values are a dictionary with keys 'parameters' and/or
+    'updatables', which describes the rules for each parameter.
+    """
+
+    factories = {}
+    for mission in missions.keys():
+        print(mission)
+        if mission not in missionTypes.keys():
+            raise ValueError("'"+mission+"' is not a valid mission type. " +\
+                             "Valid values are :" + str(missionTypes))
+        if 'parameters' not in missions[mission].keys():
+            parameterRules = {}
+            warn("No parameter rules defined for mission " + mission)
+        else:
+            parameterRules = missions[mission]['parameters']
+
+        if 'updatables' not in missions[mission].keys():
+            updateRules = {}
+            warn("No update rules defined for mission " + mission)
+        else:
+            updateRules = missions[mission]['updatables']
+        
+        factories[mission] = \
+            build_mission_factory(mission, parameterRules, updateRules)
+    
+    aircraft.load_plugin(MissionManager, factories=factories)
 
 
 

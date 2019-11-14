@@ -118,3 +118,17 @@ class MesonhProbe:
         messageInterface.send(msg)
 
 
+def build_mesonh_probe(aircraft, mesonhFiles, mesonhVariables=[],
+                       targetCacheBounds=[[   0,  20],
+                                          [-500, 500],
+                                          [-500, 500],
+                                          [-400, 200]],
+                       updateThreshold=0.25, rctFeedback=True,
+                       defaultRctBounds = Bounds(0.0, 1.0e-5)):
+
+    if isinstance(defaultRctBounds, list):
+        defaultRctBounds = Bounds(defaultRctBounds[0],
+                                  defaultRctBounds[-1])
+    aircraft.load_plugin(MesonhProbe, mesonhFiles, mesonhVariables,
+                         targetCacheBounds, updateThreshold, rctFeedback,
+                         defaultRctBounds)
