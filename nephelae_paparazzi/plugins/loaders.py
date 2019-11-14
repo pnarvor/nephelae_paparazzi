@@ -27,12 +27,12 @@ def load_plugins(aircraft, pluginsDesc):
                          "be of a list type. Did you forget a '-' in front " +
                          "of all plugin names in your yaml file ?" )
 
-    for plugin in pluginsDesc.keys():
-        if len(rule) != 1:
+    for plugin in pluginsDesc:
+        if len(plugin) != 1:
             raise ValueError("Yaml format error in plugin description")
 
         # This takes a single key from a dictionary.
-        pluginName = next(iter(rule))
+        pluginName = next(iter(plugin))
 
         # Calling a factory function
         pluginFactories[pluginName](aircraft, **plugin[pluginName])

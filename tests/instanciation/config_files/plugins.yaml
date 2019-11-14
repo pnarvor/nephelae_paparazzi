@@ -1,0 +1,30 @@
+---
+globals:
+    - hdrift: &hdrift_defaults
+        - Length: [2]
+        - SimpleBounds: [[[-10.0, -10.0], [10.0, 10.0]]]
+    - zdrift: &zdrift_defaults
+        - SimpleBounds: [[-5.0, 5.0]]
+    
+plugins:
+    - Missions:
+        Lace:
+            parameters:
+                start:
+                    - Length: [3]
+                    - SimpleBounds: [[[-10000.0, -10000.0, 300.0], [10000.0, 10000.0, 4000.0]]]
+                first_turn_direction:
+                    - DefaultValue:  [1.0]
+                    - AllowedValues: [[-1.0, 1.0]]
+                circle_radius:
+                    - SimpleBounds: [[50.0, 500.0]]
+                drift:
+                    - Length: [3]
+                    - SimpleBounds: [[[-10.0, -10.0, -5.0], [10.0, 10.0, 5.0]]]
+            updatables:
+                hdrift: *hdrift_defaults
+                zdrift: *zdrift_defaults
+    - MesonhProbe:
+        mesonhFiles: '/home/pnarvor/work/nephelae/data/nephelae-remote/MesoNH02/bomex_hf.nc'
+        mesonhVariables: ['RCT', 'WT', ['UT', 'VT']]
+
