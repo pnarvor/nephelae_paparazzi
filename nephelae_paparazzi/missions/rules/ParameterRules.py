@@ -79,5 +79,13 @@ class ParameterRules:
             res.update(rule.summary())
         return res
 
+    
+    def description(self):
+        res = self.parameterName + ":\n"
+        for rule in self.rules:
+            res = res + " - "
+            res = res + rule.description().replace('\n', '\n   ') + '\n'
+        return res
+
 
 

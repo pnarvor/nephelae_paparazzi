@@ -8,6 +8,7 @@ class InsertMode:
 
 from . import types
 from . import rules
+from . import builders
 from .MissionFactory import MissionFactory
 from .MissionManager import MissionManager
 

@@ -68,6 +68,20 @@ class MissionFactory:
         self.updateRules    = updateRules
 
 
+    def __str__(self):
+        res = "Parameters :\n   "
+        for key in self.parameterRules.keys():
+            tmp = self.parameterRules[key].description()
+            res = res + tmp.replace('\n','\n   ')
+        res = res[:-3] + "Update rules :\n   "
+        for key in self.updateRules.keys():
+            tmp = self.updateRules[key].description()
+            res = res + tmp.replace('\n','\n   ')
+        res = "MissionFactory for mission " + self.missionType + '\n   ' +\
+              res.replace('\n','\n   ')
+        return res
+
+
     def build(self, missionId, aircraftId, duration, **missionParameters):
         """
         This is the main function to build an instance of a mission.
