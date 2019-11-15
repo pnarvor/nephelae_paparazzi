@@ -10,15 +10,26 @@ class AircraftLogger:
     Intended for debug purposes.
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, quiet=False):
+        self.quiet = quiet
 
     def add_sample(self, msg):
-        print(msg, end="\n\n", flush=True)
+        if not self.quiet:
+            print(msg, end="\n\n", flush=True)
 
     def add_gps(self, msg):
-        print(msg, end="\n\n", flush=True)
+        if not self.quiet:
+            print(msg, end="\n\n", flush=True)
 
     def notify_status(self, status):
-        print(status)
+        if not self.quiet:
+            print(status)
 
+    def toggle(self):
+        if self.quiet:
+            self.quiet = False
+        else:
+            self.quiet = True
+
+
+    
