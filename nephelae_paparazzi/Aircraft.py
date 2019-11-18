@@ -5,8 +5,9 @@ import time
 
 from nephelae.types import MultiObserverSubject, Pluginable, Position
 
-from .common import IvySendMsg, IvyUnBindMsg
-from .messages import Gps, FlightParam, NavStatus, ApStatus, Bat, MissionStatus, Config
+from .common           import IvySendMsg, IvyUnBindMsg
+from .messages         import Gps, FlightParam, NavStatus, ApStatus, Bat, MissionStatus, Config
+from .plugins.loaders  import load_plugins
 
 
 class AircraftStatus:
@@ -282,3 +283,77 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def remove_status_observer(self, observer):
         self.detach_observer(observer, 'notify_status')
     # decide to keep these or not... (up)
+
+
+def find_aircraft_config(aircraftId, config):
+    """
+    Fing the configuration associated to this specific aircraftId from the set
+    of configuration for all aircrafts.
+
+    Several formats are allowed for the configuration file. This function is
+    used to "parse" the configuration by checking all these formats.
+
+    return None if config was not found.
+    """
+    # Comparing all ids as str to ensure comparability
+    if not isinstance(aircraftId, str):
+        aircraftId = str(aircraftId)
+    
+    if aircraftId in [str(key) for key in config.keys()]:
+        try:
+            return config[aircraftId]
+        except KeyError:
+            # Here key might be an int
+            try:
+                return config[int(aircraftId)]
+            except KeyError as e:
+                print("Unforeseen error happened while parsing configuration. "+\
+                      "Feedback :", e)
+                raise e
+    else:
+        # Id was not used as a configuration key. Maybe configuration
+        # contains an 'identifier' or an 'id' field ?
+        for acConfig in config.values():
+            # Checking for keys which might contain an identifier
+            for key in ['identifier', 'id']:
+                try:
+                    if str(acConfig[key]) == aircraftId:
+                        # Found !
+                        return acConfig
+                except KeyError:
+                    # Here acConfig did not contains 'id' or 'identifier'
+                    pass
+    return None
+
+
+def build_aircraft(aircraftId, navFrame, config):
+    """
+    Builds an Aircraft instance using the description given in config.
+
+    Config is assumed to be the output of a nephelae yaml configuration file.
+    And contains information for all uavs.
+
+    config is assumed to contain the configuration for all aircraft. First
+    step is to find the configuration for this specific aircraftId. Then the
+    aircraft is loaded.
+
+    config is assumed to be a dictionary. Keys can be aircraft long names or
+    ids. If these are long names, the aircraft config must contain an
+    'identifier or 'id' field.
+    """
+   
+    config = find_aircraft_config(aircraftId, config)
+    if config is None:
+        return None
+    
+    aircraft = Aircraft(aircraftId, navFrame)
+    if 'plugins' in config.keys():
+        load_plugins(aircraft, config['plugins'])
+
+    return aircraft
+
+        
+
+        
+
+
