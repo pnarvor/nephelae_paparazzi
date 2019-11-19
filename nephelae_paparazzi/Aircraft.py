@@ -186,7 +186,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.ivyBinds.append(MissionStatus.bind(self.mission_status_callback, self.id))
 
 
-    def terminate(self):
+    def stop(self):
         for bindId in self.ivyBinds:
             IvyUnBindMsg(bindId)
 

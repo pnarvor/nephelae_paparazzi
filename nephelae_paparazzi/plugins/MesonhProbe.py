@@ -16,8 +16,8 @@ class MesonhProbe:
     """
 
     def __pluginmethods__():
-        return [{'name'         : 'terminate',
-                 'method'       : MesonhProbe.terminate,
+        return [{'name'         : 'stop',
+                 'method'       : MesonhProbe.stop,
                  'conflictMode' : 'prepend'},
                 {'name'         : 'gps_callback',
                  'method'       : MesonhProbe.gps_callback,
@@ -33,7 +33,7 @@ class MesonhProbe:
                  'conflictMode' : 'abort'},
                 {'name'         : 'rct_feedback',
                  'method'       : MesonhProbe.rct_feedback,
-                 'conflictMode' : 'error'},
+                 'conflictMode' : 'error'}
                ]
 
 
@@ -73,7 +73,7 @@ class MesonhProbe:
             self.rctBounds = Bounds(b[0], b[-1])
 
 
-    def terminate(self):
+    def stop(self):
         for probe in self.probes.values():
             probe.stop()
 
@@ -116,6 +116,7 @@ class MesonhProbe:
         msg['ac_id']   = int(self.id)
         msg['command'] = [min(255,int(255 * rctValue / self.rctBounds.span()))]
         messageInterface.send(msg)
+
 
 
 def build_mesonh_probe(aircraft, mesonhFiles, mesonhVariables=[],

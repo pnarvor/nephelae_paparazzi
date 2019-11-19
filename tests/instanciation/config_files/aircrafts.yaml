@@ -27,6 +27,7 @@ aircrafts:
                         hdrift: *hdrift_defaults
                         zdrift: *zdrift_defaults
             - MesonhProbe:
-                mesonhFiles: '/home/pnarvor/work/nephelae/data/nephelae-remote/MesoNH02/bomex_hf.nc'
+                # mesonhFiles: '/home/pnarvor/work/nephelae/data/nephelae-remote/MesoNH02/bomex_hf.nc'
+                mesonhFiles: '/home/pnarvor/work/nephelae/data/MesoNH-2019-02/REFHR.1.ARMCu.4D.nc'
                 mesonhVariables: ['RCT', 'WT', ['UT', 'VT']]
 
