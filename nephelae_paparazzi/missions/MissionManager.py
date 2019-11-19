@@ -118,5 +118,5 @@ class MissionManager:
             To be removed when a real management is implemented"""
         self.currentMission  = self.pendingMissions[-1]
         self.pendingMissions = []
-        # messageInterface.send(
-        #     self.currentMission.build_message(InsertMode.ReplaceAll))
+        messageInterface.send(
+            self.currentMission.build_message(InsertMode.ReplaceAll))
