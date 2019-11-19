@@ -144,6 +144,45 @@ class AircraftStatus:
         self.mission_time_left = missionStatus.remaining_time
         self.mission_task_list = missionStatus.index_list
 
+    
+    def to_dict(self):
+        """
+        Convert status in json compatible dictionary
+        Consider creating a single dictionary to hold all attributes instead of
+        separated attributes.
+        """
+        res = {}
+        res['id']                = self.aircraftId
+        res['lat']               = self.lat
+        res['long']              = self.long
+        res['utm_east']          = self.utm_east
+        res['utm_north']         = self.utm_north
+        res['utm_zone']          = self.utm_zone
+        res['alt']               = self.alt
+        res['agl']               = self.agl
+        res['roll']              = self.roll
+        res['pitch']             = self.pitch
+        res['heading']           = self.heading
+        res['course']            = self.course
+        res['speed']             = self.speed
+        res['air_speed']         = self.air_speed
+        res['climb']             = self.climb
+        res['itow']              = self.itow
+        res['flight_time']       = self.flight_time
+        res['target_lat']        = self.target_lat
+        res['target_long']       = self.target_long
+        res['target_utm_east']   = self.target_utm_east
+        res['target_utm_north']  = self.target_utm_north
+        res['target_alt']        = self.target_alt
+        res['target_course']     = self.target_course
+        res['target_climb']      = self.target_climb
+        res['current_block_id']  = self.current_block_id
+        res['current_block']     = self.current_block
+        res['block_time']        = self.block_time
+        res['mission_time_left'] = self.mission_time_left
+        res['mission_task_list'] = self.mission_task_list
+        
+        return res
 
 
 
