@@ -19,8 +19,8 @@ config = None
 with open('config_files/aircrafts.yaml','r') as f:
     config = yaml.safe_load(f)
 
-def create_mission():
-    interface.uavs['200'].create_mission('Lace',
+def create_mission(missionType='Lace'):
+    interface.uavs['200'].create_mission(missionType,
                                          duration=-1.0,
                                          start=[-1500.0, 900.0, 700.0],
                                          first_turn_direction=1.0,
@@ -28,9 +28,9 @@ def create_mission():
                                          drift=[-7.5,-0.5,0.0])
 
 
-def create_mission_fail():
+def create_mission_fail(missionType='Lace'):
     # must fail because start not in bounds
-    interface.uavs['200'].create_mission('Lace',
+    interface.uavs['200'].create_mission(missionType,
                                          duration=-1.0,
                                          start=[-15000.0, 900.0, 700.0],
                                          first_turn_direction=1.0,
