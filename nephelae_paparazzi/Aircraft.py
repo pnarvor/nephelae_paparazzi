@@ -217,6 +217,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
 
     def start(self):
+        self.running = True
         self.request_config()
         self.ivyBinds.append(Gps.bind(self.gps_callback, self.id))
         self.ivyBinds.append(FlightParam.bind(self.flight_param_callback, self.id))
@@ -224,7 +225,6 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.ivyBinds.append(ApStatus.bind(self.ap_status_callback, self.id))
         self.ivyBinds.append(Bat.bind(self.bat_callback, self.id))
         self.ivyBinds.append(MissionStatus.bind(self.mission_status_callback, self.id))
-        self.running = True
 
 
     def stop(self):
