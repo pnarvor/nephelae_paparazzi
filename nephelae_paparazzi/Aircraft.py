@@ -213,6 +213,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.currentApStatus      = None
         self.currentBat           = None
         self.currentMissionStatus = None
+        self.running              = False
 
 
     def start(self):
@@ -223,11 +224,13 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.ivyBinds.append(ApStatus.bind(self.ap_status_callback, self.id))
         self.ivyBinds.append(Bat.bind(self.bat_callback, self.id))
         self.ivyBinds.append(MissionStatus.bind(self.mission_status_callback, self.id))
+        self.running = True
 
 
     def stop(self):
         for bindId in self.ivyBinds:
             IvyUnBindMsg(bindId)
+        self.running = False
 
 
     def gps_callback(self, msg):
@@ -289,7 +292,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def request_config(self):
         def config_request_loop(uavObj):
             count = 1
-            while uavObj.config is None:
+            while uavObj.config is None and self.running:
                 IvySendMsg('ground ' + str(os.getpid()) + '_' + str(count) +
                            ' CONFIG_REQ ' + str(self.id))
                 count = count + 1
