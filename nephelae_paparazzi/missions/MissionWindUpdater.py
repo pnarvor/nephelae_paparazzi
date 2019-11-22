@@ -1,5 +1,6 @@
 from threading import Timer
 
+from ..common import messageInterface
 
 class MissionWindUpdater:
 
@@ -57,7 +58,8 @@ class MissionWindUpdater:
     def update_current_mission_wind(self):
         
         if self.currentMission is not None:
-            self.currentMission.build_update_message(hdrift=self.windMap.wind)
+            messageInterface.send(
+                self.currentMission.build_update_messages(hdrift=self.windMap.wind)[0])
 
         # Checking if aircraft is running and stop was not requested
         if self.running and self.missionUpdateTimer is not None:
