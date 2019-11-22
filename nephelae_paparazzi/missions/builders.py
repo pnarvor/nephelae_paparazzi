@@ -1,9 +1,10 @@
 from warnings import warn
 
-from .rules          import *
-from .types          import missionTypes
-from .MissionFactory import MissionFactory
-from .MissionManager import MissionManager
+from .rules              import *
+from .types              import missionTypes
+from .MissionFactory     import MissionFactory
+from .MissionManager     import MissionManager
+from .MissionWindUpdater import MissionWindUpdater
 
 def build_rule_set(parameterName, rulesDescription):
     """
@@ -95,6 +96,9 @@ def build_mission_manager(aircraft, **missions):
     aircraft.load_plugin(MissionManager, factories=factories)
 
 
+def build_mission_wind_updater(aircraft, **params):
+    aircraft.load_plugin(MissionWindUpdater, **params)
+    
 
 
 

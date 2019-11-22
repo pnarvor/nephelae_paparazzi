@@ -1,4 +1,4 @@
-from nephelae_paparazzi.missions.builders import build_mission_manager
+from nephelae_paparazzi.missions.builders import build_mission_manager, build_mission_wind_updater
 
 from .MesonhProbe import build_mesonh_probe
 
@@ -6,7 +6,8 @@ from .MesonhProbe import build_mesonh_probe
 # on which to apply a plugin
 pluginFactories = {
     'Missions': build_mission_manager,
-    'MesonhProbe': build_mesonh_probe
+    'MesonhProbe': build_mesonh_probe,
+    'MissionWindUpdater': build_mission_wind_updater
 }
 
 
