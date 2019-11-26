@@ -40,7 +40,8 @@ class MesonhProbe:
     def __initplugin__(self, mesonhFiles, mesonhVariables=[],
                        targetCacheBounds=[[0,20],[-500,500],[-500,500],[-400,200]],
                        updateThreshold=0.25, rctFeedback=True,
-                       defaultRctBounds = Bounds(0.0, 1.0e-5)):
+                       defaultRctBounds = Bounds(0.0, 1.0e-5),
+                       mesonhOrigin=None):
         
         self.mesonhInitialized = False
         self.rctFeedback       = rctFeedback
@@ -57,7 +58,9 @@ class MesonhProbe:
             self.atm = MesonhDataset(mesonhFiles)
         self.probes = {}
         for var in mesonhVariables:
-            mesonhVar = MesonhVariable(self.atm, var, interpolation='linear')
+            mesonhVar = MesonhVariable(self.atm, var,
+                                       origin=mesonhOrigin,
+                                       interpolation='linear')
             self.probes[str(var)] = MesonhCachedProbe(mesonhVar,
                                                  targetCacheBounds,
                                                  updateThreshold)
@@ -125,7 +128,8 @@ def build_mesonh_probe(aircraft, mesonhFiles, mesonhVariables=[],
                                           [-500, 500],
                                           [-400, 200]],
                        updateThreshold=0.25, rctFeedback=True,
-                       defaultRctBounds = Bounds(0.0, 1.0e-5)):
+                       defaultRctBounds = Bounds(0.0, 1.0e-5),
+                       mesonhOrigin=None):
 
     if isinstance(defaultRctBounds, list):
         defaultRctBounds = Bounds(defaultRctBounds[0],
