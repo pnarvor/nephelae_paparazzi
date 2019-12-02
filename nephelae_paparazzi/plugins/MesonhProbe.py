@@ -136,4 +136,4 @@ def build_mesonh_probe(aircraft, mesonhFiles, mesonhVariables=[],
                                   defaultRctBounds[-1])
     aircraft.load_plugin(MesonhProbe, mesonhFiles, mesonhVariables,
                          targetCacheBounds, updateThreshold, rctFeedback,
-                         defaultRctBounds)
+                         defaultRctBounds, mesonhOrigin)
