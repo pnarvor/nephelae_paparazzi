@@ -288,6 +288,17 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
         print("Got config :", self. config)
         
+        # Ensure color is 12bit format #ffffff
+        try:
+            step = int((len(self.config.default_gui_color) - 1) / 3)
+            self.config.default_gui_color = "#" +\
+                self.config.default_gui_color[1:3] +\
+                self.config.default_gui_color[1+step:step+3] +\
+                self.config.default_gui_color[1+2*step:2*step+3]
+        except Exception as e:
+            warn("Could not retrieve color code :", e)
+            self.config.default_gui_color = "#ffffff"
+
 
     def request_config(self):
         def config_request_loop(uavObj):
