@@ -59,7 +59,10 @@ class AircraftStatus:
 
     def __str__(self):
         return 'Aircraft ' + self.aircraftId + ' status :'\
-            + '\n  time             : ' + str(self.position.t)\
+            + '\n  local_t          : ' + str(self.position.t)\
+            + '\n  local_x          : ' + str(self.position.x)\
+            + '\n  local_y          : ' + str(self.position.y)\
+            + '\n  local_z          : ' + str(self.position.z)\
             + '\n  lat              : ' + str(self.lat)\
             + '\n  long             : ' + str(self.long)\
             + '\n  utm_east         : ' + str(self.utm_east)\
@@ -97,7 +100,7 @@ class AircraftStatus:
         utmUav = utm.from_latlon(flightParam.lat, flightParam.long)
         self.position.x = utmUav[0] - self.navFrame.position.x
         self.position.y = utmUav[1] - self.navFrame.position.y
-        self.position.z = flightParam.alt
+        self.position.z = flightParam.alt - self.navFrame.position.z
 
         self.currentFlightParam = flightParam
 
@@ -153,6 +156,10 @@ class AircraftStatus:
         """
         res = {}
         res['id']                = self.aircraftId
+        res['local_t']           = self.position.t
+        res['local_x']           = self.position.x
+        res['local_y']           = self.position.y
+        res['local_z']           = self.position.z
         res['lat']               = self.lat
         res['long']              = self.long
         res['utm_east']          = self.utm_east
