@@ -199,7 +199,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
     """
 
     def __init__(self, uavId, navFrame):
-        MultiObserverSubject.__init__(self, ['add_gps', 'notify_status'])
+        MultiObserverSubject.__init__(self, ['add_gps', 'add_status'])
 
         self.id          = uavId
         self.navFrame    = navFrame
@@ -266,7 +266,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
         if not self.statusNotified:
             # notifying status if not notified in ap_statu_callback
-            self.notify_status(self.status)
+            self.add_status(self.status)
         self.statusNotified = False
 
 
@@ -281,7 +281,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
         # Notifying status observer only in ap_status callback because the 3
         # status message are sent in close sequence and this is the last one.
-        self.notify_status(self.status)
+        self.add_status(self.status)
         self.statusNotified = True
 
 
@@ -337,7 +337,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
 
     def add_status_observer(self, observer):
-        self.attach_observer(observer, 'notify_status')
+        self.attach_observer(observer, 'add_status')
 
 
     def remove_gps_observer(self, observer):
@@ -345,7 +345,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
 
     def remove_status_observer(self, observer):
-        self.detach_observer(observer, 'notify_status')
+        self.detach_observer(observer, 'add_status')
     # decide to keep these or not... (up)
 
 

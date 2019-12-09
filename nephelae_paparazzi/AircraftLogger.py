@@ -21,7 +21,7 @@ class AircraftLogger:
         if not self.quiet:
             print(msg, end="\n\n", flush=True)
 
-    def notify_status(self, status):
+    def add_status(self, status):
         if not self.quiet:
             print(status)
 
