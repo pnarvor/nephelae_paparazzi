@@ -2,6 +2,7 @@ import os
 import threading
 import utm
 import time
+from copy import deepcopy
 
 from nephelae.types import MultiObserverSubject, Pluginable, Position
 
@@ -23,7 +24,7 @@ class AircraftStatus:
 
     def __init__(self, aircraftId, navFrame):
         
-        self.aircraftId        = aircraftId
+        self.aircraftId        = str(aircraftId)
         self.navFrame          = navFrame
         self.position          = Position()
 
@@ -191,6 +192,8 @@ class AircraftStatus:
         
         return res
 
+    def copy(self):
+        return deepcopy(self)
 
 
 
@@ -273,7 +276,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
         if not self.statusNotified:
             # notifying status if not notified in ap_statu_callback
-            self.add_status(self.status)
+            self.add_status(self.status.copy())
         self.statusNotified = False
 
 
@@ -288,7 +291,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
         # Notifying status observer only in ap_status callback because the 3
         # status message are sent in close sequence and this is the last one.
-        self.add_status(self.status)
+        self.add_status(self.status.copy())
         self.statusNotified = True
 
 
