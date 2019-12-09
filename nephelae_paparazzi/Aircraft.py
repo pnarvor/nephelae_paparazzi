@@ -215,6 +215,11 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.currentMissionStatus = None
         self.running              = False
 
+        # In normal conditions the status is published on a AP_STATUS message callback
+        # This attribute allow to publish the status on a FLIGHT_PARAMS message
+        # callback if AP_STATUS is not published by paparazzi or a message was missed.
+        self.statusNotified = True
+
 
     def start(self):
         self.running = True
@@ -259,6 +264,11 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.currentFlightParam = flightParam
         self.status.set_flight_param(flightParam)
 
+        if not self.statusNotified:
+            # notifying status if not notified in ap_statu_callback
+            self.notify_status(self.status)
+        self.statusNotified = False
+
 
     def nav_status_callback(self, navStatus):
         self.currentNavStatus = navStatus
@@ -272,6 +282,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
         # Notifying status observer only in ap_status callback because the 3
         # status message are sent in close sequence and this is the last one.
         self.notify_status(self.status)
+        self.statusNotified = True
 
 
     def mission_status_callback(self, missionStatus):
