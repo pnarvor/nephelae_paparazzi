@@ -19,8 +19,8 @@ class MesonhProbe:
         return [{'name'         : 'stop',
                  'method'       : MesonhProbe.stop,
                  'conflictMode' : 'prepend'},
-                {'name'         : 'gps_callback',
-                 'method'       : MesonhProbe.gps_callback,
+                {'name'         : 'flight_param_callback',
+                 'method'       : MesonhProbe.flight_param_callback,
                  'conflictMode' : 'append'},
                 {'name'         : 'add_sensor_observer',
                  'method'       : MesonhProbe.add_sensor_observer,
@@ -78,9 +78,9 @@ class MesonhProbe:
             probe.stop()
 
 
-    def gps_callback(self, msg):
-
-        position = msg - self.navFrame
+    def flight_param_callback(self, msg):
+        
+        position = self.status.position.copy()
         readKeys = (position.t, position.x, position.y, position.z)
         if not self.mesonhInitialized:
             for probe in self.probes.values():
