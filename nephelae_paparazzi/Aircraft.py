@@ -209,7 +209,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
     """
 
     def __init__(self, uavId, navFrame):
-        MultiObserverSubject.__init__(self, ['add_gps', 'add_status'])
+        MultiObserverSubject.__init__(self, ['add_status'])
 
         self.id          = uavId
         self.navFrame    = navFrame
@@ -217,7 +217,6 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
         self.config               = None
         self.status               = AircraftStatus(self.id, self.navFrame)
-        self.currentGps           = None
         self.currentFlightParam   = None
         self.currentNavStatus     = None
         self.currentApStatus      = None
@@ -234,7 +233,6 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def start(self):
         self.running = True
         self.request_config()
-        self.ivyBinds.append(Gps.bind(self.gps_callback, self.id))
         self.ivyBinds.append(FlightParam.bind(self.flight_param_callback, self.id))
         self.ivyBinds.append(NavStatus.bind(self.nav_status_callback, self.id))
         self.ivyBinds.append(ApStatus.bind(self.ap_status_callback, self.id))
@@ -248,26 +246,8 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.running = False
 
 
-    def gps_callback(self, msg):
-        self.currentGps = msg
-        self.add_gps(msg)
-
-
     def bat_callback(self, msg):
         self.currentBat = msg
-        # if not self.gps:
-        #     return
-        # sample = SensorSample('BAT', producer=self.id,
-        #                       timeStamp=msg.stamp,
-        #                       position=self.gps[-1] - self.navFrame,
-        #                       data=[msg.throttle,
-        #                             msg.voltage,
-        #                             msg.amps, 
-        #                             msg.flight_time,
-        #                             msg.block_time,
-        #                             msg.stage_time,
-        #                             msg.energy])
-        # self.notify_sensor_sample(sample)
       
 
     def flight_param_callback(self, flightParam):
@@ -342,21 +322,10 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
 
     # decide to keep these or not...
-    def add_gps_observer(self, observer):
-        self.attach_observer(observer, 'add_gps')
-
-
     def add_status_observer(self, observer):
         self.attach_observer(observer, 'add_status')
-
-
-    def remove_gps_observer(self, observer):
-        self.detach_observer(observer, 'add_gps')
-
-
     def remove_status_observer(self, observer):
         self.detach_observer(observer, 'add_status')
-    # decide to keep these or not... (up)
 
 
 

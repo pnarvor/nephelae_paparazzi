@@ -17,10 +17,6 @@ class AircraftLogger:
         if not self.quiet:
             print(msg, end="\n\n", flush=True)
 
-    def add_gps(self, msg):
-        if not self.quiet:
-            print(msg, end="\n\n", flush=True)
-
     def add_status(self, status):
         if not self.quiet:
             print(status)
