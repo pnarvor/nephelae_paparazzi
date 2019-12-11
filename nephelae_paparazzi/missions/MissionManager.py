@@ -44,7 +44,7 @@ class MissionManager:
                  'conflictMode' : 'error'}
                ]
     
-    def __initplugin__(self, configFile=None, factories=None):
+    def __initplugin__(self, factories=None):
         """
         Parameters
         ----------
@@ -53,26 +53,15 @@ class MissionManager:
             A ValueError will be raised if the id already exists in 
             MissionManager.instances.keys()
 
-        configFile : NOT IMPLEMENTED YET
-            Path to configuration file or yaml parsed data which holds the
-            information for building MissionFactory instances. If this
-            parameter is set, the parameter factories is ignored.
-
-            Not implemented : For now, hard coded factories are used.
-
         factories : dict({str:MissionFactory, ...})
             factories used to build mission instances. This parameter is
             ignored if configFile is set.
         """
 
-        if configFile is not None:
-            raise ValueError("Configuration files are not yet implemented !")
-        else:
-            self.missionFactories = factories
-
-        self.lastMissionId   = 0
-        self.pendingMissions = []
-        self.currentMission  = None
+        self.missionFactories = factories
+        self.lastMissionId    = 0
+        self.pendingMissions  = []
+        self.currentMission   = None
 
 
     def mission_types(self):
