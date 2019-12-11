@@ -93,10 +93,10 @@ class MissionFactory:
         checkedParams = {}
         for key in self.parameterRules.keys():
             try:
-                checkedParams[key] = self.parameterRules[key].check(missionParameters[key])
+                parameter = missionParameters[key]
             except KeyError as e:
-                raise KeyError("Missing parameter when building mission : " +\
-                               key + ". Original exception feedback : " + str(e))
+                parameter = None
+            checkedParams[key] = self.parameterRules[key].check(parameter)
         # Instanciating a mission from the global missionTypes list
         # Keywords argument parameters are in a dictionary which can
         # be expanded with ** on function call.
