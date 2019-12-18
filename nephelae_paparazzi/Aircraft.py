@@ -100,8 +100,6 @@ class AircraftStatus:
         # Getting current mission time
         self.position.t = time.time() - self.navFrame.position.t
 
-        self.currentFlightParam = flightParam
-
         self.lat       = float(flightParam['lat'])
         self.long      = float(flightParam['long'])
         self.alt       = float(flightParam['alt'])
@@ -127,7 +125,6 @@ class AircraftStatus:
 
 
     def set_nav_status(self, navStatus):
-        self.currentNavStatus = navStatus
 
         self.target_lat       = float(navStatus['target_lat'])
         self.target_long      = float(navStatus['target_long'])
@@ -145,12 +142,10 @@ class AircraftStatus:
 
 
     def set_ap_status(self, apStatus):
-        self.currentApStatus = apStatus
         self.flight_time = int(apStatus['flight_time'])
 
 
     def set_mission_status(self, missionStatus):
-        print(type(missionStatus['index_list']))
         self.mission_time_left = missionStatus['remaining_time']
         self.mission_task_list = missionStatus['index_list']
 
@@ -239,7 +234,6 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def start(self):
         self.running = True
         self.request_config()
-        print('(' + str(self.id) + ' FLIGHT_PARAM .*)')
         self.ivyBinds.append(messageInterface.subscribe(self.flight_param_callback,   '(ground FLIGHT_PARAM '   + str(self.id) + ' .*)'))
         self.ivyBinds.append(messageInterface.subscribe(self.nav_status_callback,     '(ground NAV_STATUS '     + str(self.id) + ' .*)'))
         self.ivyBinds.append(messageInterface.subscribe(self.ap_status_callback,      '(ground AP_STATUS '      + str(self.id) + ' .*)'))
@@ -259,7 +253,6 @@ class Aircraft(MultiObserverSubject, Pluginable):
       
 
     def flight_param_callback(self, sender, flightParam):
-        print(flightParam)
         self.currentFlightParam = flightParam
         self.status.set_flight_param(flightParam)
 
