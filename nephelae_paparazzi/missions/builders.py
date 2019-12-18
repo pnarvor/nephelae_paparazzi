@@ -73,8 +73,14 @@ def build_mission_manager(aircraft, **missions):
     """
 
     factories = {}
+    inputBackupFile  = None
+    outputBackupFile = None
     for mission in missions.keys():
-        print(mission)
+        if mission == 'backup_file':
+            inputBackupFile  = missions[mission]
+            outputBackupFile = inputBackupFile
+            continue
+
         if mission not in missionTypes.keys():
             raise ValueError("'"+mission+"' is not a valid mission type. " +\
                              "Valid values are :" + str(missionTypes))
@@ -93,7 +99,9 @@ def build_mission_manager(aircraft, **missions):
         factories[mission] = \
             build_mission_factory(mission, parameterRules, updateRules)
     
-    aircraft.load_plugin(MissionManager, factories=factories)
+    aircraft.load_plugin(MissionManager, factories=factories,
+                         inputBackupFile=inputBackupFile,
+                         outputBackupFile=outputBackupFile)
 
 
 def build_mission_wind_updater(aircraft, **params):

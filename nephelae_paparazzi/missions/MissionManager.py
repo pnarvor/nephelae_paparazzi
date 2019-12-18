@@ -1,3 +1,4 @@
+import os.path
 import pickle
 import threading
 
@@ -41,6 +42,12 @@ class MissionManager:
                  'conflictMode' : 'error'},
                 {'name'         : 'create_mission',
                  'method'       : MissionManager.create_mission,
+                 'conflictMode' : 'error'},
+                {'name'         : 'new_mission_id',
+                 'method'       : MissionManager.new_mission_id,
+                 'conflictMode' : 'error'},
+                {'name'         : 'load_mission_backup_file',
+                 'method'       : MissionManager.load_mission_backup_file,
                  'conflictMode' : 'error'},
                 {'name'         : 'execute_mission',
                  'method'       : MissionManager.execute_mission,
@@ -119,7 +126,7 @@ class MissionManager:
         with self.lock:
             # Creating new mission instance
             mission = self.missionFactories[missionType].build(
-                self.new_mission_id(), self.id, duration, **missionParameters))
+                self.new_mission_id(), self.id, duration, **missionParameters)
             
             # Saving it to backup file for warm start
             if self.outputBackupFile is not None:
@@ -147,7 +154,6 @@ class MissionManager:
 
 
     def load_mission_backup_file(self):
-        """To be implemented"""
 
         def reload_missions(unpickledMissions):
             """
@@ -155,7 +161,7 @@ class MissionManager:
             instances.
             """
             for missionId, params in unpickledMissions.items():
-                if self.id != params['aircraftId']:
+                if str(self.id) != str(params['aircraftId']):
                     raise ValueError("Error decoding mission backup file. " +
                         "The aircraft ids do not match (got " +
                         str(params['aircraftId']) + " but current aircraft is " +
@@ -164,11 +170,12 @@ class MissionManager:
                     raise ValueError("Error decoding mission backup file. " +
                                      "Mission ids do not match.")
                 self.missions[missionId] = \
-                    self.missionFactories[params['type'].build(
-                        missionId, self.id, params['duration'], **params['params']))
+                    self.missionFactories[params['type']].build(
+                        missionId, self.id, params['duration'], **params['parameters'])
 
         # This function starts here.
-        if self.inputBackupFile is None:
+        if self.inputBackupFile is None or \
+           not os.path.exists(self.inputBackupFile):
             return
 
         with self.lock:
@@ -182,7 +189,7 @@ class MissionManager:
                         reload_missions(pickle.load(f))
                     except EOFError:
                         # loop exit here
-                        pass
+                        break
             # New last id id the biggest one from the load missions
             self.lastMissionId = max(self.missions.keys())
 
