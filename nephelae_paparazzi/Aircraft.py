@@ -8,7 +8,7 @@ from nephelae.types import MultiObserverSubject, Pluginable, Position
 
 from .common           import IvySendMsg, IvyUnBindMsg
 from .common           import messageInterface
-from .messages         import Gps, FlightParam, NavStatus, ApStatus, Bat, MissionStatus, Config
+from .messages         import Config
 from .plugins.loaders  import load_plugins
 
 
@@ -278,7 +278,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
 
 
     def mission_status_callback(self, sender, missionStatus):
-        self.currentMissionStatus = MissionStatus
+        self.currentMissionStatus = missionStatus
         self.status.set_mission_status(missionStatus)
 
 
