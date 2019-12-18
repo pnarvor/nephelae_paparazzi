@@ -49,6 +49,9 @@ class MissionManager:
                 {'name'         : 'load_mission_backup_file',
                  'method'       : MissionManager.load_mission_backup_file,
                  'conflictMode' : 'error'},
+                {'name'         : 'current_mission',
+                 'method'       : MissionManager.current_mission,
+                 'conflictMode' : 'error'},
                 {'name'         : 'execute_mission',
                  'method'       : MissionManager.execute_mission,
                  'conflictMode' : 'error'}
@@ -82,7 +85,6 @@ class MissionManager:
         self.missions         = {}
         self.lastMissionId    = 0
         self.pendingMissions  = []
-        self.currentMission   = None
         self.lock             = threading.Lock()
         
         self.inputBackupFile  = inputBackupFile
@@ -194,10 +196,21 @@ class MissionManager:
             self.lastMissionId = max(self.missions.keys())
 
 
+    def current_mission(self):
+        """
+        Return current mission of the UAV
+        (First in the MISSION_STATUS list)
+        """
+        try:
+            return self.missions[self.status.mission_task_list[0]]
+        except KeyError:
+            return None
+
+
     def execute_mission(self):
         """Execute last mission in self.pendingMission
             To be removed when a real management is implemented"""
-        self.currentMission  = self.pendingMissions[-1]
+
         self.pendingMissions = []
         messageInterface.send(
             self.currentMission.build_message(InsertMode.ReplaceAll))
