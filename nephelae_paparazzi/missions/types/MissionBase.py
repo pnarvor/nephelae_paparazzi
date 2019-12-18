@@ -79,6 +79,15 @@ class MissionBase:
             return self.parameters[key]
 
 
+    def to_dict(self):
+        return {'type'       : self.missionType,
+                'missionId'  : self.missionId,
+                'aircraftId' : self.aircraftId,
+                'duration'   : self.duration,
+                'parameters' : self.parameters}
+
+
+
     def build_update_messages(self, duration=-9.0, **params):
         """
         Builds MISSION_UPDATE messages for this mission.
