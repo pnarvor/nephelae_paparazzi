@@ -7,6 +7,7 @@ from copy import deepcopy
 from nephelae.types import MultiObserverSubject, Pluginable, Position
 
 from .common           import IvySendMsg, IvyUnBindMsg
+from .common           import messageInterface
 from .messages         import Gps, FlightParam, NavStatus, ApStatus, Bat, MissionStatus, Config
 from .plugins.loaders  import load_plugins
 
@@ -98,53 +99,58 @@ class AircraftStatus:
 
         # Getting current mission time
         self.position.t = time.time() - self.navFrame.position.t
-        utmUav = utm.from_latlon(flightParam['lat'], flightParam['long'])
-        self.position.x = utmUav[0] - self.navFrame.position.x
-        self.position.y = utmUav[1] - self.navFrame.position.y
-        self.position.z = flightParam['alt'] - self.navFrame.position.z
 
         self.currentFlightParam = flightParam
 
-        self.lat       = flightParam['lat']
-        self.long      = flightParam['long']
+        self.lat       = float(flightParam['lat'])
+        self.long      = float(flightParam['long'])
+        self.alt       = float(flightParam['alt'])
+        self.agl       = float(flightParam['agl'])
+        self.roll      = float(flightParam['roll'])
+        self.pitch     = float(flightParam['pitch'])
+        self.heading   = float(flightParam['heading'])
+        self.course    = float(flightParam['course'])
+        self.speed     = float(flightParam['speed'])
+        self.air_speed = float(flightParam['airspeed'])
+        self.climb     = float(flightParam['climb'])
+        self.itow      =   int(flightParam['itow'])
+
+        utmUav = utm.from_latlon(self.lat, self.long)
         self.utm_east  = utmUav[0]
         self.utm_north = utmUav[1]
         self.utm_zone  = str(utmUav[2]) + utmUav[3]
-        self.alt       = flightParam['alt']
-        self.agl       = flightParam['agl']
-        self.roll      = flightParam['roll']
-        self.pitch     = flightParam['pitch']
-        self.heading   = flightParam['heading']
-        self.course    = flightParam['course']
-        self.speed     = flightParam['speed']
-        self.air_speed = flightParam['airspeed']
-        self.climb     = flightParam['climb']
-        self.itow      = flightParam['itow']
+
+        self.position.x = self.utm_east  - self.navFrame.position.x
+        self.position.y = self.utm_north - self.navFrame.position.y
+        self.position.z = self.alt       - self.navFrame.position.z
+
 
 
     def set_nav_status(self, navStatus):
         self.currentNavStatus = navStatus
 
-        utmTarget = utm.from_latlon(navStatus['target_lat'], navStatus['target_long'])
-        self.target_lat       = navStatus['target_lat']
-        self.target_long      = navStatus['target_long']
+        self.target_lat       = float(navStatus['target_lat'])
+        self.target_long      = float(navStatus['target_long'])
+        self.target_alt       = float(navStatus['target_alt'])
+        self.target_course    = float(navStatus['target_course'])
+        self.target_climb     = float(navStatus['target_climb'])
+        self.current_block_id =   int(navStatus['cur_block'])
+        # To be replaced by the block name if parsing of config files in possible
+        self.current_block    =   str(navStatus['cur_block'])
+        self.block_time       =   int(navStatus['block_time'])
+
+        utmTarget = utm.from_latlon(self.target_lat, self.target_long)
         self.target_utm_east  = utmTarget[0]
         self.target_utm_north = utmTarget[1]
-        self.target_alt       = navStatus['target_alt']
-        self.target_course    = navStatus['target_course']
-        self.target_climb     = navStatus['target_climb']
-        self.current_block_id = navStatus['cur_block']
-        # To be replaced by the block name if parsing of config files in possible
-        self.current_block    = str(navStatus['cur_block'])
-        self.block_time       = navStatus['block_time']
 
 
     def set_ap_status(self, apStatus):
         self.currentApStatus = apStatus
-        self.flight_time = apStatus['flight_time']
+        self.flight_time = int(apStatus['flight_time'])
 
 
     def set_mission_status(self, missionStatus):
+        print(type(missionStatus['index_list']))
         self.mission_time_left = missionStatus['remaining_time']
         self.mission_task_list = missionStatus['index_list']
 
@@ -233,24 +239,27 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def start(self):
         self.running = True
         self.request_config()
-        self.ivyBinds.append(FlightParam.bind(self.flight_param_callback, self.id))
-        self.ivyBinds.append(NavStatus.bind(self.nav_status_callback, self.id))
-        self.ivyBinds.append(ApStatus.bind(self.ap_status_callback, self.id))
-        self.ivyBinds.append(Bat.bind(self.bat_callback, self.id))
-        self.ivyBinds.append(MissionStatus.bind(self.mission_status_callback, self.id))
+        print('(' + str(self.id) + ' FLIGHT_PARAM .*)')
+        self.ivyBinds.append(messageInterface.subscribe(self.flight_param_callback,   '(ground FLIGHT_PARAM '   + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.nav_status_callback,     '(ground NAV_STATUS '     + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.ap_status_callback,      '(ground AP_STATUS '      + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.bat_callback,            '(ground BAT '            + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.mission_status_callback, '(ground MISSION_STATUS ' + str(self.id) + ' .*)'))
 
 
     def stop(self):
         for bindId in self.ivyBinds:
-            IvyUnBindMsg(bindId)
+            # IvyUnBindMsg(bindId)
+            messageInterface.unbind(bindId)
         self.running = False
 
 
-    def bat_callback(self, msg):
+    def bat_callback(self, sender, msg):
         self.currentBat = msg
       
 
-    def flight_param_callback(self, flightParam):
+    def flight_param_callback(self, sender, flightParam):
+        print(flightParam)
         self.currentFlightParam = flightParam
         self.status.set_flight_param(flightParam)
 
@@ -260,12 +269,12 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.statusNotified = False
 
 
-    def nav_status_callback(self, navStatus):
+    def nav_status_callback(self, sender, navStatus):
         self.currentNavStatus = navStatus
         self.status.set_nav_status(navStatus)
 
 
-    def ap_status_callback(self, apStatus):
+    def ap_status_callback(self, sender, apStatus):
         self.currentApStatus = apStatus
         self.status.set_ap_status(apStatus)
 
@@ -275,7 +284,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.statusNotified = True
 
 
-    def mission_status_callback(self, missionStatus):
+    def mission_status_callback(self, sender, missionStatus):
         self.currentMissionStatus = MissionStatus
         self.status.set_mission_status(missionStatus)
 
