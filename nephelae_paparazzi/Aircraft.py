@@ -146,8 +146,8 @@ class AircraftStatus:
 
 
     def set_mission_status(self, missionStatus):
-        self.mission_time_left = missionStatus['remaining_time']
-        self.mission_task_list = missionStatus['index_list']
+        self.mission_time_left = float(missionStatus['remaining_time'])
+        self.mission_task_list = [int(index) for index in missionStatus['index_list']]
 
     
     def to_dict(self):
@@ -234,11 +234,11 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def start(self):
         self.running = True
         self.request_config()
-        self.ivyBinds.append(messageInterface.subscribe(self.flight_param_callback,   '(ground FLIGHT_PARAM '   + str(self.id) + ' .*)'))
-        self.ivyBinds.append(messageInterface.subscribe(self.nav_status_callback,     '(ground NAV_STATUS '     + str(self.id) + ' .*)'))
-        self.ivyBinds.append(messageInterface.subscribe(self.ap_status_callback,      '(ground AP_STATUS '      + str(self.id) + ' .*)'))
-        self.ivyBinds.append(messageInterface.subscribe(self.bat_callback,            '(ground BAT '            + str(self.id) + ' .*)'))
-        self.ivyBinds.append(messageInterface.subscribe(self.mission_status_callback, '(ground MISSION_STATUS ' + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.flight_param_callback,   '(ground FLIGHT_PARAM ' + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.nav_status_callback,     '(ground NAV_STATUS '   + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.ap_status_callback,      '(ground AP_STATUS '    + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.bat_callback,            '(ground BAT '          + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.subscribe(self.mission_status_callback, '(' + str(self.id) + ' MISSION_STATUS .*)'))
 
 
     def stop(self):
