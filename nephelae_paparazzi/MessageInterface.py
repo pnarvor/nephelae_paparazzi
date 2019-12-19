@@ -32,7 +32,7 @@ class MessageInterface:
         By default paparazzi message fields are all str type despite having all
         the informations to cast fields to numeric types. This function cast
         all fields to their numeric types. (supposed to be done by 
-        PprzMessage.payload_to_binay but does not seem to be working...)
+        PprzMessage.payload_to_binay but does not seem to be working)
 
         It also measure reception time.
         """
@@ -75,6 +75,14 @@ class MessageInterface:
             lambda sender, msg: callback(MessageInterface.prettify_message(msg)),
             ivyRegex)
 
+
+    def bind_raw(self, callback, ivyRegex):
+        return self.messageInterface.bind_raw(callback, ivyRegex)
+
+
     def unbind(self, bindId):
         self.messageInterface.unbind(bindId)
 
+    
+    def send(self, msg):
+        return self.messageInterface.send(msg)

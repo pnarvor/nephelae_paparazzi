@@ -6,7 +6,6 @@ from copy import deepcopy
 
 from nephelae.types import MultiObserverSubject, Pluginable, Position
 
-from .common           import IvySendMsg, IvyUnBindMsg
 from .common           import messageInterface
 from .messages         import Config
 from .plugins.loaders  import load_plugins
@@ -288,34 +287,42 @@ class Aircraft(MultiObserverSubject, Pluginable):
         if self.config is not None:
             return
         self.config = config
-        IvyUnBindMsg(self.configBindId)
+        messageInterface.unbind(self.configBindId)
         # self.configThread.join() # this is blocking everything... why ?
 
-        print("Got config :", self. config)
+        print("Got config :")
+        print(" - identifier:", self.config['ac_id'])
+        print(" - long name :", self.config['ac_name'])
+        print(" - color     :", self.config['default_gui_color'])
         
         # Ensure color is 12bit format #ffffff
         try:
-            step = int((len(self.config.default_gui_color) - 1) / 3)
-            self.config.default_gui_color = "#" +\
-                self.config.default_gui_color[1:3] +\
-                self.config.default_gui_color[1+step:step+3] +\
-                self.config.default_gui_color[1+2*step:2*step+3]
+            step = int((len(self.config['default_gui_color']) - 1) / 3)
+            self.config['default_gui_color'] = "#" +\
+                self.config['default_gui_color'][1:3] +\
+                self.config['default_gui_color'][1+step:step+3] +\
+                self.config['default_gui_color'][1+2*step:2*step+3]
         except Exception as e:
             warn("Could not retrieve color code :", e)
-            self.config.default_gui_color = "#ffffff"
+            self.config['default_gui_color'] = "#ffffff"
 
 
     def request_config(self):
         def config_request_loop(uavObj):
             count = 1
             while uavObj.config is None and self.running:
-                IvySendMsg('ground ' + str(os.getpid()) + '_' + str(count) +
-                           ' CONFIG_REQ ' + str(self.id))
+                messageInterface.send('ground ' + str(os.getpid()) + '_' +
+                    str(count) + ' CONFIG_REQ ' + str(self.id))
                 count = count + 1
                 time.sleep(1.0)
-        self.configBindId = Config.bind(self.config_callback,
-                                        str(os.getpid()) + '_\d+',
-                                        self.id)
+
+        # function starts here
+        self.configBindId = messageInterface.bind_raw(
+            lambda sender, msg: messageInterface.messageInterface.parse_pprz_msg(
+                lambda sender, msg: self.config_callback(msg), msg),
+            '(^' + str(os.getpid()) + '_\d+ .* CONFIG ' + str(self.id) +' .*)')
+
+        # Starting a thread to request config until we get one
         self.configThread = threading.Thread(target=config_request_loop,
                                              args=(self,))
         self.configThread.start()
