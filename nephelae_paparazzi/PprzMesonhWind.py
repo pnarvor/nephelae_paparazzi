@@ -1,6 +1,9 @@
 import time
+import utm
 
 from nephelae_mesonh import MesonhVariable, MesonhCachedProbe, MesonhDataset
+
+from .common import MessageInterface, messageInterface, PprzMessage
 
 from .messages import Message
 from .messages import WorldEnvReq
@@ -45,7 +48,9 @@ class PprzMesonhWind:
         self.stopping    = False
         self.stopped     = False
 
-        self.reqBind = WorldEnvReq.bind(self.wind_request_callback, self.uavPid)
+        self.reqBind = messageInterface.bind_raw(
+                lambda sender, msg: self.wind_request_callback(msg),
+                '(.*' + str(self.uavPid) + '.*WORLD_ENV_REQ.*)')
 
 
     def terminate(self):
@@ -62,13 +67,21 @@ class PprzMesonhWind:
             probe.stop()
 
 
-    def wind_request_callback(self, msg):
+    def wind_request_callback(self, rawMsg):
        
         # /!\ In the WORLD_ENV_REQ message, utm position is given
         # relative to the navFrame (paparazzi NAVIGATION_REF message)
+        
+        senderPid, requestId = rawMsg.split(' ')[1].split('_')
+        msg = PprzMessage('ground', 'WORLD_ENV_REQ')
+        msg.ivy_string_to_payload(rawMsg.split('_REQ ')[1])
+        msg = MessageInterface.prettify_message(msg)
 
-        t = msg.stamp - self.navFrame.stamp
-        position = (t, msg.east, msg.north, msg.alt)
+        utmPos = utm.from_latlon(msg['lat'], msg['long'])
+        position = (msg.timestamp - self.navFrame.stamp,
+                    utmPos[0]  - self.navFrame.position.x,
+                    utmPos[1]  - self.navFrame.position.y,
+                    msg['alt'] - self.navFrame.position.z)
         if not self.initialized:
             for probe in self.probes.values():
                 probe.request_cache_update(position, block=True)
@@ -86,16 +99,17 @@ class PprzMesonhWind:
             print("Position : ", position)
             return # Not critical, no exception raised
 
-        # print("Read : ", position, ", ", values, end="\n\n")
-        
-        if not self.stopping:
-            response = WorldEnv.build(msg, values[0], values[1], values[2])
-        else:
-            # sending 0s for stopping wind
-            response = WorldEnv.build(msg, 0.0, 0.0, 0.0)
+        if self.stopping:
+            values = [0.0, 0.0, 0.0]
             self.stopped = True
-        # print("Response : ", response)
-        response.send() 
+
+        response = str(senderPid) + "_" +  str(requestId) + " ground " + \
+                   " WORLD_ENV " +\
+                   str(values[0]) + " " +\
+                   str(values[1]) + " " +\
+                   str(values[2]) + " " +\
+                   "266.0 1.0 1"
+        messageInterface.send(response)
 
 
 

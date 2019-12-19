@@ -1,7 +1,8 @@
 from nephelae_mesonh import MesonhDataset
 
 from ..PprzMesonhWind import PprzMesonhWind
-from ..messages       import Message, WorldEnvReq
+# from ..messages       import Message, WorldEnvReq
+from ..common import messageInterface, PprzMessage
 
 class WindSimulation:
 
@@ -33,15 +34,17 @@ class WindSimulation:
         self.windProbes   = {}
         self.windIvyBind  = None
 
-    
+
     def start(self):
         if self.windIvyBind is None:
-            self.windIvyBind = WorldEnvReq.bind(self.worldenvreq_callback)
-        
+            self.windIvyBind = messageInterface.bind_raw(
+                lambda sender, msg: self.worldenvreq_callback(msg),
+                '(.*WORLD_ENV_REQ.*)')
+
 
     def stop(self):
         if self.windIvyBind is not None:
-            Message.unbind(self.windIvyBind)
+            messageInterface.unbind(self.windIvyBind)
             self.windIvyBind = None
             for probe in self.windProbes.values():
                 probe.terminate()
@@ -49,7 +52,8 @@ class WindSimulation:
 
 
     def worldenvreq_callback(self, msg):
-        senderPid = msg.sender_pid()
+
+        senderPid, requestId = msg.split(' ')[1].split('_')
         if senderPid not in self.windProbes.keys():
             self.windProbes[senderPid] = PprzMesonhWind(senderPid,
                                                         self.localFrame,
