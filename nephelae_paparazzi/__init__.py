@@ -5,7 +5,8 @@ from . import utils
 from . import plugins
 
 # v0.2
-from .AircraftLogger import AircraftLogger
-from .Aircraft       import Aircraft
+from .MessageInterface import MessageInterface
+from .AircraftLogger   import AircraftLogger
+from .Aircraft         import Aircraft
 
 
