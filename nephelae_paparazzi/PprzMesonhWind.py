@@ -5,11 +5,6 @@ from nephelae_mesonh import MesonhVariable, MesonhCachedProbe, MesonhDataset
 
 from .common import MessageInterface, messageInterface, PprzMessage
 
-from .messages import Message
-from .messages import WorldEnvReq
-from .messages import WorldEnv
-
-
 class PprzMesonhWind:
 
     """PprzMesonhWind

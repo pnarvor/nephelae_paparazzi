@@ -1,7 +1,6 @@
 from nephelae_mesonh import MesonhDataset
 
 from ..PprzMesonhWind import PprzMesonhWind
-# from ..messages       import Message, WorldEnvReq
 from ..common import messageInterface, PprzMessage
 
 class WindSimulation:

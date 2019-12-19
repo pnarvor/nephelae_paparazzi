@@ -1,5 +1,4 @@
 from . import common
-from . import messages
 from . import missions
 from . import utils
 from . import plugins

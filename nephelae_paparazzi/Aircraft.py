@@ -7,7 +7,6 @@ from copy import deepcopy
 from nephelae.types import MultiObserverSubject, Pluginable, Position
 
 from .common           import messageInterface
-from .messages         import Config
 from .plugins.loaders  import load_plugins
 
 
