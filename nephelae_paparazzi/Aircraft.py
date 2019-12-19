@@ -100,18 +100,18 @@ class AircraftStatus:
         # Getting current mission time
         # self.position.t = time.time() - self.navFrame.position.t
 
-        self.lat       = float(flightParam['lat'])
-        self.long      = float(flightParam['long'])
-        self.alt       = float(flightParam['alt'])
-        self.agl       = float(flightParam['agl'])
-        self.roll      = float(flightParam['roll'])
-        self.pitch     = float(flightParam['pitch'])
-        self.heading   = float(flightParam['heading'])
-        self.course    = float(flightParam['course'])
-        self.speed     = float(flightParam['speed'])
-        self.air_speed = float(flightParam['airspeed'])
-        self.climb     = float(flightParam['climb'])
-        self.itow      =   int(flightParam['itow'])
+        self.lat       = flightParam['lat']
+        self.long      = flightParam['long']
+        self.alt       = flightParam['alt']
+        self.agl       = flightParam['agl']
+        self.roll      = flightParam['roll']
+        self.pitch     = flightParam['pitch']
+        self.heading   = flightParam['heading']
+        self.course    = flightParam['course']
+        self.speed     = flightParam['speed']
+        self.air_speed = flightParam['airspeed']
+        self.climb     = flightParam['climb']
+        self.itow      = flightParam['itow']
 
         utmUav = utm.from_latlon(self.lat, self.long)
         self.utm_east  = utmUav[0]
@@ -128,15 +128,15 @@ class AircraftStatus:
 
     def set_nav_status(self, navStatus):
 
-        self.target_lat       = float(navStatus['target_lat'])
-        self.target_long      = float(navStatus['target_long'])
-        self.target_alt       = float(navStatus['target_alt'])
-        self.target_course    = float(navStatus['target_course'])
-        self.target_climb     = float(navStatus['target_climb'])
-        self.current_block_id =   int(navStatus['cur_block'])
+        self.target_lat       = navStatus['target_lat']
+        self.target_long      = navStatus['target_long']
+        self.target_alt       = navStatus['target_alt']
+        self.target_course    = navStatus['target_course']
+        self.target_climb     = navStatus['target_climb']
+        self.current_block_id = navStatus['cur_block']
         # To be replaced by the block name if parsing of config files in possible
-        self.current_block    =   str(navStatus['cur_block'])
-        self.block_time       =   int(navStatus['block_time'])
+        self.current_block    = navStatus['cur_block']
+        self.block_time       = navStatus['block_time']
 
         utmTarget = utm.from_latlon(self.target_lat, self.target_long)
         self.target_utm_east  = utmTarget[0]
@@ -144,12 +144,12 @@ class AircraftStatus:
 
 
     def set_ap_status(self, apStatus):
-        self.flight_time = int(apStatus['flight_time'])
+        self.flight_time = apStatus['flight_time']
 
 
     def set_mission_status(self, missionStatus):
-        self.mission_time_left = float(missionStatus['remaining_time'])
-        self.mission_task_list = [int(index) for index in missionStatus['index_list']]
+        self.mission_time_left = missionStatus['remaining_time']
+        self.mission_task_list = missionStatus['index_list']
 
     
     def to_dict(self):
