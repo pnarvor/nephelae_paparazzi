@@ -98,7 +98,7 @@ class AircraftStatus:
     def set_flight_param(self, flightParam):
 
         # Getting current mission time
-        self.position.t = time.time() - self.navFrame.position.t
+        # self.position.t = time.time() - self.navFrame.position.t
 
         self.lat       = float(flightParam['lat'])
         self.long      = float(flightParam['long'])
@@ -117,7 +117,9 @@ class AircraftStatus:
         self.utm_east  = utmUav[0]
         self.utm_north = utmUav[1]
         self.utm_zone  = str(utmUav[2]) + utmUav[3]
+        
 
+        self.position.t = flightParam.timestamp - self.navFrame.position.t
         self.position.x = self.utm_east  - self.navFrame.position.x
         self.position.y = self.utm_north - self.navFrame.position.y
         self.position.z = self.alt       - self.navFrame.position.z
