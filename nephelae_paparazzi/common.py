@@ -14,5 +14,7 @@ else:
 from pprzlink.ivy import IvyMessagesInterface
 from pprzlink.message import PprzMessage
 
-messageInterface = IvyMessagesInterface()
+from .MessageInterface import MessageInterface
+
+messageInterface = MessageInterface()
 

@@ -234,11 +234,11 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def start(self):
         self.running = True
         self.request_config()
-        self.ivyBinds.append(messageInterface.subscribe(self.flight_param_callback,   '(ground FLIGHT_PARAM ' + str(self.id) + ' .*)'))
-        self.ivyBinds.append(messageInterface.subscribe(self.nav_status_callback,     '(ground NAV_STATUS '   + str(self.id) + ' .*)'))
-        self.ivyBinds.append(messageInterface.subscribe(self.ap_status_callback,      '(ground AP_STATUS '    + str(self.id) + ' .*)'))
-        self.ivyBinds.append(messageInterface.subscribe(self.bat_callback,            '(ground BAT '          + str(self.id) + ' .*)'))
-        self.ivyBinds.append(messageInterface.subscribe(self.mission_status_callback, '(' + str(self.id) + ' MISSION_STATUS .*)'))
+        self.ivyBinds.append(messageInterface.bind(self.flight_param_callback,   '(ground FLIGHT_PARAM ' + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.bind(self.nav_status_callback,     '(ground NAV_STATUS '   + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.bind(self.ap_status_callback,      '(ground AP_STATUS '    + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.bind(self.bat_callback,            '(ground BAT '          + str(self.id) + ' .*)'))
+        self.ivyBinds.append(messageInterface.bind(self.mission_status_callback, '(' + str(self.id) + ' MISSION_STATUS .*)'))
 
 
     def stop(self):
@@ -248,11 +248,11 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.running = False
 
 
-    def bat_callback(self, sender, msg):
+    def bat_callback(self, msg):
         self.currentBat = msg
       
 
-    def flight_param_callback(self, sender, flightParam):
+    def flight_param_callback(self, flightParam):
         self.currentFlightParam = flightParam
         self.status.set_flight_param(flightParam)
 
@@ -262,12 +262,12 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.statusNotified = False
 
 
-    def nav_status_callback(self, sender, navStatus):
+    def nav_status_callback(self, navStatus):
         self.currentNavStatus = navStatus
         self.status.set_nav_status(navStatus)
 
 
-    def ap_status_callback(self, sender, apStatus):
+    def ap_status_callback(self, apStatus):
         self.currentApStatus = apStatus
         self.status.set_ap_status(apStatus)
 
@@ -277,7 +277,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
         self.statusNotified = True
 
 
-    def mission_status_callback(self, sender, missionStatus):
+    def mission_status_callback(self, missionStatus):
         self.currentMissionStatus = missionStatus
         self.status.set_mission_status(missionStatus)
 
