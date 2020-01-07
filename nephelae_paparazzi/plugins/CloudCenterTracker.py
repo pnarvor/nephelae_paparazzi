@@ -1,7 +1,5 @@
 import threading
 
-from .WindFromStatus import wind_estimate
-
 class CloudCenterTracker:
 
     def __pluginmethods__():
@@ -20,7 +18,7 @@ class CloudCenterTracker:
         self.spaceY = spaceY
         self.mapInterface = mapInterface
         self.followedCenter = None
-        self.runThread = False
+        self.runTracking = False
         self.windMap = None
 
     def stop(self):
@@ -30,9 +28,15 @@ class CloudCenterTracker:
         self.runTracking = True
         cloudCenterTracker_thread = threading.Thread(
                 target=self.cloud_center_tracker_maj);
+        cloudCenterTracker_thread.start()
 
     def cloud_center_tracker_maj(self):
-        while runTracking:
+        while self.runTracking:
             if not self.followedCenter is None:
-                pass
+                wind = self.windMap.get_wind()
+                print(wind)
 
+def build_cloud_center_tracker(aircraft, mapInterface, spaceX=1000,
+        spaceY=1000):
+
+    aircraft.load_plugin(CloudCenterTracker, mapInterface, spaceX, spaceY)
