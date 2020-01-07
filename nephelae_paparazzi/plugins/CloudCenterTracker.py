@@ -1,6 +1,11 @@
 import threading
 import time
 
+import numpy as np
+from scipy.spatial import distance
+
+from nephelae.database import CloudData
+
 class CloudCenterTracker:
 
     def __pluginmethods__():
@@ -10,8 +15,8 @@ class CloudCenterTracker:
                 {'name'         : 'start',
                  'method'       : CloudCenterTracker.start,
                  'conflictMode' : 'append'},
-                {'name'         : 'cloud_center_tracker_maj',
-                 'method'       : CloudCenterTracker.cloud_center_tracker_maj,
+                {'name'         : 'cloud_center_tracker_update',
+                 'method'       : CloudCenterTracker.cloud_center_tracker_update,
                  'conflictMode' : 'error'}]
 
     def __initplugin__(self, mapWhereCenterIs, spaceX=1000, spaceY=1000):
@@ -23,7 +28,7 @@ class CloudCenterTracker:
         self.runTracking = False
         self.windMap = None
         self.cloudCenterTracker_thread = threading.Thread(
-                target=self.cloud_center_tracker_maj)
+                target=self.cloud_center_tracker_update)
 
     def stop(self):
         self.runTracking = False
@@ -33,17 +38,26 @@ class CloudCenterTracker:
         self.runTracking = True
         self.cloudCenterTracker_thread.start()
 
-    def cloud_center_tracker_maj(self):
+    def cloud_center_tracker_update(self):
         while self.runTracking:
             if not self.followedCenter is None:
+                altitude = self.status.position.z
+                simTime = self.status.position.t
                 wind = self.windMap.get_wind()
-                self.followedCenter = self.followedCenter + wind
-                map0 = self.mapWhereCenterIs[self.status.position.t,
+                self.followedCenter = self.followedCenter + wind*(
+                        simTime - self.oldTime)
+                map0 = self.mapWhereCenterIs[simTime,
                         (self.followedCenter-self.spaceX/2):(self.followedCenter
                             +self.spaceX/2),
                         (self.followedCenter-self.spaceY/2):(self.followedCenter
                             +self.spaceY/2),
-                        self.status.position.z]
+                        altitude]
+                self.oldTime = simTime
+                list_cloudData = CloudData.from_scaledArray(map0)
+                if list_cloudData:
+                    self.followedCenter = list_cloudData[np.argmin([
+                        distance.euclidean(self.followedCenter, x.get_com())
+                        for x in list_cloudData])].get_com()
             else:
                 time.sleep(1)
 
