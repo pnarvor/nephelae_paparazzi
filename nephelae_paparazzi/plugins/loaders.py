@@ -13,7 +13,7 @@ pluginFactories = {
 }
 
 
-def load_plugins(aircraft, pluginsDesc, maps):
+def load_plugins(aircraft, pluginsDesc):
     """
     Load plugins for the specified aircraft. pluginsDesc is the output of a
     parsed yaml configuration file.
@@ -36,8 +36,6 @@ def load_plugins(aircraft, pluginsDesc, maps):
 
         # This takes a single key from a dictionary.
         pluginName = next(iter(plugin))
-        if pluginName == 'CloudCenterTracker':
-            plugin[pluginName]['mapWhereCenterIs'] = maps[plugin[pluginName][
-                'mapWhereCenterIs']]
+        
         # Calling a factory function
         pluginFactories[pluginName](aircraft, **plugin[pluginName])
