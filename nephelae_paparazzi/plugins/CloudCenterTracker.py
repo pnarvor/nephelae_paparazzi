@@ -36,6 +36,7 @@ class CloudCenterTracker:
         self.spaceX = spaceX
         self.spaceY = spaceY
         self.mapWhereCenterIs = mapWhereCenterIs
+        self.processTrackingCenterLock = threading.Lock()
         self.followedCenter = None
         self.oldTime = None
         self.runTracking = False
@@ -56,38 +57,40 @@ class CloudCenterTracker:
     def cloud_center_tracker_update(self):
         while self.runTracking:
             if self.isComputingCenter:
-                altitude = self.status.position.z
-                simTime = self.status.position.t
-                wind = self.windMap.get_wind()
-                estimatedCenter = self.followedCenter + wind*(
-                        simTime - self.oldTime)
-                map0 = self.mapWhereCenterIs[simTime,
-                        (estimatedCenter[0]-self.spaceX/2):
-                        (estimatedCenter[0]+self.spaceX/2),
-                        (estimatedCenter[1]-self.spaceY/2):
-                        (estimatedCenter[1]+self.spaceY/2),
-                        altitude]
-                list_cloudData = CloudData.from_scaledArray(map0)
-                if list_cloudData:
-                    self.cloud_center_to_track_setter(
-                            list_cloudData[np.argmin([
-                                distance.euclidean(
-                                    estimatedCenter,
-                                    x.get_com()
-                                )
-                        for x in list_cloudData])].get_com(), simTime)
-                else:
-                    self.cloud_center_to_track_setter(estimatedCenter, simTime)
-                infos_to_share = {'x': self.followedCenter[0],
-                        'y': self.followedCenter[1], 't': self.oldTime, 'z':
-                        altitude, 'label': "Tracked point by " + self.id, 'id':
-                        self.id}
-                if self.isComputingCenter:
-                    self.new_point(infos_to_share)
+                with self.processTrackingCenterLock:
+                    altitude = self.status.position.z
+                    simTime = self.status.position.t
+                    wind = self.windMap.get_wind()
+                    estimatedCenter = self.followedCenter + wind*(
+                            simTime - self.oldTime)
+                    map0 = self.mapWhereCenterIs[simTime,
+                            (estimatedCenter[0]-self.spaceX/2):
+                            (estimatedCenter[0]+self.spaceX/2),
+                            (estimatedCenter[1]-self.spaceY/2):
+                            (estimatedCenter[1]+self.spaceY/2),
+                            altitude]
+                    list_cloudData = CloudData.from_scaledArray(map0)
+                    if list_cloudData:
+                        self.followedCenter = list_cloudData[np.argmin([
+                                    distance.euclidean(
+                                        estimatedCenter,
+                                        x.get_com()
+                                    )
+                            for x in list_cloudData])].get_com()
+                        self.oldTime = simTime
+                    else:
+                        self.followedCenter = estimatedCenter
+                        self.oldTime = simTime
+                    infos_to_share = {'x': self.followedCenter[0],
+                            'y': self.followedCenter[1], 't': self.oldTime, 'z':
+                            altitude, 'label': "Tracked point by " + self.id, 'id':
+                            self.id}
+                    if self.isComputingCenter:
+                        self.new_point(infos_to_share)
             time.sleep(1)
 
     def cloud_center_to_track_setter(self, point, time):
-        if self.isComputingCenter:
+        with self.processTrackingCenterLock:
             self.followedCenter = point
             self.oldTime = time
 
