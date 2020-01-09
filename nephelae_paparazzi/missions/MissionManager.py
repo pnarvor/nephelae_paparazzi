@@ -34,8 +34,11 @@ class MissionManager:
         return [{'name'         : 'mission_types',
                  'method'       : MissionManager.mission_types,
                  'conflictMode' : 'error'},
-                {'name'         : 'mission_parameters',
-                 'method'       : MissionManager.mission_parameters,
+                {'name'         : 'mission_parameter_names',
+                 'method'       : MissionManager.mission_parameter_names,
+                 'conflictMode' : 'error'},
+                {'name'         : 'mission_parameter_rules',
+                 'method'       : MissionManager.mission_parameter_rules,
                  'conflictMode' : 'error'},
                 {'name'         : 'mission_updatables',
                  'method'       : MissionManager.mission_updatables,
@@ -97,7 +100,11 @@ class MissionManager:
         return self.missionFactories.keys()
 
 
-    def mission_parameters(self, missionName):
+    def mission_parameter_names(self, missionName):
+        return self.missionFactories[missionName].parameter_names()
+
+
+    def mission_parameter_rules(self, missionName):
         return self.missionFactories[missionName].parameter_rules_summary()
 
 

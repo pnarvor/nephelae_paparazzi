@@ -105,6 +105,9 @@ class MissionFactory:
                                               updateRules=self.updateRules,
                                               **checkedParams)
 
+    def parameter_names(self):
+        return missionTypes[self.missionType].parameterNames
+
 
     def parameter_rules_summary(self):
         res = {}

@@ -36,7 +36,7 @@ laceFactory = MissionFactory("Lace", {
 })
 
 manager = MissionManager("200", factories={"Lace":laceFactory})
-print(manager.mission_parameters('Lace'))
+print(manager.mission_parameter_rules('Lace'))
 
 # should fail
 try:
