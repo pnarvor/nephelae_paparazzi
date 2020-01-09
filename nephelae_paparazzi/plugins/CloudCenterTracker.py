@@ -90,14 +90,16 @@ class CloudCenterTracker:
             time.sleep(1)
 
     def cloud_center_to_track_setter(self, point, time):
-        with self.processTrackingCenterLock:
-            self.followedCenter = point
-            self.oldTime = time
+        if self.isComputingCenter:
+            with self.processTrackingCenterLock:
+                self.followedCenter = point
+                self.oldTime = time
 
     def add_point_observer(self, observer):
         self.attach_observer(observer, 'new_point')
 
     def remove_point_observer(self, observer):
+        self.set_computing_center(False)
         self.detach_observer(observer, 'new_point')
 
     def set_computing_center(self, value_computing):
