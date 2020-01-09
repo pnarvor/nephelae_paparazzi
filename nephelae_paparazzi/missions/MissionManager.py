@@ -112,7 +112,7 @@ class MissionManager:
         return missionTypes[missionName].updatableNames
 
 
-    def create_mission(self, missionType, duration=-1.0, **missionParameters):
+    def create_mission(self, missionType, insertMode=InsertMode.Append, duration=-1.0, **missionParameters):
         """
         Creates a mission instance and append it to self.pendingMissions.
 
@@ -135,7 +135,7 @@ class MissionManager:
         with self.lock:
             # Creating new mission instance
             mission = self.missionFactories[missionType].build(
-                self.new_mission_id(), self.id, duration, **missionParameters)
+                self.new_mission_id(), self.id, insertMode, duration, **missionParameters)
             
             # Saving it to backup file for warm start
             if self.outputBackupFile is not None:
@@ -180,7 +180,7 @@ class MissionManager:
                                      "Mission ids do not match.")
                 self.missions[missionId] = \
                     self.missionFactories[params['type']].build(
-                        missionId, self.id, params['duration'], **params['parameters'])
+                        missionId, self.id, params['insertMode'], params['duration'], **params['parameters'])
 
         # This function starts here.
         if self.inputBackupFile is None or \
@@ -219,5 +219,4 @@ class MissionManager:
             To be removed when a real management is implemented"""
 
         self.pendingMissions = []
-        messageInterface.send(
-            self.currentMission.build_message(InsertMode.ReplaceAll))
+        messageInterface.send(self.currentMission.build_message())

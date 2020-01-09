@@ -41,11 +41,13 @@ class MissionBase:
     parameterNames = []
     updatableNames = []
 
-    def __init__(self, missionId, aircraftId, duration, updateRules={}):
+    def __init__(self, missionId, aircraftId,
+                 insertMode, duration, updateRules={}):
         
         self.missionType = None
         self.missionId   = int(missionId)
         self.aircraftId  = int(aircraftId)
+        self.insertMode  = insertMode
         self.duration    = float(duration)
         self.parameters  = {}
         self.updateRules = updateRules
@@ -58,6 +60,7 @@ class MissionBase:
         res = "Mission " + str(self.missionType) +\
               prefix + "missionId".ljust(maxWidth)  + " : " + str(self.missionId) +\
               prefix + "aircraftId".ljust(maxWidth) + " : " + str(self.aircraftId) +\
+              prefix + "insertMode".ljust(maxWidth) + " : " + str(self.insertMode) +\
               prefix + "duration".ljust(maxWidth)   + " : " + str(self.duration)
         for key in self.__class__.parameterNames:
             res = res + prefix + key.ljust(maxWidth) + " : " + str(self[key])
@@ -73,6 +76,8 @@ class MissionBase:
             return self.missionId
         elif key == "aircraftId":
             return self.aircraftId
+        elif key == "insertMode":
+            return self.insertMode
         elif key == "duration":
             return self.duration
         else:

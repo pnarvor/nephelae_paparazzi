@@ -14,11 +14,12 @@ class Lace(MissionBase):
     parameterNames = ['start', 'first_turn_direction', 'circle_radius', 'drift']
     updatableNames = ['hdrift', 'zdrift']
 
-    def __init__(self, missionId, aircraftId, duration,
+    def __init__(self, missionId, aircraftId, insertMode, duration,
                        start, first_turn_direction, circle_radius, drift,
                        updateRules={}):
 
-        super().__init__(missionId, aircraftId, duration, updateRules)
+        super().__init__(missionId, aircraftId,
+                         insertMode, duration, updateRules)
         
         self.missionType                        = "Lace"
         self.parameters['start']                = start
