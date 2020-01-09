@@ -83,9 +83,29 @@ class MissionBase:
         return {'type'       : self.missionType,
                 'missionId'  : self.missionId,
                 'aircraftId' : self.aircraftId,
+                'insertMode' : self.insertMode,
                 'duration'   : self.duration,
                 'parameters' : self.parameters}
 
+
+    def build_message(self):
+        """
+        build_message
+        
+        Builds a MISSION_CUSTOM Paparazzi message, filling only parameters
+        common to all mission types. Other parameters must be filled in
+        MissionBase specializations.
+
+        Returns a partially filled PprzMessage
+        """
+
+        msg = PprzMessage('datalink', 'MISSION_CUSTOM')
+        msg['ac_id']    = self.aircraftId
+        msg['insert']   = self.insertMode
+        msg['index']    = self.missionId
+        msg['duration'] = self.duration
+
+        return msg
 
 
     def build_update_messages(self, duration=-9.0, **params):
