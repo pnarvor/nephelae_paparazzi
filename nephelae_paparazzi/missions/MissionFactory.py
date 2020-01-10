@@ -65,7 +65,7 @@ class MissionFactory:
 
         self.missionType    = missionType
         self.parameterRules = parameterRules
-        self.updateRules    = updateRules
+        self.updatableRules = updateRules
 
 
     def __str__(self):
@@ -74,8 +74,8 @@ class MissionFactory:
             tmp = self.parameterRules[key].description()
             res = res + tmp.replace('\n','\n   ')
         res = res[:-3] + "Update rules :\n   "
-        for key in self.updateRules.keys():
-            tmp = self.updateRules[key].description()
+        for key in self.updatableRules.keys():
+            tmp = self.updatableRules[key].description()
             res = res + tmp.replace('\n','\n   ')
         res = "MissionFactory for mission " + self.missionType + '\n   ' +\
               res.replace('\n','\n   ')
@@ -102,11 +102,15 @@ class MissionFactory:
         # be expanded with ** on function call.
         return missionTypes[self.missionType](missionId, aircraftId,
                                               insertMode, duration,
-                                              updateRules=self.updateRules,
+                                              updateRules=self.updatableRules,
                                               **checkedParams)
 
     def parameter_names(self):
         return missionTypes[self.missionType].parameterNames
+
+
+    def parameter_tags(self):
+        return missionTypes[self.missionType].parameterTags
 
 
     def parameter_rules_summary(self):
@@ -114,4 +118,21 @@ class MissionFactory:
         for key in self.parameterRules.keys():
             res[key] = self.parameterRules[key].summary()
         return res
+
+
+    def updatable_names(self):
+        return missionTypes[self.missionType].updatableNames
+
+
+    def updatable_tags(self):
+        return missionTypes[self.missionType].updatableTags
+
+
+    def updatable_rules_summary(self):
+        res = {}
+        for key in self.updatableRules.keys():
+            res[key] = self.updatableRules[key].summary()
+        return res
+
+
 

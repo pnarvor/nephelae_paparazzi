@@ -12,7 +12,14 @@ class Lace(MissionBase):
     """
     
     parameterNames = ['start', 'first_turn_direction', 'circle_radius', 'drift']
+    parameterTags  = {'start' : ['vector3d', 'position3d'],
+                      'first_turn_direction' : ['scalar'],
+                      'circle_radius'        : ['scalar'],
+                      'drift' : ['vector3d', 'wind3d']}
+
     updatableNames = ['hdrift', 'zdrift']
+    updatableTags  = {'hdrift' : ['vector2d', 'wind2d'],
+                      'zdrift' : ['scalar',   'windz']}
 
     def __init__(self, missionId, aircraftId, insertMode, duration,
                        start, first_turn_direction, circle_radius, drift,

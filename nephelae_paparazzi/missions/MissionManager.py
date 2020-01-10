@@ -37,11 +37,20 @@ class MissionManager:
                 {'name'         : 'mission_parameter_names',
                  'method'       : MissionManager.mission_parameter_names,
                  'conflictMode' : 'error'},
+                {'name'         : 'mission_parameter_tags',
+                 'method'       : MissionManager.mission_parameter_tags,
+                 'conflictMode' : 'error'},
                 {'name'         : 'mission_parameter_rules',
                  'method'       : MissionManager.mission_parameter_rules,
                  'conflictMode' : 'error'},
-                {'name'         : 'mission_updatables',
-                 'method'       : MissionManager.mission_updatables,
+                {'name'         : 'mission_updatable_names',
+                 'method'       : MissionManager.mission_updatable_names,
+                 'conflictMode' : 'error'},
+                {'name'         : 'mission_updatable_tags',
+                 'method'       : MissionManager.mission_updatable_tags,
+                 'conflictMode' : 'error'},
+                {'name'         : 'mission_updatable_rules',
+                 'method'       : MissionManager.mission_updatable_rules,
                  'conflictMode' : 'error'},
                 {'name'         : 'create_mission',
                  'method'       : MissionManager.create_mission,
@@ -104,12 +113,24 @@ class MissionManager:
         return self.missionFactories[missionName].parameter_names()
 
 
+    def mission_parameter_tags(self, missionName):
+        return self.missionFactories[missionName].parameter_tags()
+
+
     def mission_parameter_rules(self, missionName):
         return self.missionFactories[missionName].parameter_rules_summary()
 
 
-    def mission_updatables(self, missionName):
-        return missionTypes[missionName].updatableNames
+    def mission_updatable_names(self, missionName):
+        return self.missionFactories[missionName].updatable_names()
+
+
+    def mission_updatable_tags(self, missionName):
+        return self.missionFactories[missionName].updatable_tags()
+
+
+    def mission_updatable_rules(self, missionName):
+        return self.missionFactories[missionName].updatable_rules_summary()
 
 
     def create_mission(self, missionType, insertMode=InsertMode.Append, duration=-1.0, **missionParameters):
