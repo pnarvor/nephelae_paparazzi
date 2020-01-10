@@ -1,12 +1,14 @@
 from nephelae_paparazzi.missions.builders import build_mission_manager, build_mission_wind_updater
 
 from .MesonhProbe import build_mesonh_probe
+from .CloudCenterTracker import build_cloud_center_tracker
 
 # Definition of plugin factory functions. First parameter must be an aircraft
 # on which to apply a plugin
 pluginFactories = {
     'Missions': build_mission_manager,
     'MesonhProbe': build_mesonh_probe,
+    'CloudCenterTracker': build_cloud_center_tracker,
     'MissionWindUpdater': build_mission_wind_updater
 }
 
@@ -34,6 +36,6 @@ def load_plugins(aircraft, pluginsDesc):
 
         # This takes a single key from a dictionary.
         pluginName = next(iter(plugin))
-
+        
         # Calling a factory function
         pluginFactories[pluginName](aircraft, **plugin[pluginName])
