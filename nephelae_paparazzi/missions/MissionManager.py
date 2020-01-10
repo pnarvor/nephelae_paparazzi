@@ -64,6 +64,9 @@ class MissionManager:
                 {'name'         : 'current_mission',
                  'method'       : MissionManager.current_mission,
                  'conflictMode' : 'error'},
+                {'name'         : 'validate_all',
+                 'method'       : MissionManager.validate_all,
+                 'conflictMode' : 'error'},
                 {'name'         : 'execute_mission',
                  'method'       : MissionManager.execute_mission,
                  'conflictMode' : 'error'}
@@ -170,6 +173,8 @@ class MissionManager:
             # At this point everything went well, keeping last generated id
             self.lastMissionId = mission.missionId
 
+            self.validate_all();
+
 
     def new_mission_id(self):
         """
@@ -233,6 +238,11 @@ class MissionManager:
             return self.missions[self.status.mission_task_list[0]]
         except KeyError:
             return None
+    
+
+    def validate_all(self):
+        for mission in self.pendingMissions:
+            messageInterface.send(self.missions[mission].build_message())
 
 
     def execute_mission(self):
