@@ -82,7 +82,7 @@ class MissionFactory:
         return res
 
 
-    def build(self, missionId, aircraftId, duration, **missionParameters):
+    def build(self, missionId, aircraftId, insertMode, duration, **missionParameters):
         """
         This is the main function to build an instance of a mission.
         This will check parameters according to bounds given in
@@ -101,9 +101,12 @@ class MissionFactory:
         # Keywords argument parameters are in a dictionary which can
         # be expanded with ** on function call.
         return missionTypes[self.missionType](missionId, aircraftId,
-                                              duration,
+                                              insertMode, duration,
                                               updateRules=self.updateRules,
                                               **checkedParams)
+
+    def parameter_names(self):
+        return missionTypes[self.missionType].parameterNames
 
 
     def parameter_rules_summary(self):

@@ -41,11 +41,13 @@ class MissionBase:
     parameterNames = []
     updatableNames = []
 
-    def __init__(self, missionId, aircraftId, duration, updateRules={}):
+    def __init__(self, missionId, aircraftId,
+                 insertMode, duration, updateRules={}):
         
         self.missionType = None
         self.missionId   = int(missionId)
         self.aircraftId  = int(aircraftId)
+        self.insertMode  = insertMode
         self.duration    = float(duration)
         self.parameters  = {}
         self.updateRules = updateRules
@@ -58,6 +60,7 @@ class MissionBase:
         res = "Mission " + str(self.missionType) +\
               prefix + "missionId".ljust(maxWidth)  + " : " + str(self.missionId) +\
               prefix + "aircraftId".ljust(maxWidth) + " : " + str(self.aircraftId) +\
+              prefix + "insertMode".ljust(maxWidth) + " : " + str(self.insertMode) +\
               prefix + "duration".ljust(maxWidth)   + " : " + str(self.duration)
         for key in self.__class__.parameterNames:
             res = res + prefix + key.ljust(maxWidth) + " : " + str(self[key])
@@ -73,6 +76,8 @@ class MissionBase:
             return self.missionId
         elif key == "aircraftId":
             return self.aircraftId
+        elif key == "insertMode":
+            return self.insertMode
         elif key == "duration":
             return self.duration
         else:
@@ -83,9 +88,29 @@ class MissionBase:
         return {'type'       : self.missionType,
                 'missionId'  : self.missionId,
                 'aircraftId' : self.aircraftId,
+                'insertMode' : self.insertMode,
                 'duration'   : self.duration,
                 'parameters' : self.parameters}
 
+
+    def build_message(self):
+        """
+        build_message
+        
+        Builds a MISSION_CUSTOM Paparazzi message, filling only parameters
+        common to all mission types. Other parameters must be filled in
+        MissionBase specializations.
+
+        Returns a partially filled PprzMessage
+        """
+
+        msg = PprzMessage('datalink', 'MISSION_CUSTOM')
+        msg['ac_id']    = self.aircraftId
+        msg['insert']   = self.insertMode
+        msg['index']    = self.missionId
+        msg['duration'] = self.duration
+
+        return msg
 
 
     def build_update_messages(self, duration=-9.0, **params):

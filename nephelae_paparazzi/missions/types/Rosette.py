@@ -14,11 +14,12 @@ class Rosette(MissionBase):
     parameterNames = ['start', 'first_turn_direction', 'circle_radius', 'drift']
     updatableNames = ['hdrift', 'zdrift', 'center']
 
-    def __init__(self, missionId, aircraftId, duration,
+    def __init__(self, missionId, aircraftId, insertMode, duration,
                        start, first_turn_direction, circle_radius, drift,
                        updateRules={}):
 
-        super().__init__(missionId, aircraftId, duration, updateRules)
+        super().__init__(missionId, aircraftId,
+                         insertMode, duration, updateRules)
         
         self.missionType                        = "Rosette"
         self.parameters['start']                = start
@@ -27,23 +28,23 @@ class Rosette(MissionBase):
         self.parameters['drift']                = drift
 
 
-    def build_message(self, insertMode=InsertMode.Append):
+    def build_message(self):
         """Builds a ready to send paparazzi message from current parameters"""
+        
+        # Getting a partial message filled with parameters common to all
+        # mission types.
+        msg = super().build_message()
 
-        msg = PprzMessage('datalink', 'MISSION_CUSTOM')
-        msg['ac_id']    = self.aircraftId
-        msg['insert']   = insertMode
-        msg['index']    = self.missionId
-        msg['type']     = 'RSTT'
-        msg['duration'] = self.duration
-        msg['params']   = [float(self['start'][0]),
-                           float(self['start'][1]),
-                           float(self['start'][2]),
-                           float(self['first_turn_direction']),
-                           float(self['circle_radius']),
-                           float(self['drift'][0]),
-                           float(self['drift'][1]),
-                           float(self['drift'][2])]
+        # Filling parameters specific to this mission type.
+        msg['type']   = 'RSTT'
+        msg['params'] = [float(self['start'][0]),
+                         float(self['start'][1]),
+                         float(self['start'][2]),
+                         float(self['first_turn_direction']),
+                         float(self['circle_radius']),
+                         float(self['drift'][0]),
+                         float(self['drift'][1]),
+                         float(self['drift'][2])]
 
         return msg
 
