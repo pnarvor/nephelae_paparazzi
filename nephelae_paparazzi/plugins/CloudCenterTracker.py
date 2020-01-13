@@ -90,10 +90,10 @@ class CloudCenterTracker:
                         self.new_point(infosToShare)
                         mission = self.current_mission()
                         if (mission is not None and 'center' in
-                                mission.updatableNames()):
-                            messageInterface.send(mission.build_update_message(
-                                    center=[infosToShare.x, infosToShare.y,
-                                        infosToShare.z])[0])
+                                mission.updatableNames):
+                            messageInterface.send(mission.build_update_messages(
+                                    center=[infosToShare['x'], infosToShare['y'],
+                                        infosToShare['z']])[0])
             time.sleep(1)
 
     def cloud_center_to_track_setter(self, point, time):
