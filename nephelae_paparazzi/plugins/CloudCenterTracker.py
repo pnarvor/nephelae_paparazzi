@@ -106,7 +106,6 @@ class CloudCenterTracker:
         self.attach_observer(observer, 'new_point')
 
     def remove_point_observer(self, observer):
-        self.set_computing_center(False)
         self.detach_observer(observer, 'new_point')
 
     def set_computing_center(self, value_computing):
