@@ -64,6 +64,9 @@ class MissionManager:
                 {'name'         : 'current_mission',
                  'method'       : MissionManager.current_mission,
                  'conflictMode' : 'error'},
+                {'name'         : 'current_mission_status',
+                 'method'       : MissionManager.current_mission_status,
+                 'conflictMode' : 'error'},
                 {'name'         : 'validate_all',
                  'method'       : MissionManager.validate_all,
                  'conflictMode' : 'error'},
@@ -96,6 +99,7 @@ class MissionManager:
             Ignored if is None.
         """
 
+        self.add_notification_method('mission_uploaded')
         self.missionFactories = factories
         self.missions         = {}
         self.lastMissionId    = 0
@@ -238,11 +242,24 @@ class MissionManager:
             return self.missions[self.status.mission_task_list[0]]
         except KeyError:
             return None
+
+
+    def current_mission_status(self):
+        res = {'current_mission_time_left': self.status.mission_time_left,
+               'missions': []} 
+        try:
+            for missionId in self.status.mission_task_list:
+                res['missions'].append(self.missions[missionId])
+            return res
+        except KeyError:
+            return None
     
 
     def validate_all(self):
         for mission in self.pendingMissions:
             messageInterface.send(self.missions[mission].build_message())
+        self.pendingMissions = []
+        self.mission_uploaded()
 
 
     def execute_mission(self):
