@@ -13,9 +13,19 @@ class MissionBase:
     parameterNames : list(str, ...)
         List of parameters names for a mission specific parameters.
 
+    parameterTags : dict(str:list(str,...), ...)
+        Each element contains a list of tags to describe the nature of the
+        parameter in a high level fashion (for example in a mission lace, the
+        'start' parameter represent a 3D position, so get the tag
+        'position_3D'. Each parameter can have multiple tags.
+        The keys of the dictionary are the parameterNames.
+
     updatableNames : list(str, ...)
         List of parameters names which can be updated. Can be a subset of
         parameterNames or include other parameters.
+
+    updatableTags : dict(str:list(str,...), ...)
+        Similar to parameterTags, but for updatables parameters
 
 
     Attributes
@@ -37,9 +47,10 @@ class MissionBase:
     parameters : dict('str':AnyType, ...)
         Additional parameters to be filed by subclasses.
     """
-     
-    parameterNames = []
-    updatableNames = []
+    parameterNames      = []
+    parameterAttributes = {}
+    updatableNames      = []
+    updatableTags       = []
 
     def __init__(self, missionId, aircraftId,
                  insertMode, duration, updateRules={}):
