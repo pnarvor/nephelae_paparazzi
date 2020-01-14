@@ -57,7 +57,7 @@ class MissionWindUpdater:
 
     def update_current_mission_wind(self):
         
-        if self.currentMission is not None:
+        if self.current_mission() is not None:
             messageInterface.send(
                 self.currentMission.build_update_messages(hdrift=self.windMap.wind)[0])
 
