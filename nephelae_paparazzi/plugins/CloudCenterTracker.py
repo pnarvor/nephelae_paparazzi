@@ -70,7 +70,8 @@ class CloudCenterTracker:
                             (estimatedCenter[1]-self.spaceY/2):
                             (estimatedCenter[1]+self.spaceY/2),
                             altitude]
-                    list_cloudData = CloudData.from_scaledArray(map0)
+                    list_cloudData = CloudData.from_scaledArray(map0,
+                            threshold=self.mapWhereCenterIs.threshold)
                     if list_cloudData:
                         self.followedCenter = list_cloudData[np.argmin([
                                     distance.euclidean(
