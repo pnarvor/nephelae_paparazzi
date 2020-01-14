@@ -87,21 +87,19 @@ class CloudCenterTracker:
                             'y': self.followedCenter[1], 't': self.oldTime, 'z':
                             altitude, 'label': "Tracked point by " + self.id, 'id':
                             self.id}
-                    if self.isComputingCenter:
-                        self.new_point(infosToShare)
-                        mission = self.current_mission()
-                        if (mission is not None and 'center' in
-                                mission.updatableNames):
-                            messageInterface.send(mission.build_update_messages(
+                    self.new_point(infosToShare)
+                    mission = self.current_mission()
+                    if (mission is not None and 'center' in
+                            mission.updatableNames):
+                        messageInterface.send(mission.build_update_messages(
                                     center=[infosToShare['x'], infosToShare['y'],
                                         infosToShare['z']])[0])
             time.sleep(1)
 
     def cloud_center_to_track_setter(self, point, time):
-        if self.isComputingCenter:
-            with self.processTrackingCenterLock:
-                self.followedCenter = point
-                self.oldTime = time
+        with self.processTrackingCenterLock:
+            self.followedCenter = point
+            self.oldTime = time
 
     def add_point_observer(self, observer):
         self.attach_observer(observer, 'new_point')
@@ -110,7 +108,8 @@ class CloudCenterTracker:
         self.detach_observer(observer, 'new_point')
 
     def set_computing_center(self, value_computing):
-        self.isComputingCenter = value_computing
+        with self.processTrackingCenterLock:
+            self.isComputingCenter = value_computing
 
 def build_cloud_center_tracker(aircraft, mapWhereCenterIs, spaceX=1000,
         spaceY=1000):
