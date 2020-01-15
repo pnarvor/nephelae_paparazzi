@@ -83,8 +83,13 @@ class MesonhProbe:
         position = self.status.position.copy()
         readKeys = (position.t, position.x, position.y, position.z)
         if not self.mesonhInitialized:
-            for probe in self.probes.values():
-                probe.request_cache_update(readKeys, block=True)
+            try:
+                for probe in self.probes.values():
+                    probe.request_cache_update(readKeys, block=True)
+            except Exception as e: # !!!!!!!!!!!!!! Fix this !
+                print(traceback.format_exc())
+                print("Could not read, feedback :", e)
+                return
             self.mesonhInitialized = True
         
         for var in self.probes.keys():
