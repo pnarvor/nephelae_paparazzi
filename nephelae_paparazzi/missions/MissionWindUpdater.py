@@ -59,7 +59,7 @@ class MissionWindUpdater:
         
         if self.current_mission() is not None:
             messageInterface.send(
-                self.currentMission.build_update_messages(hdrift=self.windMap.wind)[0])
+                self.current_mission().build_update_messages(hdrift=self.windMap.wind)[0])
 
         # Checking if aircraft is running and stop was not requested
         if self.running and self.missionUpdateTimer is not None:
