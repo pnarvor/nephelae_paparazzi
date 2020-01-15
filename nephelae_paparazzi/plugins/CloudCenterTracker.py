@@ -5,6 +5,7 @@ import numpy as np
 from scipy.spatial import distance
 
 from nephelae.database import CloudData
+from ..common import messageInterface, PprzMessage
 
 class CloudCenterTracker:
 
@@ -69,7 +70,8 @@ class CloudCenterTracker:
                             (estimatedCenter[1]-self.spaceY/2):
                             (estimatedCenter[1]+self.spaceY/2),
                             altitude]
-                    list_cloudData = CloudData.from_scaledArray(map0)
+                    list_cloudData = CloudData.from_scaledArray(map0,
+                            threshold=self.mapWhereCenterIs.threshold)
                     if list_cloudData:
                         self.followedCenter = list_cloudData[np.argmin([
                                     distance.euclidean(
@@ -81,30 +83,33 @@ class CloudCenterTracker:
                     else:
                         self.followedCenter = estimatedCenter
                         self.oldTime = simTime
-                    infos_to_share = {'x': self.followedCenter[0],
+                    infosToShare = {'x': self.followedCenter[0],
                             'y': self.followedCenter[1], 't': self.oldTime, 'z':
                             altitude, 'label': "Tracked point by " + self.id, 'id':
                             self.id}
-                    if self.isComputingCenter:
-                        self.new_point(infos_to_share)
+                    self.new_point(infosToShare)
+                    mission = self.current_mission()
+                    if (mission is not None and 'center' in
+                            mission.updatableNames):
+                        messageInterface.send(mission.build_update_messages(
+                                    center=[infosToShare['x'], infosToShare['y'],
+                                        infosToShare['z']])[0])
             time.sleep(1)
 
     def cloud_center_to_track_setter(self, point, time):
-        if self.isComputingCenter:
-            with self.processTrackingCenterLock:
-                self.followedCenter = point
-                self.oldTime = time
+        with self.processTrackingCenterLock:
+            self.followedCenter = point
+            self.oldTime = time
 
     def add_point_observer(self, observer):
         self.attach_observer(observer, 'new_point')
 
     def remove_point_observer(self, observer):
-        self.set_computing_center(False)
         self.detach_observer(observer, 'new_point')
 
     def set_computing_center(self, value_computing):
-        self.isComputingCenter = value_computing
-
+        with self.processTrackingCenterLock:
+            self.isComputingCenter = value_computing
 
 def build_cloud_center_tracker(aircraft, mapWhereCenterIs, spaceX=1000,
         spaceY=1000):
