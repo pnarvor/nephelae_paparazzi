@@ -26,6 +26,12 @@ class CloudCenterTracker:
                  'method'       : CloudCenterTracker
                  .cloud_center_to_track_setter,
                  'conflictMode' : 'error'},
+                {'name'         : 'add_debug_tracker_observer',
+                 'method'       : CloudCenterTracker.add_debug_tracker_observer,
+                 'conflictMode' : 'abort'},
+                {'name'         : 'remove_debug_tracker_observer',
+                 'method'       : CloudCenterTracker.remove_debug_tracker_observer,
+                 'conflictMode' : 'abort'},
                 {'name'         : 'set_computing_center',
                  'method'       : CloudCenterTracker.set_computing_center,
                  'conflictMode' : 'abort'},
@@ -44,6 +50,7 @@ class CloudCenterTracker:
         self.isComputingCenter = False
         self.windMap = None
         self.add_notification_method('new_point')
+        self.add_notification_method('tracker_debug')
         self.cloudCenterTracker_thread = threading.Thread(
                 target=self.cloud_center_tracker_update)
 
@@ -79,15 +86,27 @@ class CloudCenterTracker:
                                         x.get_com()
                                     )
                             for x in list_cloudData])].get_com()
-                        self.oldTime = simTime
                     else:
+                        oldCenter = self.followedCenter
                         self.followedCenter = estimatedCenter
-                        self.oldTime = simTime
                     infosToShare = {'x': self.followedCenter[0],
-                            'y': self.followedCenter[1], 't': self.oldTime, 'z':
+                            'y': self.followedCenter[1], 't': simTime, 'z':
                             altitude, 'label': "Tracked point by " + self.id, 'id':
                             self.id}
                     self.new_point(infosToShare)
+                    # ---------------------- DEBUG ----------------------------
+                    infosToShare['x_old'] = oldCenter[0]
+                    infosToShare['y_old'] = oldCenter[1]
+                    infosToShare['t_old'] = self.oldTime
+                    infosToShare['map'] = self.mapWhereCenterIs
+                    infosToShare['scaledArray'] = map0
+                    infosToShare['space_X'] = self.spaceX
+                    infosToShare['space_Y'] = self.spaceY
+                    infosToShare['centers'] = [data.get_com() for data in
+                            list_cloudData]
+                    self.tracker_debug(infosToShare)
+                    # ---------------------- END DEBUG ------------------------
+                    self.oldTime = simTime
                     mission = self.current_mission()
                     if (mission is not None and 'center' in
                             mission.updatableNames):
@@ -106,6 +125,13 @@ class CloudCenterTracker:
 
     def remove_point_observer(self, observer):
         self.detach_observer(observer, 'new_point')
+
+    def add_debug_tracker_observer(self, observer):
+        self.attach_observer(observer, 'tracker_debug')
+
+    def remove_debug_tracker_observer(self, observer):
+        self.detach_observer(observer, 'tracker_debug')
+
 
     def set_computing_center(self, value_computing):
         with self.processTrackingCenterLock:
