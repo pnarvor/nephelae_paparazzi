@@ -177,14 +177,15 @@ class MissionManager:
             mission = self.missionFactories[missionType].build(
                 self.new_mission_id(), self.id, insertMode, duration, **missionParameters)
             
+            # Keeping a copy in self.missions and registering it for validation
+            self.missions[mission.missionId] = mission
+            self.pendingMissions.append(mission.missionId)
+            
             # Saving it to backup file for warm start
             if self.outputBackupFile is not None:
                 with open(self.outputBackupFile, "ab") as f:
                     pickle.dump({mission.missionId : mission.to_dict()}, f)
-            
-            # Keeping a copy in self.missions and registering it for validation
-            self.missions[mission.missionId] = mission
-            self.pendingMissions.append(mission.missionId)
+                    pickle.dump({'pendingMissions' : self.pendingMissions}, f)
             
             # At this point everything went well, keeping last generated id
             self.lastMissionId = mission.missionId
@@ -212,6 +213,12 @@ class MissionManager:
             instances.
             """
             for missionId, params in unpickledMissions.items():
+                 
+                # A true file format would be nice
+                if missionId == 'pendingMissions':
+                    self.pendingMissions = params
+                    continue
+
                 if str(self.id) != str(params['aircraftId']):
                     raise ValueError("Error decoding mission backup file. " +
                         "The aircraft ids do not match (got " +
