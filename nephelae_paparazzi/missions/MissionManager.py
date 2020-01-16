@@ -288,10 +288,11 @@ class MissionManager:
         """
         Effectively sends a message to the aircraft with the mission.
         """
-        if self.pendingMission[0] != missionId:
+        print('Authorizing mission', missionId, 'for aircraft', self.id);
+        if self.pendingMissions[0] != missionId:
             # Error, pendingMission is a fifo. Cannot authorized mission other
             # than the first one in the list.
-            if missionId in self.pendingMission:
+            if missionId in self.pendingMissions:
                 raise ValueError("You have to validate mission in " +
                                  "the order of creation")
             else:
@@ -310,7 +311,7 @@ class MissionManager:
         messageInterface.send(self.missions[missionId].build_message())
         
         # if missionReceived:
-        self.pendingMission.pop(0);
+        self.pendingMissions.pop(0);
         # else:
             # raise error ?
 
@@ -320,6 +321,7 @@ class MissionManager:
         Removes a mission from self.pendingMissions without sending it to the
         aircraft.
         """
+        print('Rejecting mission', missionId, 'for aircraft', self.id);
         self.pendingMissions.remove(missionId)
 
 
