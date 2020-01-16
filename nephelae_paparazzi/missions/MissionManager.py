@@ -312,6 +312,9 @@ class MissionManager:
         
         # if missionReceived:
         self.pendingMissions.pop(0);
+        if self.outputBackupFile is not None:
+            with open(self.outputBackupFile, "ab") as f:
+                pickle.dump({'pendingMissions' : self.pendingMissions}, f)
         # else:
             # raise error ?
 
@@ -323,6 +326,9 @@ class MissionManager:
         """
         print('Rejecting mission', missionId, 'for aircraft', self.id);
         self.pendingMissions.remove(missionId)
+        if self.outputBackupFile is not None:
+            with open(self.outputBackupFile, "ab") as f:
+                pickle.dump({'pendingMissions' : self.pendingMissions}, f)
 
 
     def validate_all(self):
