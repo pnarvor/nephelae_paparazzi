@@ -67,6 +67,18 @@ class MissionManager:
                 {'name'         : 'current_mission_status',
                  'method'       : MissionManager.current_mission_status,
                  'conflictMode' : 'error'},
+                {'name'         : 'get_pending_missions',
+                 'method'       : MissionManager.get_pending_missions,
+                 'conflictMode' : 'error'},
+                {'name'         : 'authorize_mission',
+                 'method'       : MissionManager.authorize_mission,
+                 'conflictMode' : 'error'},
+                {'name'         : 'reject_mission',
+                 'method'       : MissionManager.reject_mission,
+                 'conflictMode' : 'error'},
+                {'name'         : 'do_validate_mission',
+                 'method'       : MissionManager.do_validate_mission,
+                 'conflictMode' : 'error'},
                 {'name'         : 'validate_all',
                  'method'       : MissionManager.validate_all,
                  'conflictMode' : 'error'},
@@ -100,6 +112,7 @@ class MissionManager:
         """
 
         self.add_notification_method('mission_uploaded')
+        self.add_notification_method('pending_missions_updated')
         self.missionFactories = factories
         self.missions         = {}
         self.lastMissionId    = 0
@@ -165,19 +178,22 @@ class MissionManager:
             mission = self.missionFactories[missionType].build(
                 self.new_mission_id(), self.id, insertMode, duration, **missionParameters)
             
-            # Saving it to backup file for warm start
-            if self.outputBackupFile is not None:
-                with open(self.outputBackupFile, "ab") as f:
-                    pickle.dump({mission.missionId : mission.to_dict()}, f)
-            
             # Keeping a copy in self.missions and registering it for validation
             self.missions[mission.missionId] = mission
             self.pendingMissions.append(mission.missionId)
             
+            # Saving it to backup file for warm start
+            if self.outputBackupFile is not None:
+                with open(self.outputBackupFile, "ab") as f:
+                    pickle.dump({mission.missionId : mission.to_dict()}, f)
+                    pickle.dump({'pendingMissions' : self.pendingMissions}, f)
+            
             # At this point everything went well, keeping last generated id
             self.lastMissionId = mission.missionId
+            self.pending_missions_updated(
+                {'event': 'created', 'mission': self.missions[mission.missionId]})
 
-            self.validate_all();
+            # self.validate_all();
 
 
     def new_mission_id(self):
@@ -200,6 +216,12 @@ class MissionManager:
             instances.
             """
             for missionId, params in unpickledMissions.items():
+                 
+                # A true file format would be nice
+                if missionId == 'pendingMissions':
+                    self.pendingMissions = params
+                    continue
+
                 if str(self.id) != str(params['aircraftId']):
                     raise ValueError("Error decoding mission backup file. " +
                         "The aircraft ids do not match (got " +
@@ -253,7 +275,69 @@ class MissionManager:
             return res
         except KeyError:
             return None
+
+
+    def get_pending_missions(self):
+        """
+        Returns mission instances waiting to be authorized.
+        """
+        res = [];
+        for missionId in self.pendingMissions:
+            res.append(self.missions[missionId])
+        return res;
+
+
+    def authorize_mission(self, missionId):
+        """
+        Effectively sends a message to the aircraft with the mission.
+        """
+        print('Authorizing mission', missionId, 'for aircraft', self.id);
+        if self.pendingMissions[0] != missionId:
+            # Error, pendingMission is a fifo. Cannot authorized mission other
+            # than the first one in the list.
+            if missionId in self.pendingMissions:
+                raise ValueError("You have to validate mission in " +
+                                 "the order of creation")
+            else:
+                raise AttributeError("Unknown mission")
+        else:
+            self.do_validate_mission(missionId);
+
     
+    def do_validate_mission(self, missionId):
+        """
+        Sends a message to aircraft to add the mission, and removes it from
+        pending mission list.
+
+        TODO : verify that the mission was received by the aircraft before
+        removing it from self.pendingMissions.
+        """
+        messageInterface.send(self.missions[missionId].build_message())
+        
+        # if missionReceived:
+        self.pendingMissions.pop(0);
+        if self.outputBackupFile is not None:
+            with open(self.outputBackupFile, "ab") as f:
+                pickle.dump({'pendingMissions' : self.pendingMissions}, f)
+        self.pending_missions_updated(
+            {'event': 'authorized', 'mission': self.missions[missionId]})
+        # else:
+            # raise error ?
+
+
+    def reject_mission(self, missionId):
+        """
+        Removes a mission from self.pendingMissions without sending it to the
+        aircraft.
+        """
+        print('Rejecting mission', missionId, 'for aircraft', self.id);
+        self.pendingMissions.remove(missionId)
+        if self.outputBackupFile is not None:
+            with open(self.outputBackupFile, "ab") as f:
+                pickle.dump({'pendingMissions' : self.pendingMissions}, f)
+        self.pending_missions_updated(
+            {'event': 'rejected', 'mission': self.missions[missionId]})
+
 
     def validate_all(self):
         for mission in self.pendingMissions:
