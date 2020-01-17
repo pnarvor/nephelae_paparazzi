@@ -79,6 +79,7 @@ class CloudCenterTracker:
                             altitude]
                     list_cloudData = CloudData.from_scaledArray(map0,
                             threshold=self.mapWhereCenterIs.threshold)
+                    oldCenter = self.followedCenter
                     if list_cloudData:
                         self.followedCenter = list_cloudData[np.argmin([
                                     distance.euclidean(
@@ -87,7 +88,6 @@ class CloudCenterTracker:
                                     )
                             for x in list_cloudData])].get_com()
                     else:
-                        oldCenter = self.followedCenter
                         self.followedCenter = estimatedCenter
                     infosToShare = {'x': self.followedCenter[0],
                             'y': self.followedCenter[1], 't': simTime, 'z':
