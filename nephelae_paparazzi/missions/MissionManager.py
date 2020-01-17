@@ -112,6 +112,7 @@ class MissionManager:
         """
 
         self.add_notification_method('mission_uploaded')
+        self.add_notification_method('pending_missions_updated')
         self.missionFactories = factories
         self.missions         = {}
         self.lastMissionId    = 0
@@ -189,6 +190,8 @@ class MissionManager:
             
             # At this point everything went well, keeping last generated id
             self.lastMissionId = mission.missionId
+            self.pending_missions_updated(
+                {'event': 'created', 'mission': self.missions[mission.missionId]})
 
             # self.validate_all();
 
@@ -299,6 +302,7 @@ class MissionManager:
                 raise AttributeError("Unknown mission")
         else:
             self.do_validate_mission(missionId);
+
     
     def do_validate_mission(self, missionId):
         """
@@ -315,6 +319,8 @@ class MissionManager:
         if self.outputBackupFile is not None:
             with open(self.outputBackupFile, "ab") as f:
                 pickle.dump({'pendingMissions' : self.pendingMissions}, f)
+        self.pending_missions_updated(
+            {'event': 'authorized', 'mission': self.missions[missionId]})
         # else:
             # raise error ?
 
@@ -329,6 +335,8 @@ class MissionManager:
         if self.outputBackupFile is not None:
             with open(self.outputBackupFile, "ab") as f:
                 pickle.dump({'pendingMissions' : self.pendingMissions}, f)
+        self.pending_missions_updated(
+            {'event': 'rejected', 'mission': self.missions[missionId]})
 
 
     def validate_all(self):
