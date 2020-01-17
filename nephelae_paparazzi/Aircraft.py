@@ -2,9 +2,12 @@ import os
 import threading
 import utm
 import time
+import warnings
+
 from copy import deepcopy
 
 from nephelae.types import MultiObserverSubject, Pluginable, Position
+from nephelae.types import NavigationRef
 
 from .common           import messageInterface
 from .plugins.loaders  import load_plugins
@@ -212,9 +215,10 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def __init__(self, uavId, navFrame):
         MultiObserverSubject.__init__(self, ['add_status'])
 
-        self.id          = uavId
-        self.navFrame    = navFrame
-        self.ivyBinds    = []
+        self.id           = uavId
+        self.navFrame     = navFrame
+        self.PprzNavFrame = None
+        self.ivyBinds     = []
 
         self.config               = None
         self.status               = AircraftStatus(self.id, self.navFrame)
@@ -234,6 +238,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
     def start(self):
         self.running = True
         self.request_config()
+        self.request_navFrame()
         self.ivyBinds.append(messageInterface.bind(self.flight_param_callback,   '(ground FLIGHT_PARAM ' + str(self.id) + ' .*)'))
         self.ivyBinds.append(messageInterface.bind(self.nav_status_callback,     '(ground NAV_STATUS '   + str(self.id) + ' .*)'))
         self.ivyBinds.append(messageInterface.bind(self.ap_status_callback,      '(ground AP_STATUS '    + str(self.id) + ' .*)'))
@@ -326,6 +331,30 @@ class Aircraft(MultiObserverSubject, Pluginable):
                                              args=(self,))
         self.configThread.start()
 
+    def request_navFrame(self):
+        self.navFrameBindId = messageInterface.bind(self.navFrame_callback,
+                '(^' + str(self.id) + ' NAVIGATION_REF .*)')
+
+    def navFrame_callback(self, navFrame):
+        messageInterface.unbind(self.navFrameBindId)
+        if navFrame['utm_zone'] != self.navFrame.utm_number:
+            raise ValueError('navFrame and Pprz have two different values of ' +
+                    'utm_zone')
+        self.PprzNavFrame = NavigationRef(position=Position(
+            self.navFrame.position.t, navFrame['utm_east'],
+            navFrame['utm_north'], navFrame['ground_alt']),
+            utm_zone=str(navFrame['utm_zone']) + self.navFrame.utm_letter)
+        print('Catched Paparazzi NavigationRef for ' + str(self.id) + ' : ')
+        print(self.PprzNavFrame)
+        if abs(self.PprzNavFrame.position.x - self.navFrame.position.x) > 1:
+            warnings.warn('X values between Ground NavigationRef and Pprz' +
+                    'NavigationRef have a greater difference than 1 meter',
+                    Warning)
+
+        if abs(self.PprzNavFrame.position.y - self.navFrame.position.y) > 1:
+            warnings.warn('Y values between Ground NavigationRef and Pprz' +
+                    'NavigationRef have a greater difference than 1 meter',
+                    Warning)
 
     def flight_time(self):
         return self.currentApStatus.flight_time
