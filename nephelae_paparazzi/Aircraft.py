@@ -346,15 +346,22 @@ class Aircraft(MultiObserverSubject, Pluginable):
             utm_zone=str(navFrame['utm_zone']) + self.navFrame.utm_letter)
         print('Catched Paparazzi NavigationRef for ' + str(self.id) + ' : ')
         print(self.PprzNavFrame)
+        print(self.navFrame)
+        warnings.simplefilter('always')
         if abs(self.PprzNavFrame.position.x - self.navFrame.position.x) > 1:
-            warnings.warn('X values between Ground NavigationRef and Pprz' +
-                    'NavigationRef have a greater difference than 1 meter',
-                    Warning)
+            e = UserWarning('X values between Ground NavigationRef and Pprz' +
+                    'NavigationRef have a greater difference than 1 meter')
+            print("{}: {}".format(type(e).__name__, e))
 
         if abs(self.PprzNavFrame.position.y - self.navFrame.position.y) > 1:
-            warnings.warn('Y values between Ground NavigationRef and Pprz' +
-                    'NavigationRef have a greater difference than 1 meter',
-                    Warning)
+            e = UserWarning('Y values between Ground NavigationRef and Pprz' +
+                    'NavigationRef have a greater difference than 1 meter')
+            print("{}: {}".format(type(e).__name__, e))
+
+        if abs(self.PprzNavFrame.position.z - self.navFrame.position.z) > 1:
+            e = UserWarning('Z values between Ground NavigationRef and Pprz' +
+                    'NavigationRef have a greater difference than 1 meter')
+            print("{}: {}".format(type(e).__name__, e))
 
     def flight_time(self):
         return self.currentApStatus.flight_time
