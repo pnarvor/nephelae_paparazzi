@@ -56,7 +56,7 @@ class PprzMesonhWind:
                 if self.stopped or not self.initialized:
                     break
                 time.sleep(0.1)
-            Message.unbind(self.reqBind)
+            messageInterface.unbind(self.reqBind)
             self.reqBind = None
         for probe in self.probes.values():
             probe.stop()
