@@ -1,6 +1,7 @@
 from .Lace     import Lace
 from .Rosette  import Rosette
 from .Spiral3D import Spiral3D
+from .Trinity  import Trinity
 
 # This list allows to instanciate a particular mission type from a string
 # For example :
@@ -10,5 +11,6 @@ from .Spiral3D import Spiral3D
 
 missionTypes = {'Lace'     : Lace,
                 'Rosette'  : Rosette,
-                'Spiral3D' : Spiral3D
+                'Spiral3D' : Spiral3D,
+                'Trinity'  : Trinity
                }
