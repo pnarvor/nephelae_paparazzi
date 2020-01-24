@@ -102,6 +102,7 @@ class CloudCenterTracker:
                     infosToShare['scaledArray'] = map0
                     infosToShare['space_X'] = self.spaceX
                     infosToShare['space_Y'] = self.spaceY
+                    infosToShare['producer'] = self.id
                     infosToShare['centers'] = [data.get_com() for data in
                             list_cloudData]
                     self.tracker_debug(infosToShare)
