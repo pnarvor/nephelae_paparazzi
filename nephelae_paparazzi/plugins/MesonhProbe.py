@@ -119,7 +119,7 @@ class MesonhProbe:
     def rct_feedback(self, rctValue):
         msg = PprzMessage('datalink', 'PAYLOAD_COMMAND')
         msg['ac_id']   = int(self.id)
-        msg['command'] = [min(255,int(255 * rctValue / self.rctBounds.span()))]
+        msg['command'] = [max(0, min(255,int(255 * rctValue / self.rctBounds.span())))]
         messageInterface.send(msg)
 
 

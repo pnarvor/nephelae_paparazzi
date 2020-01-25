@@ -1,5 +1,7 @@
-from .Lace    import Lace
-from .Rosette import Rosette
+from .Lace     import Lace
+from .Rosette  import Rosette
+from .Spiral3D import Spiral3D
+from .Trinity  import Trinity
 
 # This list allows to instanciate a particular mission type from a string
 # For example :
@@ -7,6 +9,8 @@ from .Rosette import Rosette
 # lace = missionTypes['Lace'](...)
 # Will instanciate a nephelae_paparazzi.missions.types 
 
-missionTypes = {'Lace'   : Lace,
-                'Rosette': Rosette
+missionTypes = {'Lace'     : Lace,
+                'Rosette'  : Rosette,
+                'Spiral3D' : Spiral3D,
+                'Trinity'  : Trinity
                }

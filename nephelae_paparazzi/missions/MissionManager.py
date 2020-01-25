@@ -4,7 +4,7 @@ import threading
 
 from .MissionFactory import MissionFactory
 from .types import missionTypes
-from ..common import messageInterface
+from ..common import messageInterface, PprzMessage
 from . import InsertMode
 
 class MissionManager:
@@ -78,6 +78,12 @@ class MissionManager:
                  'conflictMode' : 'error'},
                 {'name'         : 'do_validate_mission',
                  'method'       : MissionManager.do_validate_mission,
+                 'conflictMode' : 'error'},
+                {'name'         : 'next_mission',
+                 'method'       : MissionManager.next_mission,
+                 'conflictMode' : 'error'},
+                {'name'         : 'end_mission',
+                 'method'       : MissionManager.end_mission,
                  'conflictMode' : 'error'},
                 {'name'         : 'validate_all',
                  'method'       : MissionManager.validate_all,
@@ -337,6 +343,18 @@ class MissionManager:
                 pickle.dump({'pendingMissions' : self.pendingMissions}, f)
         self.pending_missions_updated(
             {'event': 'rejected', 'mission': self.missions[missionId]})
+
+
+    def next_mission(self):
+        msg = PprzMessage('datalink', 'NEXT_MISSION')
+        msg['ac_id'] = int(self.id)
+        messageInterface.send(msg)
+
+
+    def end_mission(self):
+        msg = PprzMessage('datalink', 'NEXT_MISSION')
+        msg['ac_id'] = int(self.id)
+        messageInterface.send(msg)
 
 
     def validate_all(self):
