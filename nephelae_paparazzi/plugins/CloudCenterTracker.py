@@ -32,6 +32,14 @@ class CloudCenterTracker:
                 {'name'         : 'remove_debug_tracker_observer',
                  'method'       : CloudCenterTracker.remove_debug_tracker_observer,
                  'conflictMode' : 'abort'},
+                {'name'         : 'is_choosing_nearest_cloud_center',
+                 'method'       :
+                 CloudCenterTracker.is_choosing_nearest_cloud_center,
+                 'conflictMode' : 'abort'},
+                {'name'         : 'set_choose_nearest_cloud_center',
+                 'method'       :
+                 CloudCenterTracker.set_choose_nearest_cloud_center,
+                 'conflictMode' : 'abort'},
                 {'name'         : 'set_computing_center',
                  'method'       : CloudCenterTracker.set_computing_center,
                  'conflictMode' : 'abort'},
@@ -78,13 +86,10 @@ class CloudCenterTracker:
                             (estimatedCenter[1]-self.spaceY/2):
                             (estimatedCenter[1]+self.spaceY/2),
                             altitude]
-                    if chooseNearestCloudCenter:
-                        list_cloudData = CloudData.from_scaledArray(map0,
-                            threshold=self.mapWhereCenterIs.threshold)
-                    else:
-                        list_cloudData = []
+                    list_cloudData = CloudData.from_scaledArray(map0,
+                        threshold=self.mapWhereCenterIs.threshold)
                     oldCenter = self.followedCenter
-                    if list_cloudData:
+                    if self.chooseNearestCloudCenter and list_cloudData:
                         self.followedCenter = list_cloudData[np.argmin([
                                     distance.euclidean(
                                         estimatedCenter,
@@ -109,6 +114,7 @@ class CloudCenterTracker:
                     infosToShare['producer'] = self.id
                     infosToShare['centers'] = [data.get_com() for data in
                             list_cloudData]
+                    infosToShare['stop'] = False
                     self.tracker_debug(infosToShare)
                     # ---------------------- END DEBUG ------------------------
                     self.oldTime = simTime
@@ -146,6 +152,9 @@ class CloudCenterTracker:
     def set_computing_center(self, value_computing):
         with self.processTrackingCenterLock:
             self.isComputingCenter = value_computing
+            if not value_computing:
+                self.tracker_debug({'stop': True})
+
 
 def build_cloud_center_tracker(aircraft, mapWhereCenterIs, spaceX=1000,
         spaceY=1000):
