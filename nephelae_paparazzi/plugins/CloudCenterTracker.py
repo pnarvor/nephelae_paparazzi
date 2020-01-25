@@ -35,13 +35,25 @@ class CloudCenterTracker:
                 {'name'         : 'is_choosing_nearest_cloud_center',
                  'method'       :
                  CloudCenterTracker.is_choosing_nearest_cloud_center,
-                 'conflictMode' : 'abort'},
+                 'conflictMode' : 'error'},
                 {'name'         : 'set_choose_nearest_cloud_center',
                  'method'       :
                  CloudCenterTracker.set_choose_nearest_cloud_center,
-                 'conflictMode' : 'abort'},
+                 'conflictMode' : 'error'},
                 {'name'         : 'set_computing_center',
                  'method'       : CloudCenterTracker.set_computing_center,
+                 'conflictMode' : 'abort'},
+                {'name'         : 'set_space_x',
+                 'method'       : CloudCenterTracker.set_space_x,
+                 'conflictMode' : 'abort'},
+                {'name'         : 'set_space_y',
+                 'method'       : CloudCenterTracker.set_space_y,
+                 'conflictMode' : 'abort'},
+                {'name'         : 'get_space_x',
+                 'method'       : CloudCenterTracker.get_space_x,
+                 'conflictMode' : 'abort'},
+                {'name'         : 'get_space_y',
+                 'method'       : CloudCenterTracker.get_space_y,
                  'conflictMode' : 'abort'},
                 {'name'         : 'cloud_center_tracker_update',
                  'method'       : CloudCenterTracker.cloud_center_tracker_update,
@@ -155,6 +167,17 @@ class CloudCenterTracker:
             if not value_computing:
                 self.tracker_debug({'stop': True})
 
+    def set_space_x(self, x):
+        self.spaceX = x
+
+    def set_space_y(self, y):
+        self.spaceY = y
+
+    def get_space_x(self):
+        return self.spaceX
+    
+    def get_space_y(self):
+        return self.spaceY
 
 def build_cloud_center_tracker(aircraft, mapWhereCenterIs, spaceX=1000,
         spaceY=1000):
