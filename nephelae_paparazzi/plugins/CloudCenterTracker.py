@@ -49,6 +49,7 @@ class CloudCenterTracker:
         self.runTracking = False
         self.isComputingCenter = False
         self.windMap = None
+        self.chooseNearestCloudCenter = True
         self.add_notification_method('new_point')
         self.add_notification_method('tracker_debug')
         self.cloudCenterTracker_thread = threading.Thread(
@@ -77,8 +78,11 @@ class CloudCenterTracker:
                             (estimatedCenter[1]-self.spaceY/2):
                             (estimatedCenter[1]+self.spaceY/2),
                             altitude]
-                    list_cloudData = CloudData.from_scaledArray(map0,
+                    if chooseNearestCloudCenter:
+                        list_cloudData = CloudData.from_scaledArray(map0,
                             threshold=self.mapWhereCenterIs.threshold)
+                    else:
+                        list_cloudData = []
                     oldCenter = self.followedCenter
                     if list_cloudData:
                         self.followedCenter = list_cloudData[np.argmin([
@@ -133,6 +137,8 @@ class CloudCenterTracker:
     def remove_debug_tracker_observer(self, observer):
         self.detach_observer(observer, 'tracker_debug')
 
+    def set_choose_nearest_cloud_center(self, value):
+        self.chooseNearestCloudCenter = value
 
     def set_computing_center(self, value_computing):
         with self.processTrackingCenterLock:
