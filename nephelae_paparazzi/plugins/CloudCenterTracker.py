@@ -139,6 +139,9 @@ class CloudCenterTracker:
 
     def set_choose_nearest_cloud_center(self, value):
         self.chooseNearestCloudCenter = value
+    
+    def is_choosing_nearest_cloud_center(self):
+        return self.chooseNearestCloudCenter
 
     def set_computing_center(self, value_computing):
         with self.processTrackingCenterLock:
