@@ -2,6 +2,8 @@ from nephelae_paparazzi.missions.builders import build_mission_manager, build_mi
 
 from .MesonhProbe import build_mesonh_probe
 from .CloudCenterTracker import build_cloud_center_tracker
+from .MeteoStick  import build_meteo_stick
+from .CloudSensor import build_cloud_sensor
 
 # Definition of plugin factory functions. First parameter must be an aircraft
 # on which to apply a plugin
@@ -9,7 +11,9 @@ pluginFactories = {
     'Missions': build_mission_manager,
     'MesonhProbe': build_mesonh_probe,
     'CloudCenterTracker': build_cloud_center_tracker,
-    'MissionWindUpdater': build_mission_wind_updater
+    'MissionWindUpdater': build_mission_wind_updater,
+    'MeteoStick': build_meteo_stick,
+    'CloudSensor': build_cloud_sensor
 }
 
 
@@ -31,6 +35,11 @@ def load_plugins(aircraft, pluginsDesc):
                          "of all plugin names in your yaml file ?" )
 
     for plugin in pluginsDesc:
+
+        if isinstance(plugin, str):
+            pluginFactories[plugin](aircraft)
+            continue
+
         if len(plugin) != 1:
             raise ValueError("Yaml format error in plugin description")
 
