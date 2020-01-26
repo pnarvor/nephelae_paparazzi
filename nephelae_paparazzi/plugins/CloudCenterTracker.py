@@ -111,9 +111,7 @@ class CloudCenterTracker:
                     else:
                         self.followedCenter = estimatedCenter
                     infosToShare = {'x': self.followedCenter[0],
-                            'y': self.followedCenter[1], 't': simTime, 'z':
-                            altitude, 'label': "Tracked point by " + self.id, 'id':
-                            self.id}
+                            'y': self.followedCenter[1], 't': simTime, 'z': altitude, 'label': "Tracked point by " + self.id, 'id': self.id}
                     self.new_point(infosToShare)
                     # ---------------------- DEBUG ----------------------------
                     infosToShare['x_old'] = oldCenter[0]
@@ -124,6 +122,8 @@ class CloudCenterTracker:
                     infosToShare['space_X'] = self.spaceX
                     infosToShare['space_Y'] = self.spaceY
                     infosToShare['producer'] = self.id
+                    infosToShare['x_uav'] = self.status.position.x
+                    infosToShare['y_uav'] = self.status.position.y
                     infosToShare['centers'] = [data.get_com() for data in
                             list_cloudData]
                     infosToShare['stop'] = False
@@ -165,7 +165,7 @@ class CloudCenterTracker:
         with self.processTrackingCenterLock:
             self.isComputingCenter = value_computing
             if not value_computing:
-                self.tracker_debug({'stop': True})
+                self.tracker_debug({'stop': True, 'producer': self.id})
 
     def set_space_x(self, x):
         self.spaceX = x
