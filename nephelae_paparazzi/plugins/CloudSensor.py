@@ -43,17 +43,26 @@ class CloudSensor:
 
     def cloud_sensor_callback(self, msg):
 
-        utmPos   = utm.from_latlon(msg['lat'], msg['lon'])
-        position = Position(time.time(), 
+        # utmPos   = utm.from_latlon(msg['lat'], msg['lon'])
+        utmPos   = utm.from_latlon(msg['lat']/1.0e7, msg['lon']/1.0e7)
+        position = Position(time.time() - self.navFrame.position.t, 
                             utmPos[0] - self.navFrame.utm_east,
                             utmPos[1] - self.navFrame.utm_north,
-                            msg['hmsl'] - self.navFrame.ground_alt)
+                            msg['hmsl']/1000.0 - self.navFrame.ground_alt)
 
-        for index, value in enumerate(msg['raw']):
-            self.add_sample(SensorSample('cloud_channel_'+str(index),
-                                         self.id, position.time(),
-                                         copy.deepcopy(position),
-                                         [value]))
+        self.add_sample(SensorSample('cloud_channel_0',
+                                     self.id, position.t,
+                                     copy.deepcopy(position),
+                                     [msg['raw'][1]]))
+        self.add_sample(SensorSample('cloud_channel_1',
+                                     self.id, position.t,
+                                     copy.deepcopy(position),
+                                     [msg['raw'][2]]))
+        # for index, value in enumerate(msg['raw']):
+        #     self.add_sample(SensorSample('cloud_channel_'+str(index),
+        #                                  self.id, position.t,
+        #                                  copy.deepcopy(position),
+        #                                  [value]))
 
 
 def build_cloud_sensor(aircraft):

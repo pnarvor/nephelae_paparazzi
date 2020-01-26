@@ -42,20 +42,20 @@ class MeteoStick:
     
 
     def meteo_stick_callback(self, msg):
-
-        utmPos   = utm.from_latlon(msg['lat'], msg['lon'])
-        position = Position(time.time(), 
+        
+        utmPos   = utm.from_latlon(msg['lat']/1.0e7, msg['lon']/1.0e7)
+        position = Position(time.time() - self.navFrame.position.t, 
                             utmPos[0] - self.navFrame.utm_east,
                             utmPos[1] - self.navFrame.utm_north,
-                            msg['hmsl'] - self.navFrame.ground_alt)
+                            msg['hmsl']/1000.0 - self.navFrame.ground_alt)
 
-        pressure = SensorSample('pressure', self.id, position.time(),
+        pressure = SensorSample('pressure', self.id, position.t,
                                 copy.deepcopy(position), [msg['pressure']])
-        temperature = SensorSample('temperature', self.id, position.time(),
+        temperature = SensorSample('temperature', self.id, position.t,
                                    copy.deepcopy(position), [msg['temperature']])
-        humidity = SensorSample('humidity', self.id, position.time(),
+        humidity = SensorSample('humidity', self.id, position.t,
                                 copy.deepcopy(position), [msg['humidity']])
-        airspeed = SensorSample('airspeed', self.id, position.time(),
+        airspeed = SensorSample('airspeed', self.id, position.t,
                                 copy.deepcopy(position), [msg['airspeed']])
         self.add_sample(pressure)
         self.add_sample(temperature)
