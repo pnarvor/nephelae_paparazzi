@@ -352,7 +352,7 @@ class MissionManager:
 
 
     def end_mission(self):
-        msg = PprzMessage('datalink', 'NEXT_MISSION')
+        msg = PprzMessage('datalink', 'END_MISSION')
         msg['ac_id'] = int(self.id)
         messageInterface.send(msg)
 
