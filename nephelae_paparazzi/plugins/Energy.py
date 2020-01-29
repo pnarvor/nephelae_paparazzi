@@ -30,7 +30,7 @@ class Energy:
     def __initplugin__(self):
         self.add_notification_method('add_sample')
         self.ivyBinds.append(messageInterface.bind(self.energy_callback,
-                             '(' + str(self.id) + ' METEO_STICK .*)'))
+                             '(' + str(self.id) + ' ENERGY .*)'))
 
 
     def add_sensor_observer(self, observer):
