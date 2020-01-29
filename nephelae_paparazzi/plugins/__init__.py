@@ -9,3 +9,4 @@ from .CloudCenterTracker import CloudCenterTracker
 
 from .MeteoStick         import MeteoStick
 from .CloudSensor        import CloudSensor
+from .Energy             import Energy
