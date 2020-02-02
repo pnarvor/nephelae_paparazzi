@@ -37,7 +37,7 @@ class Spiral3D(MissionBase):
         self.parameters['drift']        = drift
 
 
-    def build_message(self):
+    def build_message(self, pprzNavRef=None):
         """Builds a ready to send paparazzi message from current parameters"""
         
         # Getting a partial message filled with parameters common to all
@@ -46,15 +46,29 @@ class Spiral3D(MissionBase):
 
         # Filling parameters specific to this mission type.
         msg['type']   = 'SPIR3'
-        msg['params'] = [float(self['start'][0]),
-                         float(self['start'][1]),
-                         float(self['start'][2]),
-                         float(self['alt_stop']),
-                         float(self['radius_start']),
-                         float(self['radius_stop']),
-                         float(self['drift'][0]),
-                         float(self['drift'][1]),
-                         float(self['drift'][2])]
+        if pprzNavRef is None:
+            # Filling parameters specific to this mission type.
+            msg['params'] = [float(self['start'][0]),
+                             float(self['start'][1]),
+                             float(self['start'][2]),
+                             float(self['alt_stop']),
+                             float(self['radius_start']),
+                             float(self['radius_stop']),
+                             float(self['drift'][0]),
+                             float(self['drift'][1]),
+                             float(self['drift'][2])]
+        else:
+            # Filling parameters specific to this mission type.
+            # shifted with this specific aircraft NAVIGATION_REF
+            msg['params'] = [float(self['start'][0]),
+                             float(self['start'][1]),
+                             float(self['start'][2] - pprzNavRef['ground_alt']),
+                             float(self['alt_stop'] - pprzNavRef['ground_alt']),
+                             float(self['radius_start']),
+                             float(self['radius_stop']),
+                             float(self['drift'][0]),
+                             float(self['drift'][1]),
+                             float(self['drift'][2])]
 
         return msg
 

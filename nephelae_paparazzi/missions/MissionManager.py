@@ -318,7 +318,7 @@ class MissionManager:
         TODO : verify that the mission was received by the aircraft before
         removing it from self.pendingMissions.
         """
-        messageInterface.send(self.missions[missionId].build_message())
+        messageInterface.send(self.missions[missionId].build_message(self.PprzNavFrame))
         
         # if missionReceived:
         self.pendingMissions.pop(0);

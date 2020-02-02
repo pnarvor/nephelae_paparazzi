@@ -150,7 +150,7 @@ class Aircraft(MultiObserverSubject, Pluginable):
                 '(^' + str(self.id) + ' NAVIGATION_REF .*)')
 
     def navFrame_callback(self, navFrame):
-        return
+        # return
         messageInterface.unbind(self.navFrameBindId)
         if navFrame['utm_zone'] != self.navFrame.utm_number:
             raise ValueError('navFrame and Pprz have two different values of ' +
