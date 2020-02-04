@@ -62,7 +62,7 @@ class MissionBase:
         self.duration    = float(duration)
         self.parameters  = {}
         self.updateRules = updateRules
-
+        self.authorized  = False
 
     def __str__(self):
         prefix = "\n  "
@@ -101,7 +101,9 @@ class MissionBase:
                 'aircraftId' : self.aircraftId,
                 'insertMode' : self.insertMode,
                 'duration'   : self.duration,
-                'parameters' : self.parameters}
+                'parameters' : self.parameters,
+                'authorized' : self.authorized
+                }
 
 
     def build_message(self):

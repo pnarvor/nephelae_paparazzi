@@ -198,7 +198,7 @@ class MissionManager:
             self.lastMissionId = mission.missionId
             self.pending_missions_updated(
                 {'event': 'created', 'mission': self.missions[mission.missionId]})
-
+            return {'mission_id': mission.missionId, 'aircraft_id': self.id}
             # self.validate_all();
 
 
@@ -325,6 +325,7 @@ class MissionManager:
         if self.outputBackupFile is not None:
             with open(self.outputBackupFile, "ab") as f:
                 pickle.dump({'pendingMissions' : self.pendingMissions}, f)
+        self.missions[missionId].authorized = True
         self.pending_missions_updated(
             {'event': 'authorized', 'mission': self.missions[missionId]})
         # else:
@@ -360,6 +361,7 @@ class MissionManager:
     def validate_all(self):
         for mission in self.pendingMissions:
             messageInterface.send(self.missions[mission].build_message())
+            mission.authorized = True
         self.pendingMissions = []
         self.mission_uploaded()
 
