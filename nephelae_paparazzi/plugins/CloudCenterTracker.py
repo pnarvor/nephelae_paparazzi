@@ -133,9 +133,10 @@ class CloudCenterTracker:
                     mission = self.current_mission()
                     if (mission is not None and 'center' in
                             mission.updatableNames):
-                        messageInterface.send(mission.build_update_messages(
-                                    center=[infosToShare['x'], infosToShare['y'],
-                                        infosToShare['z']])[0])
+                        if self.PprzNavFrame is not None:
+                            messageInterface.send(mission.build_update_messages(
+                                center=[infosToShare['x'], infosToShare['y'],
+                                infosToShare['z'] - self.PprzNavFrame['ground_alt']])[0])
             time.sleep(1)
 
     def cloud_center_to_track_setter(self, point, time):
