@@ -5,6 +5,7 @@ from .CloudCenterTracker import build_cloud_center_tracker
 from .MeteoStick  import build_meteo_stick
 from .CloudSensor import build_cloud_sensor
 from .Energy import build_energy
+from .WindInfo import build_wind_info
 
 # Definition of plugin factory functions. First parameter must be an aircraft
 # on which to apply a plugin
@@ -15,7 +16,8 @@ pluginFactories = {
     'MissionWindUpdater': build_mission_wind_updater,
     'MeteoStick': build_meteo_stick,
     'CloudSensor': build_cloud_sensor,
-    'Energy': build_energy
+    'Energy': build_energy,
+    'WindInfo': build_wind_info
 }
 
 
