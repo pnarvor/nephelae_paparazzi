@@ -23,16 +23,15 @@ class MessageInterface:
 
     This is an abstraction layer used to simplify the use of paparazzi
     message interface, especially for time measurement and casting of
-    message payload data (which are all str at message reception).
+    message payload data (which sometimes stays in ascii)
 
     """
 
     def prettify_message(msg):
         """
-        By default paparazzi message fields are all str type despite having all
-        the informations to cast fields to numeric types. This function cast
-        all fields to their numeric types. (supposed to be done by 
-        PprzMessage.payload_to_binay but does not seem to be working)
+        Sometimes IvyMessageInterface does not cast data to their binary types.
+        This function cast all fields to their binary types. (supposed to be
+        done by PprzMessage.payload_to_binay but does not seem to be working)
 
         It also measure reception time.
         """
@@ -61,6 +60,26 @@ class MessageInterface:
         return msg
 
 
+    def parse_pprz_msg(msg):
+        """
+        Alias to IvyMessageInterface.parse_pprz_msg, but with prettify_message
+        called at the end to ensure all data are in binary format.
+        """
+        class Catcher:
+            """
+            This is a type specifically to catch result from
+            IvyMessageInterface.parse_pprz_msg which only outputs result via a
+            callback.
+            """
+            def set_message(self, aircraftId, message):
+                self.message    = message
+                self.aircraftId = str(aircraftId)
+        catcher = Catcher()
+        IvyMessagesInterface.parse_pprz_msg(catcher.set_message, msg)
+        return [MessageInterface.prettify_message(catcher.message),
+                catcher.aircraftId]
+
+
     def __init__(self, ivyBusAddress=None):
         
         if ivyBusAddress is None:
@@ -86,3 +105,5 @@ class MessageInterface:
     
     def send(self, msg):
         return self.messageInterface.send(msg)
+
+
