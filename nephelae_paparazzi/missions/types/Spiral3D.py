@@ -23,11 +23,12 @@ class Spiral3D(MissionBase):
                       'zdrift' : ['scalar',   'windz']}
 
     def __init__(self, missionId, aircraftId, insertMode, duration,
-                       start, alt_stop, radius_start, radius_stop, drift,
-                       updateRules={}):
+                       positionOffset=None, navFrame=None, pprzNavFrame=None,
+                       start=None, alt_stop=None, radius_start=None,
+                       radius_stop=None, drift=None, updateRules={}):
 
-        super().__init__(missionId, aircraftId,
-                         insertMode, duration, updateRules)
+        super().__init__(missionId, aircraftId, insertMode, duration,
+                         positionOffset, navFrame, pprzNavFrame, updateRules)
         
         self.missionType                = "Spiral3D"
         self.parameters['start']        = start
@@ -35,9 +36,22 @@ class Spiral3D(MissionBase):
         self.parameters['radius_start'] = radius_start
         self.parameters['radius_stop']  = radius_stop
         self.parameters['drift']        = drift
+        
+        # Spiral3D have not the same reference frame as the other missions.
+        if positionOffset is None:
+            if navFrame is None or pprzNavFrame is None:
+                raise ValueError("You have to give either a positionOffset" +
+                                 " of both navFrame and pprzNavFrame.")
+            self.positionOffset = [
+                navFrame.position.x - self.pprzNavFrame.utm_east,
+                navFrame.position.y - self.pprzNavFrame.utm_north,
+                navFrame.position.z]
+        else:
+            self.positionOffset = positionOffset
+        print("Position offset for mission", self.missionType, ":", self.positionOffset)
 
 
-    def build_message(self, pprzNavRef=None):
+    def build_message(self, pprzNavRef=None, localRef=None):
         """Builds a ready to send paparazzi message from current parameters"""
         
         # Getting a partial message filled with parameters common to all
@@ -46,38 +60,16 @@ class Spiral3D(MissionBase):
 
         # Filling parameters specific to this mission type.
         msg['type']   = 'SPIR3'
-        msg['params'] = [float(self['start'][0]),
-                         float(self['start'][1]),
-                         float(self['start'][2]),
-                         float(self['alt_stop']),
+        # Filling parameters specific to this mission type.
+        # shifted with this specific aircraft NAVIGATION_REF
+        msg['params'] = [float(self['start'][0]) + self.positionOffset[0],
+                         float(self['start'][1]) + self.positionOffset[1],
+                         float(self['start'][2]) + self.positionOffset[2],
+                         float(self['alt_stop']) + self.positionOffset[2],
                          float(self['radius_start']),
                          float(self['radius_stop']),
                          float(self['drift'][0]),
                          float(self['drift'][1]),
                          float(self['drift'][2])]
-        # if pprzNavRef is None:
-        #     # Filling parameters specific to this mission type.
-        #     msg['params'] = [float(self['start'][0]),
-        #                      float(self['start'][1]),
-        #                      float(self['start'][2]),
-        #                      float(self['alt_stop']),
-        #                      float(self['radius_start']),
-        #                      float(self['radius_stop']),
-        #                      float(self['drift'][0]),
-        #                      float(self['drift'][1]),
-        #                      float(self['drift'][2])]
-        # else:
-        #     # Filling parameters specific to this mission type.
-        #     # shifted with this specific aircraft NAVIGATION_REF
-        #     msg['params'] = [float(self['start'][0]),
-        #                      float(self['start'][1]),
-        #                      float(self['start'][2] - pprzNavRef['ground_alt']),
-        #                      float(self['alt_stop'] - pprzNavRef['ground_alt']),
-        #                      float(self['radius_start']),
-        #                      float(self['radius_stop']),
-        #                      float(self['drift'][0]),
-        #                      float(self['drift'][1]),
-        #                      float(self['drift'][2])]
-
         return msg
 

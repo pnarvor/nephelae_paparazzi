@@ -19,14 +19,16 @@ class Rosette(MissionBase):
 
     updatableNames = ['hdrift', 'zdrift', 'center']
     updatableTags  = {'hdrift' : ['vector2d', 'wind2d'],
-                      'zdrift' : ['scalar',   'windx']}
+                      'zdrift' : ['scalar',   'windx'],
+                      'center' : ['vector3d', 'position3d']}
 
     def __init__(self, missionId, aircraftId, insertMode, duration,
-                       start, first_turn_direction, circle_radius, drift,
-                       updateRules={}):
+                       positionOffset=None, navFrame=None, pprzNavFrame=None,
+                       start=None, first_turn_direction=None,
+                       circle_radius=None, drift=None, updateRules={}):
 
-        super().__init__(missionId, aircraftId,
-                         insertMode, duration, updateRules)
+        super().__init__(missionId, aircraftId, insertMode, duration,
+                         positionOffset, navFrame, pprzNavFrame, updateRules)
         
         self.missionType                        = "Rosette"
         self.parameters['start']                = start
@@ -35,7 +37,7 @@ class Rosette(MissionBase):
         self.parameters['drift']                = drift
 
 
-    def build_message(self, pprzNavRef=None):
+    def build_message(self, pprzNavRef=None, localRef=None):
         """Builds a ready to send paparazzi message from current parameters"""
         
         # Getting a partial message filled with parameters common to all
@@ -44,27 +46,28 @@ class Rosette(MissionBase):
 
         # Filling parameters specific to this mission type.
         msg['type']   = 'RSTT'
-        if pprzNavRef is None:
-            # Filling parameters specific to this mission type.
-            msg['params'] = [float(self['start'][0]),
-                             float(self['start'][1]),
-                             float(self['start'][2]),
-                             float(self['first_turn_direction']),
-                             float(self['circle_radius']),
-                             float(self['drift'][0]),
-                             float(self['drift'][1]),
-                             float(self['drift'][2])]
-        else:
-            # Filling parameters specific to this mission type.
-            # shifted with this specific aircraft NAVIGATION_REF
-            msg['params'] = [float(self['start'][0]),
-                             float(self['start'][1]),
-                             float(self['start'][2] - pprzNavRef['ground_alt']),
-                             float(self['first_turn_direction']),
-                             float(self['circle_radius']),
-                             float(self['drift'][0]),
-                             float(self['drift'][1]),
-                             float(self['drift'][2])]
-
+        # Filling parameters specific to this mission type.
+        # shifted with this specific aircraft NAVIGATION_REF
+        msg['params'] = [float(self['start'][0]) + self.positionOffset[0],
+                         float(self['start'][1]) + self.positionOffset[1],
+                         float(self['start'][2]) + self.positionOffset[2],
+                         float(self['first_turn_direction']),
+                         float(self['circle_radius']),
+                         float(self['drift'][0]),
+                         float(self['drift'][1]),
+                         float(self['drift'][2])]
         return msg
+
+
+    def build_update_messages(self, duration=-9.0, **params):
+        """
+        This is to shift the 'center' updatable parameter in the paparazzi
+        frame.
+        """
+        if 'center' in params.keys():
+            center = params['center']
+            params['center'] = [center[0] + self.positionOffset[0],
+                                center[1] + self.positionOffset[1],
+                                center[2] + self.positionOffset[2]]
+        return super().build_update_messages(duration, **params)
 

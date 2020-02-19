@@ -159,7 +159,8 @@ class MissionManager:
         return self.missionFactories[missionName].updatable_rules_summary()
 
 
-    def create_mission(self, missionType, insertMode=InsertMode.Append, duration=-1.0, **missionParameters):
+    def create_mission(self, missionType, insertMode=InsertMode.Append,
+                       duration=-1.0, **missionParameters):
         """
         Creates a mission instance and append it to self.pendingMissions.
 
@@ -180,9 +181,14 @@ class MissionManager:
             raise ValueError("Cannot create a " + missionType + " for this aircraft.")
 
         with self.lock:
+            if self.PprzNavFrame is None:
+                return {}
             # Creating new mission instance
             mission = self.missionFactories[missionType].build(
-                self.new_mission_id(), self.id, insertMode, duration, **missionParameters)
+                self.new_mission_id(), self.id, insertMode, duration,
+                positionOffset=None,
+                navFrame=self.navFrame, pprzNavFrame=self.PprzNavFrame,
+                **missionParameters)
             
             # Keeping a copy in self.missions and registering it for validation
             self.missions[mission.missionId] = mission
@@ -238,7 +244,8 @@ class MissionManager:
                                      "Mission ids do not match.")
                 self.missions[missionId] = \
                     self.missionFactories[params['type']].build(
-                        missionId, self.id, params['insertMode'], params['duration'], **params['parameters'])
+                        missionId, self.id, params['insertMode'], params['duration'],
+                        positionOffset=params['positionOffset'], **params['parameters'])
 
         # This function starts here.
         if self.inputBackupFile is None or \
@@ -318,8 +325,8 @@ class MissionManager:
         TODO : verify that the mission was received by the aircraft before
         removing it from self.pendingMissions.
         """
-        messageInterface.send(self.missions[missionId].build_message(self.PprzNavFrame))
-        
+        messageInterface.send(self.missions[missionId].build_message())
+
         # if missionReceived:
         self.pendingMissions.pop(0);
         if self.outputBackupFile is not None:

@@ -82,7 +82,9 @@ class MissionFactory:
         return res
 
 
-    def build(self, missionId, aircraftId, insertMode, duration, **missionParameters):
+    def build(self, missionId, aircraftId, insertMode, duration,
+        positionOffset=None, navFrame=None, pprzNavFrame=None,
+        **missionParameters):
         """
         This is the main function to build an instance of a mission.
         This will check parameters according to bounds given in
@@ -102,6 +104,8 @@ class MissionFactory:
         # be expanded with ** on function call.
         return missionTypes[self.missionType](missionId, aircraftId,
                                               insertMode, duration,
+                                              positionOffset,
+                                              navFrame, pprzNavFrame,
                                               updateRules=self.updatableRules,
                                               **checkedParams)
 

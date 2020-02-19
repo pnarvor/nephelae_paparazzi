@@ -52,18 +52,31 @@ class MissionBase:
     updatableNames      = []
     updatableTags       = []
 
-    def __init__(self, missionId, aircraftId,
-                 insertMode, duration, updateRules={}):
+    def __init__(self, missionId, aircraftId, insertMode, duration,
+                 positionOffset=None, navFrame=None, pprzNavFrame=None,
+                 updateRules={}):
         
-        self.missionType = None
-        self.missionId   = int(missionId)
-        self.aircraftId  = int(aircraftId)
-        self.insertMode  = insertMode
-        self.duration    = float(duration)
-        self.parameters  = {}
-        self.updateRules = updateRules
-        self.authorized  = False
+        self.missionType  = None
+        self.missionId    = int(missionId)
+        self.aircraftId   = int(aircraftId)
+        self.insertMode   = insertMode
+        self.duration     = float(duration)
+        self.parameters   = {}
+        self.updateRules  = updateRules
+        self.authorized   = False
 
+        if positionOffset is None:
+            if navFrame is None or pprzNavFrame is None:
+                raise ValueError("You have to give either a positionOffset" +
+                                 " of both navFrame and pprzNavFrame.")
+            self.positionOffset = [
+                navFrame.position.x - pprzNavFrame.utm_east,
+                navFrame.position.y - pprzNavFrame.utm_north,
+                navFrame.position.z - pprzNavFrame.ground_alt]
+        else:
+            self.positionOffset = positionOffset
+        print("Position offset for mission", self.missionType, ":", self.positionOffset)
+        
     def __str__(self):
         prefix = "\n  "
         maxWidth = max([len(w) for w in
@@ -96,13 +109,14 @@ class MissionBase:
 
 
     def to_dict(self):
-        return {'type'       : self.missionType,
-                'missionId'  : self.missionId,
-                'aircraftId' : self.aircraftId,
-                'insertMode' : self.insertMode,
-                'duration'   : self.duration,
-                'parameters' : self.parameters,
-                'authorized' : self.authorized
+        return {'type'           : self.missionType,
+                'missionId'      : self.missionId,
+                'aircraftId'     : self.aircraftId,
+                'insertMode'     : self.insertMode,
+                'duration'       : self.duration,
+                'positionOffset' : self.positionOffset,
+                'parameters'     : self.parameters,
+                'authorized'     : self.authorized
                 }
 
 
